@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,6 +16,7 @@ Route::get('/dashboard', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     Route::post('/api/chat', [ChatController::class, 'message'])->name('chat.message');
+    Route::post('/api/upload', [UploadController::class, 'handle'])->name('upload');
 });
 
 Route::middleware('auth')->group(function () {

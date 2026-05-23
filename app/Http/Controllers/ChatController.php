@@ -17,7 +17,7 @@ class ChatController extends Controller
     public function message(Request $request): JsonResponse
     {
         $request->validate([
-            'message' => 'required|string|max:2000',
+            'message' => 'required|string|max:100000',
             'history' => 'array|max:50',
             'history.*.role' => 'required|in:user,assistant',
             'history.*.content' => 'required|string|max:4000',
