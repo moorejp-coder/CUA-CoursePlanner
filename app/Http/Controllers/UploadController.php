@@ -26,10 +26,11 @@ class UploadController extends Controller
 
         if ($extension === 'pdf') {
             $parser = new PdfParser;
-            $pdf = $parser->parseFile($file->path());
-            $text = $pdf->getText();
+            $pdf    = $parser->parseFile($file->path());
+            $text   = $pdf->getText();
         } else {
-            $text = $this->parseApwCsv($file->path());
+            $rawCsv = file_get_contents($file->path());
+            $text   = $this->buildApwPrompt((string) $rawCsv);
         }
 
         if (empty(trim((string) $text))) {
@@ -42,281 +43,45 @@ class UploadController extends Controller
         return response()->json(['text' => $text]);
     }
 
-    private function parseApwCsv(string $path): string
+    private function buildApwPrompt(string $rawCsv): string
     {
-        $rows = [];
-        if (($handle = fopen($path, 'r')) !== false) {
-            while (($row = fgetcsv($handle)) !== false) {
-                $rows[] = $row;
-            }
-            fclose($handle);
-        }
+        $instructions = <<<'INSTRUCTIONS'
+You are reading a Busch School of Business Academic Planning Worksheet (APW) exported as CSV. Here is how to read it:
 
-        if (empty($rows)) {
-            return '';
-        }
+The CSV has multiple column groups side by side:
+- Columns A-D: Student info (left side) and Degree Requirements with grades and statuses
+- Columns E-H: Junior/Senior degree requirements
+- Columns I-K: Specialization requirements (up to 3 specializations stacked)
+- Columns L-M: Liberal Arts requirements
+- Columns N-O: Free Electives
 
-        $statuses = [
-            'Course Completed',
-            'Course In Progress',
-            'Course Planned',
-            'Course Needs Planning 0',
-        ];
+Course status values mean:
+- 'Course Completed' = student has finished this course (look for a grade like A, B+, etc. in the adjacent column)
+- 'Course in Progress' = student is currently enrolled
+- 'Course Planned' = student has scheduled this for a future semester
+- 'Course Needs Planning 0' = not yet planned, still required
 
-        // Student info: scan column A for known labels, value is in column B
-        $infoFields = [
-            'name'         => ['last name, first name', 'last name/first name', 'student name'],
-            'id'           => ['student id'],
-            'admit_term'   => ['admit term'],
-            'degree'       => ['degree'],
-            'grad_term'    => ['expected graduation term', 'expected graduation'],
-            'credits_comp' => ['credits completed'],
-            'credits_ip'   => ['credits in progress'],
-            'credits_plan' => ['credits planned'],
-            'standing'     => ['projected standing'],
-            'gpa'          => ['cum gpa'],
-            'math'         => ['math placement'],
-            'language'     => ['foreign language placement', 'language placement'],
-            'advisor'      => ['faculty advisor'],
-        ];
+Student info is in the first ~17 rows on the left: name, student ID, admit term, degree, expected graduation, credits completed, credits in progress, credits planned, projected standing, CUM GPA, math placement, language placement.
 
-        $info = array_fill_keys(array_keys($infoFields), '');
+Read every single row carefully. Do NOT assume a course is incomplete just because you cannot find it — look at the status column next to each course name.
 
-        foreach ($rows as $row) {
-            if (empty($row[0])) {
-                continue;
-            }
-            $cellA = strtolower(trim((string) $row[0]));
-            $cellB = isset($row[1]) ? trim((string) $row[1]) : '';
+Here is the raw APW CSV data:
+INSTRUCTIONS;
 
-            foreach ($infoFields as $key => $variants) {
-                if (! empty($info[$key])) {
-                    continue;
-                }
-                foreach ($variants as $variant) {
-                    if (str_contains($cellA, $variant)) {
-                        $info[$key] = $cellB;
-                        break;
-                    }
-                }
-            }
-        }
+        $footer = <<<'FOOTER'
 
-        // Locate section header rows by scanning every cell
-        $sectionKeywords = [
-            'degree requirements',
-            'specialization requirements',
-            'liberal arts requirements',
-            'free electives',
-        ];
+Based on this data, provide:
+1. Student name, degree program, admit term, catalog year (pre or post Spring 2024)
+2. Credits completed, in progress, and remaining to graduation
+3. CUM GPA and projected standing
+4. Every course marked Course Completed — list them all
+5. Every course marked Course in Progress
+6. Every course still needing planning
+7. All specializations detected and their completion status
+8. What the student still needs to graduate
+9. Any warnings or concerns
+FOOTER;
 
-        $sectionStarts = []; // row_index => header label
-        for ($i = 0; $i < count($rows); $i++) {
-            foreach ($rows[$i] as $cell) {
-                $lower = strtolower(trim((string) $cell));
-                foreach ($sectionKeywords as $kw) {
-                    if (str_contains($lower, $kw)) {
-                        $sectionStarts[$i] = trim((string) $cell);
-                        break 2;
-                    }
-                }
-            }
-        }
-
-        // Process each section
-        $sectionIndices  = array_keys($sectionStarts);
-        $sectionCourses  = []; // degree requirements, liberal arts, free electives
-        $specializations = []; // parsed specialization sub-blocks
-
-        for ($s = 0; $s < count($sectionIndices); $s++) {
-            $start  = $sectionIndices[$s] + 1;
-            $end    = isset($sectionIndices[$s + 1]) ? $sectionIndices[$s + 1] - 1 : count($rows) - 1;
-            $header = $sectionStarts[$sectionIndices[$s]];
-
-            if (stripos($header, 'specialization') !== false) {
-                $specializations = $this->extractSpecializations($rows, $start, $end, $statuses);
-            } else {
-                $courses = array_fill_keys($statuses, []);
-
-                for ($i = $start; $i <= $end; $i++) {
-                    if (! isset($rows[$i])) {
-                        continue;
-                    }
-                    $row = $rows[$i];
-
-                    foreach ($row as $colIdx => $cell) {
-                        $cellTrimmed = trim((string) $cell);
-                        if (! in_array($cellTrimmed, $statuses)) {
-                            continue;
-                        }
-
-                        $left  = trim((string) ($row[$colIdx - 1] ?? ''));
-                        $right = trim((string) ($row[$colIdx + 1] ?? ''));
-
-                        $courseName = ($colIdx > 0 && $left !== '') ? $left : $right;
-
-                        if ($courseName !== '') {
-                            $courses[$cellTrimmed][] = $courseName;
-                        }
-                        break;
-                    }
-                }
-
-                $sectionCourses[$header] = $courses;
-            }
-        }
-
-        $fmt = fn (array $arr): string => empty($arr) ? 'None' : implode(', ', $arr);
-
-        // Build structured summary
-        $s  = "STUDENT ACADEMIC PLANNING WORKSHEET SUMMARY:\n";
-        $s .= '- Student: '.($info['name'] ?: 'Unknown')."\n";
-        $s .= '- Degree: '.($info['degree'] ?: 'Unknown')."\n";
-        $s .= '- Admit Term: '.($info['admit_term'] ?: 'Unknown')."\n";
-        $s .= '- Expected Graduation: '.($info['grad_term'] ?: 'Unknown')."\n";
-        $s .= '- Credits Completed: '.($info['credits_comp'] ?: 'Unknown')."\n";
-        $s .= '- Credits In Progress: '.($info['credits_ip'] ?: 'Unknown')."\n";
-        $s .= '- Credits Planned: '.($info['credits_plan'] ?: 'Unknown')."\n";
-        $s .= '- Projected Standing: '.($info['standing'] ?: 'Unknown')."\n";
-        $s .= '- CUM GPA: '.($info['gpa'] ?: 'Unknown')."\n";
-        $s .= '- Math Placement: '.($info['math'] ?: 'Unknown')."\n";
-        $s .= '- Language Placement: '.($info['language'] ?: 'Unknown')."\n\n";
-
-        // Degree Requirements
-        foreach (array_keys($sectionCourses) as $k) {
-            if (stripos($k, 'degree requirements') !== false) {
-                $dr = $sectionCourses[$k];
-                $s .= "DEGREE REQUIREMENTS STATUS:\n";
-                $s .= 'Completed: '.$fmt($dr['Course Completed'])."\n";
-                $s .= 'In Progress: '.$fmt($dr['Course In Progress'])."\n";
-                $s .= 'Planned: '.$fmt($dr['Course Planned'])."\n";
-                $s .= 'Needs Planning: '.$fmt($dr['Course Needs Planning 0'])."\n\n";
-                break;
-            }
-        }
-
-        // Specialization Requirements — per named specialization
-        if (! empty($specializations)) {
-            $s .= "SPECIALIZATION REQUIREMENTS:\n";
-            $ordinals = ['1st', '2nd', '3rd', '4th'];
-            foreach ($specializations as $idx => $spec) {
-                $ord = $ordinals[$idx] ?? ($idx + 1).'th';
-                $s .= "{$ord} Specialization - {$spec['name']}:\n";
-                $s .= '  Completed: '.$fmt($spec['courses']['Course Completed'])."\n";
-                $s .= '  In Progress: '.$fmt($spec['courses']['Course In Progress'])."\n";
-                $s .= '  Planned: '.$fmt($spec['courses']['Course Planned'])."\n";
-                $s .= '  Needs Planning: '.$fmt($spec['courses']['Course Needs Planning 0'])."\n";
-            }
-            $s .= "\n";
-        }
-
-        // Liberal Arts Requirements
-        foreach (array_keys($sectionCourses) as $k) {
-            if (stripos($k, 'liberal arts') !== false) {
-                $la = $sectionCourses[$k];
-                $s .= "LIBERAL ARTS STATUS:\n";
-                $s .= 'Completed: '.$fmt($la['Course Completed'])."\n";
-                $s .= 'In Progress: '.$fmt($la['Course In Progress'])."\n";
-                $s .= 'Planned: '.$fmt($la['Course Planned'])."\n";
-                $s .= 'Needs Planning: '.$fmt($la['Course Needs Planning 0'])."\n\n";
-                break;
-            }
-        }
-
-        // Free Electives
-        foreach (array_keys($sectionCourses) as $k) {
-            if (stripos($k, 'free elective') !== false) {
-                $fe = $sectionCourses[$k];
-                $s .= "FREE ELECTIVES STATUS:\n";
-                $s .= 'Completed: '.$fmt($fe['Course Completed'])."\n";
-                $s .= 'In Progress: '.$fmt($fe['Course In Progress'])."\n";
-                $s .= 'Planned: '.$fmt($fe['Course Planned'])."\n";
-                $s .= 'Needs Planning: '.$fmt($fe['Course Needs Planning 0'])."\n\n";
-                break;
-            }
-        }
-
-        $s .= "Please analyze this student's APW and:\n";
-        $s .= "1. Confirm what degree program and catalog year they are on\n";
-        $s .= "2. List exactly what required courses they still need to complete\n";
-        $s .= "3. Flag any prerequisite issues based on what is completed vs planned\n";
-        $s .= "4. Identify how many credits they still need\n";
-        $s .= "5. Note any concerns or warnings";
-
-        return $s;
-    }
-
-    /**
-     * Within a Specialization Requirements section, find each named specialization
-     * (e.g. "Marketing", "Sales") and group its courses by status.
-     *
-     * Specialization label rows have a name in the course column but nothing in the
-     * status column. Course rows have both a name and a status value.
-     *
-     * @return array<int, array{name: string, courses: array<string, list<string>>}>
-     */
-    private function extractSpecializations(array $rows, int $start, int $end, array $statuses): array
-    {
-        // Find which column contains status values for this section
-        $statusCol = -1;
-        for ($i = $start; $i <= $end; $i++) {
-            if (! isset($rows[$i])) {
-                continue;
-            }
-            foreach ($rows[$i] as $colIdx => $cell) {
-                if (in_array(trim((string) $cell), $statuses)) {
-                    $statusCol = $colIdx;
-                    break 2;
-                }
-            }
-        }
-
-        if ($statusCol < 0) {
-            return [];
-        }
-
-        // Course names sit immediately to the left of the status column (or right if at col 0)
-        $courseCol = $statusCol > 0 ? $statusCol - 1 : $statusCol + 1;
-
-        $specs           = [];
-        $currentSpecIdx  = -1;
-
-        for ($i = $start; $i <= $end; $i++) {
-            if (! isset($rows[$i])) {
-                continue;
-            }
-            $row = $rows[$i];
-
-            $courseCell = trim((string) ($row[$courseCol] ?? ''));
-            $statusCell = trim((string) ($row[$statusCol] ?? ''));
-
-            if ($courseCell === '') {
-                continue;
-            }
-
-            if (in_array($statusCell, $statuses)) {
-                // Course row — attribute to the current specialization
-                if ($currentSpecIdx >= 0) {
-                    $specs[$currentSpecIdx]['courses'][$statusCell][] = $courseCell;
-                }
-            } else {
-                // No status value — candidate for a specialization name label.
-                // Skip if it looks like a course code (e.g. "MGT 311") or a section header.
-                if (preg_match('/^[A-Z]{2,6}\s+\d{3}/i', $courseCell)) {
-                    continue;
-                }
-                if (str_contains(strtolower($courseCell), 'specialization requirements')) {
-                    continue;
-                }
-
-                $specs[] = [
-                    'name'    => $courseCell,
-                    'courses' => array_fill_keys($statuses, []),
-                ];
-                $currentSpecIdx = count($specs) - 1;
-            }
-        }
-
-        return $specs;
+        return $instructions."\n".$rawCsv.$footer;
     }
 }
