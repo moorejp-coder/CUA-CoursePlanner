@@ -89,6 +89,38 @@
             color: var(--cua-red);
         }
 
+        /* File attachment tag */
+        .file-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #EBF2FF;
+            border: 1px solid #b3cff5;
+            color: var(--cua-blue);
+            font-size: 13px;
+            font-family: 'Roboto', sans-serif;
+            padding: 4px 10px 4px 10px;
+            border-radius: 4px;
+            max-width: 100%;
+        }
+        .file-tag-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 260px;
+        }
+        .file-tag-remove {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #5a7fa8;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0;
+            flex-shrink: 0;
+        }
+        .file-tag-remove:hover { color: var(--cua-red); }
+
         /* Mobile chips */
         .chip {
             flex-shrink: 0;
@@ -289,8 +321,42 @@
                 @endforeach
             </div>
 
+            {{-- Hidden file input --}}
+            <input
+                type="file"
+                x-ref="fileInput"
+                accept=".csv,.pdf"
+                class="hidden"
+                @change="handleFileSelect($event)"
+            >
+
+            {{-- Filename tag --}}
+            <div x-show="fileName" class="mb-2">
+                <span class="file-tag">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                    </svg>
+                    <span class="file-tag-name" x-text="fileName"></span>
+                    <button type="button" class="file-tag-remove" @click="removeFile()" aria-label="Remove file">&times;</button>
+                </span>
+            </div>
+
             {{-- Compose --}}
-            <form @submit.prevent="send()" class="flex items-end gap-3">
+            <form @submit.prevent="send()" class="flex items-end gap-2">
+                {{-- Paperclip button --}}
+                <button
+                    type="button"
+                    @click="$refs.fileInput.click()"
+                    :disabled="loading"
+                    title="Attach Academic Planning Worksheet (.csv) or graduation report (.pdf)"
+                    class="shrink-0 h-[52px] w-10 flex items-center justify-center rounded border border-gray-300
+                           bg-[#FAFAFA] text-gray-400 hover:text-blue-700 hover:border-blue-500
+                           transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                    </svg>
+                </button>
+
                 <textarea
                     x-model="input"
                     @keydown.enter.exact.prevent="send()"
@@ -301,13 +367,14 @@
                     class="flex-1 resize-none border border-gray-300 rounded px-4 py-3 text-base
                            text-gray-800 placeholder-gray-400 leading-relaxed bg-[#FAFAFA]
                            focus:outline-none focus:bg-white transition-colors disabled:opacity-50"
-                    style="font-family:'Source Sans 3',sans-serif;"
+                    style="font-family:'Roboto',sans-serif;"
                     onfocus="this.style.borderColor='var(--cua-blue)'"
                     onblur="this.style.borderColor=''"
                 ></textarea>
+
                 <button
                     type="submit"
-                    :disabled="loading || !input.trim()"
+                    :disabled="loading || (!input.trim() && !file)"
                     class="shrink-0 font-oswald font-semibold uppercase tracking-wide text-sm text-white
                            px-5 py-3 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
                     style="background:var(--cua-red); border-radius:3px;">
@@ -340,6 +407,8 @@ function chatApp() {
         input: '',
         loading: false,
         error: null,
+        file: null,
+        fileName: null,
 
         init() {
             this.messages.push({
@@ -354,17 +423,69 @@ function chatApp() {
                 .replace(/\*(.*?)\*/gs, '$1');
         },
 
+        handleFileSelect(event) {
+            const f = event.target.files[0];
+            if (!f) return;
+            this.file = f;
+            this.fileName = f.name;
+            event.target.value = '';
+        },
+
+        removeFile() {
+            this.file = null;
+            this.fileName = null;
+        },
+
         async send() {
             const text = this.input.trim();
-            if (!text || this.loading) return;
+            if ((!text && !this.file) || this.loading) return;
 
-            this.input = '';
             this.error = null;
+            this.input = '';
+
+            let messageText = text;
+
+            if (this.file) {
+                const csrf = document.querySelector('meta[name="csrf-token"]').content;
+                const form = new FormData();
+                form.append('file', this.file);
+                form.append('_token', csrf);
+
+                this.loading = true;
+                this.scrollToBottom();
+
+                let extracted;
+                try {
+                    const uploadRes = await fetch('/api/upload', { method: 'POST', body: form });
+                    const uploadData = await uploadRes.json();
+                    if (!uploadRes.ok) {
+                        this.error = uploadData.error ?? 'File upload failed. Please try again.';
+                        this.loading = false;
+                        return;
+                    }
+                    extracted = uploadData.text;
+                } catch {
+                    this.error = 'Could not upload the file. Check your connection and try again.';
+                    this.loading = false;
+                    return;
+                }
+
+                if (!messageText) {
+                    messageText = 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
+                }
+
+                messageText = `The student has uploaded their Academic Planning Worksheet or graduation progress report. Here is the content:\n\n${extracted}\n\nStudent question: ${messageText}`;
+
+                this.removeFile();
+            }
 
             const history = this.messages.map(m => ({ role: m.role, content: m.content }));
-            this.messages.push({ role: 'user', content: text });
-            this.loading = true;
-            this.scrollToBottom();
+            const displayText = text || 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
+            this.messages.push({ role: 'user', content: displayText });
+            if (!this.loading) {
+                this.loading = true;
+                this.scrollToBottom();
+            }
 
             try {
                 const res = await fetch('/api/chat', {
@@ -373,7 +494,7 @@ function chatApp() {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     },
-                    body: JSON.stringify({ message: text, history }),
+                    body: JSON.stringify({ message: messageText, history }),
                 });
 
                 const data = await res.json();
