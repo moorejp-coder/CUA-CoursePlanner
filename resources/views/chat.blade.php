@@ -470,7 +470,7 @@ function chatApp() {
                     return;
                 }
 
-                if (extracted.startsWith('You are reading a Busch School')) {
+                if (extracted.startsWith('APW:')) {
                     // APW CSV: structured summary already contains analysis instructions
                     messageText = messageText
                         ? extracted + '\n\nAdditional student question: ' + messageText

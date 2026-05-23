@@ -14,7 +14,7 @@ class UploadController extends Controller
             'file' => 'required|file|max:10240',
         ]);
 
-        $file = $request->file('file');
+        $file      = $request->file('file');
         $extension = strtolower($file->getClientOriginalExtension());
 
         if (! in_array($extension, ['csv', 'pdf'])) {
@@ -29,8 +29,7 @@ class UploadController extends Controller
             $pdf    = $parser->parseFile($file->path());
             $text   = $pdf->getText();
         } else {
-            $rawCsv = file_get_contents($file->path());
-            $text   = $this->buildApwPrompt((string) $rawCsv);
+            $text = $this->buildApwPrompt((string) file_get_contents($file->path()));
         }
 
         if (empty(trim((string) $text))) {
@@ -43,45 +42,241 @@ class UploadController extends Controller
         return response()->json(['text' => $text]);
     }
 
+    /**
+     * Parse the raw APW CSV and produce an ultra-compact prompt for Groq.
+     * Keeps the token count well under 4,000 by using status symbols and
+     * removing whitespace from course codes.
+     */
     private function buildApwPrompt(string $rawCsv): string
     {
-        $instructions = <<<'INSTRUCTIONS'
-You are reading a Busch School of Business Academic Planning Worksheet (APW) exported as CSV. Here is how to read it:
+        // Parse CSV from string via in-memory stream
+        $rows   = [];
+        $stream = fopen('php://memory', 'r+');
+        fwrite($stream, $rawCsv);
+        rewind($stream);
+        // Empty string escape = RFC 4180 compliant; suppresses PHP 8.4 deprecation
+        while (($row = fgetcsv($stream, 0, ',', '"', '')) !== false) {
+            $rows[] = array_map(fn ($c) => trim((string) $c), $row);
+        }
+        fclose($stream);
 
-The CSV has multiple column groups side by side:
-- Columns A-D: Student info (left side) and Degree Requirements with grades and statuses
-- Columns E-H: Junior/Senior degree requirements
-- Columns I-K: Specialization requirements (up to 3 specializations stacked)
-- Columns L-M: Liberal Arts requirements
-- Columns N-O: Free Electives
+        if (empty($rows)) {
+            return '';
+        }
 
-Course status values mean:
-- 'Course Completed' = student has finished this course (look for a grade like A, B+, etc. in the adjacent column)
-- 'Course in Progress' = student is currently enrolled
-- 'Course Planned' = student has scheduled this for a future semester
-- 'Course Needs Planning 0' = not yet planned, still required
+        // Status → symbol map (case-insensitive)
+        $statusMap = [
+            'course completed'        => '✓',
+            'course in progress'      => '→',
+            'course planned'          => 'P',
+            'course needs planning 0' => '✗',
+        ];
 
-Student info is in the first ~17 rows on the left: name, student ID, admit term, degree, expected graduation, credits completed, credits in progress, credits planned, projected standing, CUM GPA, math placement, language placement.
+        $sym  = fn (string $v): ?string => $statusMap[strtolower($v)] ?? null;
+        $code = fn (string $v): string  => preg_replace('/\s+/', '', $v);
 
-Read every single row carefully. Do NOT assume a course is incomplete just because you cannot find it — look at the status column next to each course name.
+        // ── Student info: column A = label, column B = value ─────────
+        $fieldMap = [
+            'name'     => ['last name, first name', 'last name/first name', 'student name', 'last name'],
+            'degree'   => ['degree'],
+            'admit'    => ['admit term'],
+            'grad'     => ['expected graduation term', 'expected graduation'],
+            'cr_done'  => ['credits completed'],
+            'cr_ip'    => ['credits in progress'],
+            'cr_plan'  => ['credits planned'],
+            'standing' => ['projected standing'],
+            'gpa'      => ['cum gpa'],
+            'math'     => ['math placement'],
+            'lang'     => ['foreign language placement', 'language placement'],
+        ];
 
-Here is the raw APW CSV data:
-INSTRUCTIONS;
+        $info = array_fill_keys(array_keys($fieldMap), '?');
 
-        $footer = <<<'FOOTER'
+        foreach ($rows as $row) {
+            $a = strtolower($row[0] ?? '');
+            $b = $row[1] ?? '';
+            if ($a === '') {
+                continue;
+            }
+            foreach ($fieldMap as $key => $variants) {
+                if ($info[$key] !== '?') {
+                    continue;
+                }
+                foreach ($variants as $v) {
+                    if (str_contains($a, $v)) {
+                        $info[$key] = $b !== '' ? $b : '?';
+                        break;
+                    }
+                }
+            }
+        }
 
-Based on this data, provide:
-1. Student name, degree program, admit term, catalog year (pre or post Spring 2024)
-2. Credits completed, in progress, and remaining to graduation
-3. CUM GPA and projected standing
-4. Every course marked Course Completed — list them all
-5. Every course marked Course in Progress
-6. Every course still needing planning
-7. All specializations detected and their completion status
-8. What the student still needs to graduate
-9. Any warnings or concerns
-FOOTER;
+        // ── Locate section headers (row + col) ───────────────────────
+        $kwMap = [
+            'degree' => 'degree requirements',
+            'spec'   => 'specialization requirements',
+            'la'     => 'liberal arts requirements',
+            'elec'   => 'free electives',
+        ];
 
-        return $instructions."\n".$rawCsv.$footer;
+        $hdrPos = [];
+
+        for ($r = 0, $total = count($rows); $r < $total; $r++) {
+            foreach ($rows[$r] as $c => $cell) {
+                $lower = strtolower($cell);
+                foreach ($kwMap as $key => $kw) {
+                    if (! isset($hdrPos[$key]) && str_contains($lower, $kw)) {
+                        $hdrPos[$key] = ['row' => $r, 'col' => $c];
+                    }
+                }
+            }
+            if (count($hdrPos) === count($kwMap)) {
+                break;
+            }
+        }
+
+        // ── Derive per-section column ranges from header columns ──────
+        // Each section owns columns from its header column up to (but not
+        // including) the next section's header column, sorted left→right.
+        $byCol = array_map(fn ($h) => $h['col'], $hdrPos);
+        asort($byCol);
+        $sortedKeys = array_keys($byCol);
+        $colRanges  = [];
+
+        for ($i = 0; $i < count($sortedKeys); $i++) {
+            $k   = $sortedKeys[$i];
+            $min = $byCol[$k];
+            $max = isset($sortedKeys[$i + 1]) ? $byCol[$sortedKeys[$i + 1]] - 1 : PHP_INT_MAX;
+            $colRanges[$k] = [$min, $max];
+        }
+
+        // ── Find spec section's status + course columns ───────────────
+        $specStatusCol = null;
+        $specCourseCol = null;
+
+        if (isset($colRanges['spec'])) {
+            [$specMin, $specMax] = $colRanges['spec'];
+            foreach ($rows as $row) {
+                for ($c = $specMin; $c <= min($specMax, count($row) - 1); $c++) {
+                    if ($sym($row[$c]) !== null) {
+                        $specStatusCol = $c;
+                        $specCourseCol = $c > 0 ? $c - 1 : $c + 1;
+                        break 2;
+                    }
+                }
+            }
+        }
+
+        // ── Collect courses + detect specialization name labels ───────
+        $coreCourses = [];
+        $laCourses   = [];
+        $elecCourses = [];
+        $specBlocks  = []; // [['name' => string, 'courses' => string[]]]
+        $curSpec     = -1;
+
+        foreach ($rows as $row) {
+            // Course/status pair scan — every column
+            foreach ($row as $c => $cell) {
+                $s = $sym($cell);
+                if ($s === null) {
+                    continue;
+                }
+
+                $left  = $c > 0 ? ($row[$c - 1] ?? '') : '';
+                $right = $row[$c + 1] ?? '';
+                $name  = $left !== '' ? $left : $right;
+                if ($name === '') {
+                    continue;
+                }
+
+                $entry = $code($name).$s;
+
+                // Attribute to section by column
+                foreach ($colRanges as $key => [$min, $max]) {
+                    if ($c < $min || $c > $max) {
+                        continue;
+                    }
+                    match ($key) {
+                        'degree' => ($coreCourses[] = $entry),
+                        'la'     => ($laCourses[]   = $entry),
+                        'elec'   => ($elecCourses[]  = $entry),
+                        'spec'   => ($curSpec >= 0 ? ($specBlocks[$curSpec]['courses'][] = $entry) : null),
+                        default  => null,
+                    };
+                    break;
+                }
+            }
+
+            // Specialization name label: non-empty course col, empty/non-status status col
+            if ($specCourseCol !== null && $specStatusCol !== null) {
+                $nameCell   = $row[$specCourseCol] ?? '';
+                $statusCell = $row[$specStatusCol] ?? '';
+
+                if (
+                    $nameCell !== ''
+                    && $sym($statusCell) === null
+                    && ! preg_match('/^[A-Z]{2,6}\s*\d{3}/i', $nameCell)
+                    && ! str_contains(strtolower($nameCell), 'specialization')
+                    && ! str_contains(strtolower($nameCell), 'requirements')
+                ) {
+                    $specBlocks[] = ['name' => $nameCell, 'courses' => []];
+                    $curSpec      = count($specBlocks) - 1;
+                }
+            }
+        }
+
+        // ── Build compact output ──────────────────────────────────────
+        $n   = $info;
+        $out = sprintf(
+            'APW: %s | %s | Admit %s | GPA %s | %s | Cr: %s/%s/%s | Grad: %s | Math: %s | Lang: %s',
+            $n['name'], $n['degree'], $n['admit'], $n['gpa'], $n['standing'],
+            $n['cr_done'], $n['cr_ip'], $n['cr_plan'], $n['grad'], $n['math'], $n['lang']
+        );
+
+        if (! empty($coreCourses)) {
+            $out .= "\n\nCORE: ".implode(' ', $coreCourses);
+        }
+
+        $ordinals = ['SPEC1', 'SPEC2', 'SPEC3'];
+        foreach (array_slice($specBlocks, 0, 3) as $i => $spec) {
+            if (empty($spec['courses'])) {
+                continue;
+            }
+            $out .= "\n".($ordinals[$i] ?? 'SPEC'.($i + 1)).' '.$spec['name'].': '.implode(' ', $spec['courses']);
+        }
+
+        if (! empty($laCourses)) {
+            $out .= "\n\nLIBARTS: ".implode(' ', $laCourses);
+        }
+
+        if (! empty($elecCourses)) {
+            $out .= "\n\nELECTIVES: ".implode(' ', $elecCourses);
+        }
+
+        // Fallback: if section detection failed entirely, dump all pairs flat
+        if (empty($coreCourses) && empty($laCourses) && empty($elecCourses) && empty($specBlocks)) {
+            $all = [];
+            foreach ($rows as $row) {
+                foreach ($row as $c => $cell) {
+                    $s = $sym($cell);
+                    if ($s === null) {
+                        continue;
+                    }
+                    $left  = $c > 0 ? ($row[$c - 1] ?? '') : '';
+                    $right = $row[$c + 1] ?? '';
+                    $name  = $left !== '' ? $left : $right;
+                    if ($name !== '') {
+                        $all[] = $code($name).$s;
+                    }
+                }
+            }
+            if (! empty($all)) {
+                $out .= "\n\nCOURSES: ".implode(' ', $all);
+            }
+        }
+
+        $out .= "\n\nAnalyze this student's BSBA/BSAccounting progress. List what still needs completing, flag any issues, and give specific actionable advice.";
+
+        return $out;
     }
 }
