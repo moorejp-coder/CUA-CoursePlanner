@@ -176,9 +176,10 @@
                 </button>
             </form>
             <p class="text-xs text-gray-400 mt-2 text-center">
-                AI guidance is informational — confirm requirements with
-                <a href="https://business.catholic.edu/undergraduate/advising/" target="_blank"
-                   class="text-cua-blue hover:underline">Academic Services</a>.
+                AI guidance is informational — always consult with a
+                <a href="https://business.catholic.edu/academics/academic-services/index.html" target="_blank"
+                   class="text-cua-blue hover:underline">human advisor</a>
+                before finalizing your schedule or degree plan.
             </p>
         </div>
     </div>
