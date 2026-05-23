@@ -123,48 +123,47 @@ class UploadController extends Controller
             }
         }
 
-        // Collect courses by status for each section
-        $sectionIndices = array_keys($sectionStarts);
-        $sectionCourses = [];
+        // Process each section
+        $sectionIndices  = array_keys($sectionStarts);
+        $sectionCourses  = []; // degree requirements, liberal arts, free electives
+        $specializations = []; // parsed specialization sub-blocks
 
         for ($s = 0; $s < count($sectionIndices); $s++) {
             $start  = $sectionIndices[$s] + 1;
             $end    = isset($sectionIndices[$s + 1]) ? $sectionIndices[$s + 1] - 1 : count($rows) - 1;
             $header = $sectionStarts[$sectionIndices[$s]];
 
-            $courses = array_fill_keys($statuses, []);
+            if (stripos($header, 'specialization') !== false) {
+                $specializations = $this->extractSpecializations($rows, $start, $end, $statuses);
+            } else {
+                $courses = array_fill_keys($statuses, []);
 
-            for ($i = $start; $i <= $end; $i++) {
-                if (! isset($rows[$i])) {
-                    continue;
-                }
-                $row = $rows[$i];
-
-                foreach ($row as $colIdx => $cell) {
-                    $cellTrimmed = trim((string) $cell);
-                    if (! in_array($cellTrimmed, $statuses)) {
+                for ($i = $start; $i <= $end; $i++) {
+                    if (! isset($rows[$i])) {
                         continue;
                     }
+                    $row = $rows[$i];
 
-                    // Course name is in the adjacent column (prefer left, fall back to right)
-                    $courseName = '';
-                    $left = trim((string) ($row[$colIdx - 1] ?? ''));
-                    $right = trim((string) ($row[$colIdx + 1] ?? ''));
+                    foreach ($row as $colIdx => $cell) {
+                        $cellTrimmed = trim((string) $cell);
+                        if (! in_array($cellTrimmed, $statuses)) {
+                            continue;
+                        }
 
-                    if ($colIdx > 0 && $left !== '') {
-                        $courseName = $left;
-                    } elseif ($right !== '') {
-                        $courseName = $right;
+                        $left  = trim((string) ($row[$colIdx - 1] ?? ''));
+                        $right = trim((string) ($row[$colIdx + 1] ?? ''));
+
+                        $courseName = ($colIdx > 0 && $left !== '') ? $left : $right;
+
+                        if ($courseName !== '') {
+                            $courses[$cellTrimmed][] = $courseName;
+                        }
+                        break;
                     }
-
-                    if ($courseName !== '') {
-                        $courses[$cellTrimmed][] = $courseName;
-                    }
-                    break;
                 }
-            }
 
-            $sectionCourses[$header] = $courses;
+                $sectionCourses[$header] = $courses;
+            }
         }
 
         $fmt = fn (array $arr): string => empty($arr) ? 'None' : implode(', ', $arr);
@@ -196,23 +195,17 @@ class UploadController extends Controller
             }
         }
 
-        // Specialization Requirements (1st / 2nd / 3rd)
-        $specKeys = array_values(array_filter(
-            array_keys($sectionCourses),
-            fn ($k) => stripos($k, 'specialization') !== false
-        ));
-
-        if (! empty($specKeys)) {
-            $s .= "SPECIALIZATION REQUIREMENTS STATUS:\n";
+        // Specialization Requirements — per named specialization
+        if (! empty($specializations)) {
+            $s .= "SPECIALIZATION REQUIREMENTS:\n";
             $ordinals = ['1st', '2nd', '3rd', '4th'];
-            foreach ($specKeys as $idx => $specKey) {
-                $sp  = $sectionCourses[$specKey];
+            foreach ($specializations as $idx => $spec) {
                 $ord = $ordinals[$idx] ?? ($idx + 1).'th';
-                $s .= "{$ord} Specialization ({$specKey})\n";
-                $s .= '  Completed: '.$fmt($sp['Course Completed'])."\n";
-                $s .= '  In Progress: '.$fmt($sp['Course In Progress'])."\n";
-                $s .= '  Planned: '.$fmt($sp['Course Planned'])."\n";
-                $s .= '  Needs Planning: '.$fmt($sp['Course Needs Planning 0'])."\n";
+                $s .= "{$ord} Specialization - {$spec['name']}:\n";
+                $s .= '  Completed: '.$fmt($spec['courses']['Course Completed'])."\n";
+                $s .= '  In Progress: '.$fmt($spec['courses']['Course In Progress'])."\n";
+                $s .= '  Planned: '.$fmt($spec['courses']['Course Planned'])."\n";
+                $s .= '  Needs Planning: '.$fmt($spec['courses']['Course Needs Planning 0'])."\n";
             }
             $s .= "\n";
         }
@@ -251,5 +244,79 @@ class UploadController extends Controller
         $s .= "5. Note any concerns or warnings";
 
         return $s;
+    }
+
+    /**
+     * Within a Specialization Requirements section, find each named specialization
+     * (e.g. "Marketing", "Sales") and group its courses by status.
+     *
+     * Specialization label rows have a name in the course column but nothing in the
+     * status column. Course rows have both a name and a status value.
+     *
+     * @return array<int, array{name: string, courses: array<string, list<string>>}>
+     */
+    private function extractSpecializations(array $rows, int $start, int $end, array $statuses): array
+    {
+        // Find which column contains status values for this section
+        $statusCol = -1;
+        for ($i = $start; $i <= $end; $i++) {
+            if (! isset($rows[$i])) {
+                continue;
+            }
+            foreach ($rows[$i] as $colIdx => $cell) {
+                if (in_array(trim((string) $cell), $statuses)) {
+                    $statusCol = $colIdx;
+                    break 2;
+                }
+            }
+        }
+
+        if ($statusCol < 0) {
+            return [];
+        }
+
+        // Course names sit immediately to the left of the status column (or right if at col 0)
+        $courseCol = $statusCol > 0 ? $statusCol - 1 : $statusCol + 1;
+
+        $specs           = [];
+        $currentSpecIdx  = -1;
+
+        for ($i = $start; $i <= $end; $i++) {
+            if (! isset($rows[$i])) {
+                continue;
+            }
+            $row = $rows[$i];
+
+            $courseCell = trim((string) ($row[$courseCol] ?? ''));
+            $statusCell = trim((string) ($row[$statusCol] ?? ''));
+
+            if ($courseCell === '') {
+                continue;
+            }
+
+            if (in_array($statusCell, $statuses)) {
+                // Course row — attribute to the current specialization
+                if ($currentSpecIdx >= 0) {
+                    $specs[$currentSpecIdx]['courses'][$statusCell][] = $courseCell;
+                }
+            } else {
+                // No status value — candidate for a specialization name label.
+                // Skip if it looks like a course code (e.g. "MGT 311") or a section header.
+                if (preg_match('/^[A-Z]{2,6}\s+\d{3}/i', $courseCell)) {
+                    continue;
+                }
+                if (str_contains(strtolower($courseCell), 'specialization requirements')) {
+                    continue;
+                }
+
+                $specs[] = [
+                    'name'    => $courseCell,
+                    'courses' => array_fill_keys($statuses, []),
+                ];
+                $currentSpecIdx = count($specs) - 1;
+            }
+        }
+
+        return $specs;
     }
 }
