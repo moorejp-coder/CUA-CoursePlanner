@@ -25,7 +25,9 @@ class ChatController extends Controller
 
         $systemPrompt = file_get_contents(storage_path('app/system_prompt.txt'));
 
-        $messages = [['role' => 'system', 'content' => $systemPrompt]];
+        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only.";
+
+        $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule]];
 
         foreach ($request->input('history', []) as $turn) {
             $messages[] = ['role' => $turn['role'], 'content' => $turn['content']];
