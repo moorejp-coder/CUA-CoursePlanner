@@ -32,7 +32,7 @@
         .typing-dot:nth-child(3) { animation-delay: .4s; }
 
         /* Textarea auto-resize */
-        textarea { field-sizing: content; min-height: 2.5rem; max-height: 8rem; }
+        textarea { field-sizing: content; min-height: 52px; max-height: 8rem; }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden bg-[#F5F3EF]">
@@ -94,12 +94,11 @@
 <div class="flex flex-1 overflow-hidden">
 
     {{-- ══════ SIDEBAR ══════ --}}
-    <aside class="hidden md:flex w-64 bg-cua-blue flex-col shrink-0 border-r border-white/10">
+    <aside class="hidden md:flex w-64 bg-[#003550] flex-col shrink-0 border-r border-white/10">
 
         {{-- Sidebar header --}}
         <div class="px-5 pt-6 pb-4 border-b border-white/10">
-            <p class="text-[10px] font-semibold uppercase tracking-[0.12em] text-cua-gold mb-1">Quick Start</p>
-            <p class="text-xs text-blue-200/70 leading-snug">Select a topic to begin your advising session</p>
+            <p class="text-sm font-semibold uppercase tracking-[0.1em] text-cua-gold">Quick Start</p>
         </div>
 
         {{-- Quick-start buttons --}}
@@ -118,17 +117,17 @@
             @foreach($prompts as $prompt)
             <button
                 @click="$dispatch('quick-send', { message: '{{ $prompt['label'] }}' })"
-                class="w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-lg text-sm
+                class="w-full flex items-center gap-3 text-left px-4 py-3 rounded-lg
                        text-blue-100 hover:text-white hover:bg-white/10
                        transition-all duration-150 group">
-                <span class="flex-shrink-0 w-7 h-7 rounded-md bg-white/5 group-hover:bg-cua-gold/20
+                <span class="flex-shrink-0 w-8 h-8 rounded-md bg-white/5 group-hover:bg-cua-gold/20
                              flex items-center justify-center transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-cua-gold/70 group-hover:text-cua-gold transition-colors"
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-cua-gold/70 group-hover:text-cua-gold transition-colors"
                          fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $prompt['icon'] }}" />
                     </svg>
                 </span>
-                <span class="leading-snug text-[13px]">{{ $prompt['label'] }}</span>
+                <span class="leading-snug text-[14px]">{{ $prompt['label'] }}</span>
             </button>
             @endforeach
         </nav>
@@ -149,7 +148,6 @@
     <div
         class="flex-1 flex flex-col overflow-hidden"
         x-data="chatApp()"
-        x-init="init()"
         @quick-send.window="quickSend($event.detail.message)"
     >
         {{-- ── Messages area ── --}}
@@ -170,7 +168,7 @@
                                 </svg>
                             </div>
                             <div class="bg-white border border-gray-200/80 text-gray-800 rounded-2xl rounded-bl-sm
-                                        px-4 py-3 shadow-sm text-sm leading-relaxed whitespace-pre-wrap">
+                                        px-5 py-4 shadow-sm text-base leading-[1.7] whitespace-pre-wrap">
                                 <p x-text="msg.content"></p>
                             </div>
                         </div>
@@ -180,7 +178,7 @@
                     <template x-if="msg.role === 'user'">
                         <div class="max-w-[75%]">
                             <div class="bg-cua-red text-white rounded-2xl rounded-br-sm
-                                        px-4 py-3 shadow-sm text-sm leading-relaxed whitespace-pre-wrap"
+                                        px-5 py-4 shadow-sm text-base leading-[1.7] whitespace-pre-wrap"
                                  x-text="msg.content"></div>
                         </div>
                     </template>
@@ -248,7 +246,7 @@
                         :disabled="loading"
                         placeholder="Ask about your degree, courses, specializations, or graduation…"
                         class="w-full resize-none rounded-xl border border-gray-300 bg-gray-50
-                               px-4 py-2.5 pr-4 text-sm text-gray-800 placeholder-gray-400
+                               px-4 py-3 pr-4 text-base text-gray-800 placeholder-gray-400
                                focus:outline-none focus:ring-2 focus:ring-cua-blue/30 focus:border-cua-blue
                                focus:bg-white disabled:opacity-50 transition-colors leading-relaxed"
                     ></textarea>
