@@ -470,11 +470,18 @@ function chatApp() {
                     return;
                 }
 
-                if (!messageText) {
-                    messageText = 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
+                if (extracted.startsWith('STUDENT ACADEMIC PLANNING WORKSHEET SUMMARY:')) {
+                    // APW CSV: structured summary already contains analysis instructions
+                    messageText = messageText
+                        ? extracted + '\n\nAdditional student question: ' + messageText
+                        : extracted;
+                } else {
+                    // PDF or other raw text
+                    if (!messageText) {
+                        messageText = 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
+                    }
+                    messageText = `The student has uploaded their Academic Planning Worksheet or graduation progress report. Here is the content:\n\n${extracted}\n\nStudent question: ${messageText}`;
                 }
-
-                messageText = `The student has uploaded their Academic Planning Worksheet or graduation progress report. Here is the content:\n\n${extracted}\n\nStudent question: ${messageText}`;
 
                 this.removeFile();
             }
