@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\View\View;
+
+class ChatController extends Controller
+{
+    public function index(): View
+    {
+        return view('chat');
+    }
+
+    public function message(Request $request): JsonResponse
+    {
+        $request->validate([
+            'message' => 'required|string|max:2000',
+            'history' => 'array|max:50',
+            'history.*.role' => 'required|in:user,assistant',
+            'history.*.content' => 'required|string|max:4000',
+        ]);
+
+        $systemPrompt = file_get_contents(storage_path('app/system_prompt.txt'));
+
+        $messages = [['role' => 'system', 'content' => $systemPrompt]];
+
+        foreach ($request->input('history', []) as $turn) {
+            $messages[] = ['role' => $turn['role'], 'content' => $turn['content']];
+        }
+
+        $messages[] = ['role' => 'user', 'content' => $request->message];
+
+        $response = Http::withToken(config('services.groq.key'))
+            ->timeout(30)
+            ->post('https://api.groq.com/openai/v1/chat/completions', [
+                'model' => 'llama-3.3-70b-versatile',
+                'messages' => $messages,
+                'max_tokens' => 1024,
+            ]);
+
+        if (! $response->successful()) {
+            return response()->json(
+                ['error' => 'The AI service is temporarily unavailable. Please try again.'],
+                502,
+            );
+        }
+
+        return response()->json([
+            'message' => $response->json('choices.0.message.content'),
+        ]);
+    }
+}
