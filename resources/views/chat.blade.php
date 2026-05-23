@@ -154,7 +154,7 @@
 <div class="flex flex-1 overflow-hidden">
 
     {{-- ═══ SIDEBAR ═══ --}}
-    <aside class="hidden md:flex w-64 bg-white flex-col shrink-0 border-r border-gray-200">
+    <aside x-data class="hidden md:flex w-64 bg-white flex-col shrink-0 border-r border-gray-200">
 
         {{-- Section heading --}}
         <div class="px-5 pt-6 pb-4 border-b border-gray-200">
@@ -378,7 +378,7 @@ function chatApp() {
 
         quickSend(prompt) {
             this.input = prompt;
-            this.$nextTick(() => this.send());
+            this.send();
         },
 
         scrollToBottom() {
