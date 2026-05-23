@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -22,12 +22,22 @@
         * { box-sizing: border-box; }
 
         body {
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Roboto', sans-serif;
             background: #F5F5F5;
             color: var(--cua-dark);
         }
 
-        .font-oswald { font-family: 'Oswald', sans-serif; }
+        .font-oswald  { font-family: 'Oswald', sans-serif; }
+        .font-crimson { font-family: 'Crimson Text', Georgia, serif; }
+
+        /* Rendered HTML inside chat bubbles */
+        .html-msg { font-family: 'Crimson Text', Georgia, serif; font-size: 1.05rem; line-height: 1.75; }
+        .html-msg p { margin-bottom: 0.75rem; }
+        .html-msg p:last-child { margin-bottom: 0; }
+        .html-msg ul { margin: 0.5rem 0 0.75rem 1.4rem; list-style: disc; }
+        .html-msg ul li { margin-bottom: 0.45rem; }
+        .html-msg a { color: var(--cua-blue); text-decoration: underline; text-underline-offset: 2px; }
+        .html-msg a:hover { color: var(--cua-red); }
 
         /* Scrollbar */
         .chat-scroll::-webkit-scrollbar { width: 5px; }
@@ -59,7 +69,7 @@
             text-align: left;
             padding: 12px 20px;
             font-size: 15px;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Roboto', sans-serif;
             color: #333;
             background: transparent;
             border: none;
@@ -83,7 +93,7 @@
         .chip {
             flex-shrink: 0;
             font-size: 13px;
-            font-family: 'Source Sans 3', sans-serif;
+            font-family: 'Roboto', sans-serif;
             color: #555;
             background: #fff;
             border: 1px solid #d8d8d8;
@@ -215,8 +225,13 @@
                     <template x-if="msg.role === 'assistant'">
                         <div class="max-w-[78%] bg-white border border-gray-200 shadow-sm"
                              style="border-radius:2px 14px 14px 14px; padding:18px 22px;">
-                            <p class="text-base leading-[1.75] text-gray-800 whitespace-pre-wrap"
-                               x-text="stripMarkdown(msg.content)"></p>
+                            <template x-if="msg.html">
+                                <div class="html-msg text-gray-800" x-html="msg.content"></div>
+                            </template>
+                            <template x-if="!msg.html">
+                                <p class="font-crimson text-[1.05rem] leading-[1.75] text-gray-800 whitespace-pre-wrap"
+                                   x-text="stripMarkdown(msg.content)"></p>
+                            </template>
                         </div>
                     </template>
 
@@ -224,7 +239,7 @@
                     <template x-if="msg.role === 'user'">
                         <div class="max-w-[78%] text-white shadow-sm"
                              style="background:var(--cua-blue); border-radius:14px 14px 2px 14px; padding:18px 22px;">
-                            <p class="text-base leading-[1.75] whitespace-pre-wrap"
+                            <p class="font-crimson text-[1.05rem] leading-[1.75] whitespace-pre-wrap"
                                x-text="msg.content"></p>
                         </div>
                     </template>
@@ -377,6 +392,27 @@ function chatApp() {
         },
 
         quickSend(prompt) {
+            if (prompt === 'Forms & requests') {
+                this.messages.push({ role: 'user', content: prompt });
+                this.messages.push({ role: 'assistant', html: true, content: `<p>Here are the most common Busch School forms and requests. Click any item to open the form directly:</p>
+<ul>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd_IFxpMN3DHd2sMTxxlBo5rWtKciue-zsSieDG7yLQfbi45Q/viewform" target="_blank">Internship for Credit Application</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeKVk2VXIJ6K4jQQEYEpElk1TJE2JmtDDPwpdVytCx78DlSPA/viewform" target="_blank">Late Registration / Special Academic Requests</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfQEBsGO1QhNz8OnLyi4b9KBnkHC2Qd3BuO3ChcLWZW_NqThQ/viewform" target="_blank">Class Registration Help</a></li>
+  <li><a href="https://business.catholic.edu/_media/busch-incomplete-request-form-dec2023.pdf" target="_blank">Request for Incomplete</a></li>
+  <li><a href="https://enrollment-services.catholic.edu/forms/registration-status-change-form.pdf" target="_blank">Pass/Fail Registration Change</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfp12NrXfiqwtqO7j5vjpEZa9yJav_fChqBQ5Th-2rgtpNdbQ/viewform" target="_blank">Declare / Change Specialization</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfSqf3vwGbOxgrYr1GOw2UG984c4vFbshK16_vjnaJLza3IPA/viewform" target="_blank">Add / Remove a Minor</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc0hLnRtHFFh9U1U5LIC1RuGXiPdsU5J70iVfrt0_38kQHuPQ/viewform" target="_blank">Class Substitution Request</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd7rYkqMw0cpLKuTid62XmO_1Z7xC-wtM7vpxnql0DD6A0_Sw/viewform" target="_blank">Expected Graduation Term Change</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSdRzq3MtT-CVee6N42IFIGBzkdG4IKxm6eSyiEHMEa-OLT1xQ/viewform" target="_blank">Career Discernment Exemption (Transfer Students)</a></li>
+  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLScNx2uBAqVdcg8invm7rsXt2uzU2TxIV9vOu2Bk67_dhc33Cw/viewform" target="_blank">Special Permission to Over-Elect</a></li>
+  <li><a href="https://enrollment-services.catholic.edu/forms/double-major-application.pdf" target="_blank">Double Major Application</a></li>
+</ul>
+<p>For anything not listed here, email <a href="mailto:busch-academic-services@cua.edu">busch-academic-services@cua.edu</a></p>` });
+                this.scrollToBottom();
+                return;
+            }
             this.input = prompt;
             this.send();
         },
