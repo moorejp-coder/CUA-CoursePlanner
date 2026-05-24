@@ -273,6 +273,9 @@
             color: #7c7169;
         }
 
+        /* ── Hide Alpine-controlled elements before init ───── */
+        [x-cloak] { display: none !important; }
+
         /* ── Profile update suggestion banner ──────────────── */
         .profile-update-banner {
             background: #fffbea;
@@ -495,7 +498,7 @@
          @new-chat.window="newChat()">
 
         {{-- Semester prompt banner (Phase 7) --}}
-        <div x-show="semesterBanner"
+        <div x-cloak x-show="semesterBanner"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 -translate-y-2"
              x-transition:enter-end="opacity-100 translate-y-0"
@@ -512,7 +515,7 @@
         </div>
 
         {{-- Profile update suggestion banner (Phase 6) --}}
-        <div x-show="profileUpdate !== null"
+        <div x-cloak x-show="profileUpdate !== null"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 -translate-y-2"
              x-transition:enter-end="opacity-100 translate-y-0"
@@ -522,28 +525,14 @@
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
                     <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                 </svg>
-                <div class="pub-text">
-                    <span>Your advisor suggests marking </span>
-                    <strong x-text="profileUpdate ? profileUpdate.course_code : ''"></strong>
-                    <span> as </span>
-                    <strong x-text="profileUpdate ? profileUpdate.status : ''"></strong>
-                    <template x-if="profileUpdate && profileUpdate.grade">
-                        <span> (Grade: <strong x-text="profileUpdate.grade"></strong></span>
-                    </template>
-                    <template x-if="profileUpdate && profileUpdate.semester">
-                        <span x-text="profileUpdate && profileUpdate.grade ? ', ' + profileUpdate.semester + ')' : (profileUpdate ? ', ' + profileUpdate.semester : '')"></span>
-                    </template>
-                    <template x-if="profileUpdate && profileUpdate.grade && !profileUpdate.semester">
-                        <span>)</span>
-                    </template>
-                </div>
+                <div class="pub-text" x-text="profileUpdateMessage()"></div>
                 <button class="pub-accept" @click="acceptProfileUpdate()">Accept</button>
                 <button class="pub-dismiss" @click="profileUpdate = null">Dismiss</button>
             </div>
         </div>
 
         {{-- Success toast --}}
-        <div x-show="successToast"
+        <div x-cloak x-show="successToast"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 translate-y-2"
              x-transition:enter-end="opacity-100 translate-y-0"
@@ -600,7 +589,7 @@
                 </template>
 
                 {{-- Typing indicator --}}
-                <div x-show="loading"
+                <div x-cloak x-show="loading"
                      x-transition:enter="transition ease-out duration-150"
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
@@ -618,7 +607,7 @@
                 </div>
 
                 {{-- Error banner --}}
-                <div x-show="error"
+                <div x-cloak x-show="error"
                      x-transition:enter="transition ease-out duration-150"
                      x-transition:enter-start="opacity-0 scale-95"
                      x-transition:enter-end="opacity-100 scale-100"
@@ -728,7 +717,10 @@
 <script>
 function chatApp() {
     return {
-        messages: [],
+        messages: [{
+            role: 'assistant',
+            content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
+        }],
         input: '',
         loading: false,
         error: null,
@@ -739,11 +731,6 @@ function chatApp() {
         successToast: false,
 
         init() {
-            this.messages.push({
-                role: 'assistant',
-                content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
-            });
-
             const urlParams = new URLSearchParams(window.location.search);
             const autoMsg = urlParams.get('msg');
             if (autoMsg) {
@@ -810,6 +797,18 @@ function chatApp() {
             }
         },
 
+        profileUpdateMessage() {
+            if (!this.profileUpdate) return '';
+            const p = this.profileUpdate;
+            const statusLabel = (p.status || '').replace(/_/g, ' ');
+            let msg = `Your advisor suggests marking ${p.course_code} as ${statusLabel}`;
+            const details = [];
+            if (p.grade) details.push('Grade: ' + p.grade);
+            if (p.semester) details.push(p.semester);
+            if (details.length) msg += ' (' + details.join(', ') + ')';
+            return msg + '. Accept or Dismiss?';
+        },
+
         extractProfileUpdate(text) {
             const match = text.match(/\[PROFILE_UPDATE:\s*(\{[^}]+\})\]/s);
             if (!match) return { text, update: null };
@@ -823,13 +822,16 @@ function chatApp() {
         },
 
         newChat() {
-            this.messages = [];
+            this.messages = [{
+                role: 'assistant',
+                content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
+            }];
             this.input = '';
             this.error = null;
             this.loading = false;
             this.file = null;
             this.fileName = null;
-            this.init();
+            this.profileUpdate = null;
             this.$nextTick(() => this.scrollToBottom());
         },
 
