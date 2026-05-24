@@ -80,17 +80,22 @@ class UploadController extends Controller
 
     /**
      * Parse the raw APW CSV and produce an ultra-compact prompt for Groq.
-     * Keeps the token count well under 4,000 by using status symbols and
-     * removing whitespace from course codes.
+     *
+     * Handles all 4 APW template versions by detecting column layout from
+     * the column count (25 = BSBA, 22 = BS Accounting) and using fixed column
+     * positions derived from template analysis rather than keyword scanning.
+     *
+     * Column layout (confirmed against all 4 template versions + student APW):
+     *   All versions — Core: (col2,col4) First-Year, (col5,col7) Junior/Senior
+     *   BSBA (25 cols) — Spec: col8=label/course, col10=status; LA: (col11,col13); Elec: (col14,col16)
+     *   BSA  (22 cols) — LA: (col8,col10); Elec: (col11,col13)
      */
     private function buildApwPrompt(string $rawCsv): string
     {
-        // Parse CSV from string via in-memory stream
         $rows = [];
         $stream = fopen('php://memory', 'r+');
         fwrite($stream, $rawCsv);
         rewind($stream);
-        // Empty string escape = RFC 4180 compliant; suppresses PHP 8.4 deprecation
         while (($row = fgetcsv($stream, 0, ',', '"', '')) !== false) {
             $rows[] = array_map(fn ($c) => trim((string) $c), $row);
         }
@@ -100,27 +105,31 @@ class UploadController extends Controller
             return '';
         }
 
-        // Status → symbol map (case-insensitive)
         $statusMap = [
             'course completed' => '✓',
             'course in progress' => '→',
             'course planned' => 'P',
             'course needs planning 0' => '✗',
+            'course needs to be planned' => '✗',
         ];
 
-        $sym = fn (string $v): ?string => $statusMap[strtolower($v)] ?? null;
-        $code = fn (string $v): string => preg_replace('/\s+/', '', $v);
+        $sym = fn (string $v): ?string => $statusMap[strtolower(trim($v))] ?? null;
+        $compress = fn (string $v): string => preg_replace('/\s+/', '', $v);
 
-        // ── Student info: column A = label, column B = value ─────────
+        // 25 cols = BSBA (with specialization section), 22 cols = BS Accounting
+        $maxCols = max(array_map('count', $rows));
+        $isBSBA = $maxCols >= 25;
+
+        // ── Student info (col0 = label, col1 = value) ────────────────
         $fieldMap = [
-            'name' => ['last name, first name', 'last name/first name', 'student name', 'last name'],
+            'name' => ['last name, first name', 'last name/first name', 'last name, first', 'last name'],
             'degree' => ['degree'],
             'admit' => ['admit term'],
             'grad' => ['expected graduation term', 'expected graduation'],
             'cr_done' => ['credits completed'],
-            'cr_ip' => ['credits in progress'],
-            'cr_plan' => ['credits planned'],
-            'standing' => ['projected standing'],
+            'cr_ip' => ['credit in progress', 'credits in progress'],
+            'cr_plan' => ['credits planned', 'planned credits'],
+            'standing' => ['standing'],
             'gpa' => ['cum gpa'],
             'math' => ['math placement'],
             'lang' => ['foreign language placement', 'language placement'],
@@ -131,7 +140,8 @@ class UploadController extends Controller
         foreach ($rows as $row) {
             $a = strtolower($row[0] ?? '');
             $b = $row[1] ?? '';
-            if ($a === '') {
+            // Skip empty labels and long compound rows (e.g. "Credits Completed + … + Credits Planned")
+            if ($a === '' || strlen($a) > 50) {
                 continue;
             }
             foreach ($fieldMap as $key => $variants) {
@@ -147,116 +157,130 @@ class UploadController extends Controller
             }
         }
 
-        // ── Locate section headers (row + col) ───────────────────────
-        $kwMap = [
-            'degree' => 'degree requirements',
-            'spec' => 'specialization requirements',
-            'la' => 'liberal arts requirements',
-            'elec' => 'free electives',
-        ];
-
-        $hdrPos = [];
-
-        for ($r = 0, $total = count($rows); $r < $total; $r++) {
-            foreach ($rows[$r] as $c => $cell) {
-                $lower = strtolower($cell);
-                foreach ($kwMap as $key => $kw) {
-                    if (! isset($hdrPos[$key]) && str_contains($lower, $kw)) {
-                        $hdrPos[$key] = ['row' => $r, 'col' => $c];
-                    }
-                }
+        // Students replace the "Last Name, First Name" label in row0/col0 with their actual name
+        if ($info['name'] === '?' && isset($rows[0][0])) {
+            $cell0 = trim($rows[0][0]);
+            $lower0 = strtolower($cell0);
+            if ($cell0 !== '' && ! str_contains($lower0, 'last name') && ! str_contains($lower0, 'student')) {
+                $info['name'] = $cell0;
             }
-            if (count($hdrPos) === count($kwMap)) {
+        }
+
+        // ── Data range: stop at the LEGEND row (col2 = 'LEGEND') ─────
+        $dataEnd = count($rows);
+        foreach ($rows as $ri => $row) {
+            if (($row[2] ?? '') === 'LEGEND' || str_starts_with($row[0] ?? '', 'Frequently Asked')) {
+                $dataEnd = $ri;
                 break;
             }
         }
 
-        // ── Derive per-section column ranges from header columns ──────
-        // Each section owns columns from its header column up to (but not
-        // including) the next section's header column, sorted left→right.
-        $byCol = array_map(fn ($h) => $h['col'], $hdrPos);
-        asort($byCol);
-        $sortedKeys = array_keys($byCol);
-        $colRanges = [];
+        // ── Fixed column pairs (course_col, status_col) ───────────────
+        $corePairs = [[2, 4], [5, 7]]; // First-Year(/Sophomore) + Junior/Senior
 
-        for ($i = 0; $i < count($sortedKeys); $i++) {
-            $k = $sortedKeys[$i];
-            $min = $byCol[$k];
-            $max = isset($sortedKeys[$i + 1]) ? $byCol[$sortedKeys[$i + 1]] - 1 : PHP_INT_MAX;
-            $colRanges[$k] = [$min, $max];
+        if ($isBSBA) {
+            $laPairs = [[11, 13]];
+            $elecPairs = [[14, 16]];
+            // Specialization: col8 = course name (or spec-block label), col10 = status
+        } else {
+            $laPairs = [[8, 10]];
+            $elecPairs = [[11, 13]];
         }
 
-        // ── Find spec section's status + course columns ───────────────
-        $specStatusCol = null;
-        $specCourseCol = null;
+        // Cell values that are headers/annotations, not course codes
+        $headerTokens = [
+            'degree requirements', 'specialization requirements', 'liberal arts requirements',
+            'free electives', 'first-year', 'junior/senior', 'first-year/sophomore',
+            'business minors', 'four year plan', 'transfer credits', 'did not satisfy',
+            'legend', 'math fulfilled', 'social science fulfilled', 'business elective',
+            'sophomore', 'course completed', 'course in progress', 'course planned', 'course needs',
+        ];
 
-        if (isset($colRanges['spec'])) {
-            [$specMin, $specMax] = $colRanges['spec'];
-            foreach ($rows as $row) {
-                for ($c = $specMin; $c <= min($specMax, count($row) - 1); $c++) {
-                    if ($sym($row[$c]) !== null) {
-                        $specStatusCol = $c;
-                        $specCourseCol = $c > 0 ? $c - 1 : $c + 1;
-                        break 2;
-                    }
+        $isHeader = static function (string $cell) use ($headerTokens): bool {
+            if ($cell === '' || is_numeric($cell)) {
+                return true;
+            }
+            $lower = strtolower($cell);
+            foreach ($headerTokens as $t) {
+                if (str_contains($lower, $t)) {
+                    return true;
                 }
             }
-        }
 
-        // ── Collect courses + detect specialization name labels ───────
+            return false;
+        };
+
+        // ── Collect courses ───────────────────────────────────────────
         $coreCourses = [];
         $laCourses = [];
         $elecCourses = [];
         $specBlocks = []; // [['name' => string, 'courses' => string[]]]
         $curSpec = -1;
 
-        foreach ($rows as $row) {
-            // Course/status pair scan — every column
-            foreach ($row as $c => $cell) {
-                $s = $sym($cell);
-                if ($s === null) {
-                    continue;
-                }
+        // Start at row 1 so specialization block labels in row1 are detected;
+        // course collection is guarded to start at row 2.
+        for ($ri = 1; $ri < $dataEnd; $ri++) {
+            $row = $rows[$ri] ?? [];
 
-                $left = $c > 0 ? ($row[$c - 1] ?? '') : '';
-                $right = $row[$c + 1] ?? '';
-                $name = $left !== '' ? $left : $right;
-                if ($name === '') {
-                    continue;
-                }
-
-                $entry = $code($name).$s;
-
-                // Attribute to section by column
-                foreach ($colRanges as $key => [$min, $max]) {
-                    if ($c < $min || $c > $max) {
-                        continue;
-                    }
-                    match ($key) {
-                        'degree' => ($coreCourses[] = $entry),
-                        'la' => ($laCourses[] = $entry),
-                        'elec' => ($elecCourses[] = $entry),
-                        'spec' => ($curSpec >= 0 ? ($specBlocks[$curSpec]['courses'][] = $entry) : null),
-                        default => null,
-                    };
-                    break;
+            // Specialization block label detection (BSBA only).
+            // col8 is the spec-name label when col10 is not a status value
+            // (credit count, empty) and col8 is not a course-code pattern.
+            if ($isBSBA) {
+                $col8 = $row[8] ?? '';
+                $col10 = $row[10] ?? '';
+                $looksLikeCourse = preg_match('/^[A-Z]{2,6}\s*\d/i', $col8);
+                if ($col8 !== '' && $sym($col10) === null && ! $looksLikeCourse) {
+                    $specBlocks[] = ['name' => $col8, 'courses' => []];
+                    $curSpec = count($specBlocks) - 1;
                 }
             }
 
-            // Specialization name label: non-empty course col, empty/non-status status col
-            if ($specCourseCol !== null && $specStatusCol !== null) {
-                $nameCell = $row[$specCourseCol] ?? '';
-                $statusCell = $row[$specStatusCol] ?? '';
+            if ($ri < 2) {
+                continue; // Row 1 sub-headers are labels only, not course data
+            }
 
-                if (
-                    $nameCell !== ''
-                    && $sym($statusCell) === null
-                    && ! preg_match('/^[A-Z]{2,6}\s*\d{3}/i', $nameCell)
-                    && ! str_contains(strtolower($nameCell), 'specialization')
-                    && ! str_contains(strtolower($nameCell), 'requirements')
-                ) {
-                    $specBlocks[] = ['name' => $nameCell, 'courses' => []];
-                    $curSpec = count($specBlocks) - 1;
+            // Core degree courses
+            foreach ($corePairs as [$cc, $sc]) {
+                $course = $row[$cc] ?? '';
+                $status = $row[$sc] ?? '';
+                $s = $sym($status);
+                if ($s !== null && ! $isHeader($course)) {
+                    $coreCourses[] = $compress($course).$s;
+                }
+            }
+
+            // Specialization courses (BSBA only): col8 = course, col10 = status
+            if ($isBSBA) {
+                $course = $row[8] ?? '';
+                $status = $row[10] ?? '';
+                $s = $sym($status);
+                if ($s !== null && ! $isHeader($course)) {
+                    if ($curSpec >= 0) {
+                        $specBlocks[$curSpec]['courses'][] = $compress($course).$s;
+                    } else {
+                        $specBlocks[] = ['name' => 'Specialization', 'courses' => [$compress($course).$s]];
+                        $curSpec = 0;
+                    }
+                }
+            }
+
+            // Liberal Arts
+            foreach ($laPairs as [$cc, $sc]) {
+                $course = $row[$cc] ?? '';
+                $status = $row[$sc] ?? '';
+                $s = $sym($status);
+                if ($s !== null && ! $isHeader($course)) {
+                    $laCourses[] = $compress($course).$s;
+                }
+            }
+
+            // Free electives
+            foreach ($elecPairs as [$cc, $sc]) {
+                $course = $row[$cc] ?? '';
+                $status = $row[$sc] ?? '';
+                $s = $sym($status);
+                if ($s !== null && ! $isHeader($course)) {
+                    $elecCourses[] = $compress($course).$s;
                 }
             }
         }
@@ -264,6 +288,7 @@ class UploadController extends Controller
         // ── Build compact output ──────────────────────────────────────
         $n = $info;
         $out = "KEY: ✓=completed →=in-progress P=planned ✗=not-started\n\n";
+        $out .= 'TEMPLATE: '.($isBSBA ? 'BSBA' : 'BS Accounting')."\n";
         $out .= sprintf(
             'APW: %s | %s | Admit %s | GPA %s | %s | Cr: %s done/%s in-progress/%s planned | Grad: %s | Math: %s | Lang: %s',
             $n['name'], $n['degree'], $n['admit'], $n['gpa'], $n['standing'],
@@ -274,12 +299,14 @@ class UploadController extends Controller
             $out .= "\n\nCORE: ".implode(' ', $coreCourses);
         }
 
-        $ordinals = ['SPEC1', 'SPEC2', 'SPEC3'];
-        foreach (array_slice($specBlocks, 0, 3) as $i => $spec) {
-            if (empty($spec['courses'])) {
-                continue;
+        if ($isBSBA) {
+            $ordinals = ['SPEC1', 'SPEC2', 'SPEC3'];
+            foreach (array_slice($specBlocks, 0, 3) as $i => $spec) {
+                if (empty($spec['courses'])) {
+                    continue;
+                }
+                $out .= "\n".($ordinals[$i] ?? 'SPEC'.($i + 1)).' '.$spec['name'].': '.implode(' ', $spec['courses']);
             }
-            $out .= "\n".($ordinals[$i] ?? 'SPEC'.($i + 1)).' '.$spec['name'].': '.implode(' ', $spec['courses']);
         }
 
         if (! empty($laCourses)) {
@@ -288,28 +315,6 @@ class UploadController extends Controller
 
         if (! empty($elecCourses)) {
             $out .= "\n\nELECTIVES: ".implode(' ', $elecCourses);
-        }
-
-        // Fallback: if section detection failed entirely, dump all pairs flat
-        if (empty($coreCourses) && empty($laCourses) && empty($elecCourses) && empty($specBlocks)) {
-            $all = [];
-            foreach ($rows as $row) {
-                foreach ($row as $c => $cell) {
-                    $s = $sym($cell);
-                    if ($s === null) {
-                        continue;
-                    }
-                    $left = $c > 0 ? ($row[$c - 1] ?? '') : '';
-                    $right = $row[$c + 1] ?? '';
-                    $name = $left !== '' ? $left : $right;
-                    if ($name !== '') {
-                        $all[] = $code($name).$s;
-                    }
-                }
-            }
-            if (! empty($all)) {
-                $out .= "\n\nCOURSES: ".implode(' ', $all);
-            }
         }
 
         $out .= "\n\nSECTION KEY:\n"
@@ -324,7 +329,12 @@ class UploadController extends Controller
             ."4. Any critical rules that apply (e.g. MGT 475 + BUS 498 same semester, credit gate requirements, SRES 290 if post-Spring 2024)\n"
             .'5. Recommended next steps and any concerns to raise with their academic advisor';
 
-        Log::info('APW parsed', ['degree' => $n['degree'], 'standing' => $n['standing'], 'grad' => $n['grad']]);
+        Log::info('APW parsed', [
+            'degree' => $n['degree'],
+            'standing' => $n['standing'],
+            'grad' => $n['grad'],
+            'template' => $isBSBA ? 'BSBA' : 'BSA',
+        ]);
 
         return $out;
     }
