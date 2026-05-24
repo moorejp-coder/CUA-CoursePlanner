@@ -17,8 +17,8 @@ Route::get('/dashboard', function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    Route::post('/api/chat', [ChatController::class, 'message'])->name('chat.message');
-    Route::post('/api/upload', [UploadController::class, 'handle'])->name('upload');
+    Route::post('/api/chat', [ChatController::class, 'message'])->middleware('throttle:20,1')->name('chat.message');
+    Route::post('/api/upload', [UploadController::class, 'handle'])->middleware('throttle:10,1')->name('upload');
 });
 
 Route::middleware('auth')->group(function () {
