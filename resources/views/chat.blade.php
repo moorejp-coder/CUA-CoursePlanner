@@ -14,174 +14,272 @@
 
     <style>
         :root {
-            --cua-blue: #004B9D;
-            --cua-red:  #CC0000;
-            --cua-dark: #1A1A1A;
+            --cua-blue:   #004B9D;
+            --cua-red:    #CC0000;
+            --cua-dark:   #111827;
+            --surface:    #F6F7F9;
+            --blue-tint:  #EFF5FF;
+            --border:     #E3E6EA;
+            --text-muted: #6B7280;
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background: #F5F5F5;
+            background: var(--surface);
             color: var(--cua-dark);
         }
 
-        .font-oswald  { font-family: 'Oswald', sans-serif; }
-        .font-crimson { font-family: 'Crimson Text', Georgia, serif; }
+        /* ── Message entry animation ───────────────────────── */
+        @keyframes msgIn {
+            from { opacity: 0; transform: translateY(7px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .msg-in { animation: msgIn 0.2s ease-out forwards; }
 
-        /* Rendered HTML inside chat bubbles */
-        .html-msg { font-family: 'Crimson Text', Georgia, serif; font-size: 1.05rem; line-height: 1.75; }
-        .html-msg p { margin-bottom: 0.75rem; }
+        /* ── Rendered HTML in AI bubbles ───────────────────── */
+        .html-msg {
+            font-family: 'Crimson Text', Georgia, serif;
+            font-size: 1.0625rem;
+            line-height: 1.82;
+            font-feature-settings: "kern" 1, "liga" 1;
+        }
+        .html-msg p { margin-bottom: 0.65rem; }
         .html-msg p:last-child { margin-bottom: 0; }
-        .html-msg ul { margin: 0.5rem 0 0.75rem 1.4rem; list-style: disc; }
-        .html-msg ul li { margin-bottom: 0.45rem; }
+        .html-msg ul { margin: 0.4rem 0 0.65rem 1.4rem; list-style: disc; }
+        .html-msg ul li { margin-bottom: 0.38rem; }
         .html-msg a { color: var(--cua-blue); text-decoration: underline; text-underline-offset: 2px; }
         .html-msg a:hover { color: var(--cua-red); }
 
-        /* Scrollbar */
-        .chat-scroll::-webkit-scrollbar { width: 5px; }
-        .chat-scroll::-webkit-scrollbar-track { background: #f0f0f0; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #c8c8c8; border-radius: 3px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #aaa; }
+        /* ── Scrollbar ─────────────────────────────────────── */
+        .chat-scroll::-webkit-scrollbar { width: 4px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
 
-        /* Typing dots */
+        /* ── Typing dots ───────────────────────────────────── */
         @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: .35; }
-            30%           { transform: translateY(-5px); opacity: 1; }
+            0%, 60%, 100% { transform: translateY(0); opacity: .38; }
+            30%            { transform: translateY(-5px); opacity: 1; }
         }
-        .typing-dot { animation: typingBounce 1.3s ease-in-out infinite; }
-        .typing-dot:nth-child(2) { animation-delay: .2s; }
-        .typing-dot:nth-child(3) { animation-delay: .4s; }
+        .typing-dot { animation: typingBounce 1.4s ease-in-out infinite; }
+        .typing-dot:nth-child(2) { animation-delay: .18s; }
+        .typing-dot:nth-child(3) { animation-delay: .36s; }
 
-        /* Textarea */
-        textarea {
-            field-sizing: content;
-            min-height: 52px;
-            max-height: 140px;
-        }
-
-        /* Sidebar nav buttons */
+        /* ── Sidebar nav buttons ───────────────────────────── */
         .qs-btn {
             display: flex;
             align-items: center;
+            gap: 10px;
             width: 100%;
             text-align: left;
-            padding: 12px 20px;
-            font-size: 15px;
+            padding: 10px 14px 10px 18px;
+            font-size: 13.5px;
             font-family: 'Roboto', sans-serif;
-            color: #333;
+            color: #374151;
             background: transparent;
             border: none;
             border-left: 3px solid transparent;
             cursor: pointer;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
-            line-height: 1.4;
+            transition: background 0.12s, border-color 0.12s, color 0.12s;
+            line-height: 1.45;
+        }
+        .qs-icon  { color: #9CA3AF; flex-shrink: 0; transition: color 0.12s; }
+        .qs-chevron {
+            color: #D1D5DB;
+            flex-shrink: 0;
+            margin-left: auto;
+            transition: color 0.12s, transform 0.12s;
         }
         .qs-btn:hover {
-            background: #EBF2FF;
+            background: var(--blue-tint);
             border-left-color: var(--cua-blue);
             color: var(--cua-blue);
         }
+        .qs-btn:hover .qs-icon    { color: var(--cua-blue); }
+        .qs-btn:hover .qs-chevron { color: var(--cua-blue); transform: translateX(2px); }
         .qs-btn:active {
-            background: #FDECEA;
+            background: #FEF2F2;
             border-left-color: var(--cua-red);
             color: var(--cua-red);
         }
 
-        /* File attachment tag */
+        /* ── Compose ring ──────────────────────────────────── */
+        .compose-ring {
+            display: flex;
+            align-items: flex-end;
+            gap: 2px;
+            background: #fff;
+            border: 1.5px solid #D1D5DB;
+            border-radius: 14px;
+            padding: 4px 4px 4px 2px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .compose-ring:focus-within {
+            border-color: var(--cua-blue);
+            box-shadow: 0 0 0 3px rgba(0, 75, 157, 0.09);
+        }
+        .compose-ring textarea {
+            flex: 1;
+            border: none;
+            background: transparent;
+            outline: none;
+            resize: none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--cua-dark);
+            padding: 9px 8px 9px 12px;
+            min-height: 42px;
+            max-height: 140px;
+            field-sizing: content;
+        }
+        .compose-ring textarea::placeholder { color: #9CA3AF; }
+        .compose-ring textarea:disabled { opacity: 0.5; }
+
+        /* ── Attach button ─────────────────────────────────── */
+        .attach-btn {
+            align-self: flex-end;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #9CA3AF;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background 0.12s, color 0.12s;
+        }
+        .attach-btn:hover:not(:disabled) { background: var(--blue-tint); color: var(--cua-blue); }
+        .attach-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+        /* ── Send button ───────────────────────────────────── */
+        .send-btn {
+            align-self: flex-end;
+            height: 38px;
+            padding: 0 20px;
+            background: var(--cua-red);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: opacity 0.12s, transform 0.1s;
+        }
+        .send-btn:hover:not(:disabled) { opacity: 0.87; }
+        .send-btn:active:not(:disabled) { transform: scale(0.965); }
+        .send-btn:disabled { opacity: 0.27; cursor: not-allowed; }
+
+        /* ── File attachment tag ───────────────────────────── */
         .file-tag {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: #EBF2FF;
-            border: 1px solid #b3cff5;
+            background: var(--blue-tint);
+            border: 1px solid #BFDBFE;
             color: var(--cua-blue);
-            font-size: 13px;
+            font-size: 12.5px;
             font-family: 'Roboto', sans-serif;
-            padding: 4px 10px 4px 10px;
-            border-radius: 4px;
-            max-width: 100%;
+            font-weight: 500;
+            padding: 3px 10px 3px 8px;
+            border-radius: 20px;
         }
         .file-tag-name {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 260px;
+            max-width: 240px;
         }
         .file-tag-remove {
             background: none;
             border: none;
             cursor: pointer;
-            color: #5a7fa8;
+            color: #93C5FD;
             font-size: 16px;
             line-height: 1;
             padding: 0;
             flex-shrink: 0;
+            transition: color 0.12s;
         }
         .file-tag-remove:hover { color: var(--cua-red); }
 
-        /* Mobile chips */
+        /* ── Mobile chips ──────────────────────────────────── */
         .chip {
             flex-shrink: 0;
-            font-size: 13px;
+            font-size: 12.5px;
             font-family: 'Roboto', sans-serif;
-            color: #555;
+            color: #4B5563;
             background: #fff;
-            border: 1px solid #d8d8d8;
-            padding: 5px 14px;
+            border: 1px solid var(--border);
+            padding: 5px 13px;
             border-radius: 20px;
             white-space: nowrap;
             cursor: pointer;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
+            transition: background 0.12s, color 0.12s, border-color 0.12s;
         }
-        .chip:hover {
-            background: var(--cua-blue);
-            border-color: var(--cua-blue);
-            color: #fff;
+        .chip:hover { background: var(--cua-blue); border-color: var(--cua-blue); color: #fff; }
+
+        /* ── Keyboard hint ─────────────────────────────────── */
+        .kbd {
+            display: inline-block;
+            font-family: 'Roboto Mono', monospace, 'Roboto', sans-serif;
+            font-size: 10px;
+            background: #F3F4F6;
+            border: 1px solid #D1D5DB;
+            border-bottom-width: 2px;
+            border-radius: 3px;
+            padding: 1px 4px;
+            line-height: 1.4;
+            color: #6B7280;
         }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
-{{-- ═══════════════════════════════
-     TOP UTILITY BAR
-═══════════════════════════════ --}}
-<div style="background:var(--cua-blue);" class="shrink-0 py-1.5 px-5">
+{{-- TOP UTILITY BAR ─────────────────────────────────────── --}}
+<div style="background:var(--cua-blue);" class="shrink-0 py-1.5 px-6">
     <p class="text-white text-xs font-light tracking-wide">
-        The Catholic University of America &nbsp;|&nbsp; Busch School of Business
+        The Catholic University of America &nbsp;&middot;&nbsp; Busch School of Business
     </p>
 </div>
 
-{{-- ═══════════════════════════════
-     HEADER
-═══════════════════════════════ --}}
-<header class="bg-white shrink-0 border-b-[3px]" style="border-bottom-color:var(--cua-red);">
-    <div class="flex items-center justify-between px-5 h-[68px]">
+{{-- HEADER ──────────────────────────────────────────────── --}}
+<header class="bg-white shrink-0"
+        style="border-bottom:2.5px solid var(--cua-red); box-shadow:0 1px 4px rgba(0,0,0,0.07);">
+    <div class="flex items-center justify-between px-5 h-[66px]">
 
-        {{-- Logo + title --}}
-        <a href="{{ route('chat') }}" class="flex items-center gap-4 no-underline">
-            <img src="/images/busch_logo.jpg"
-                 alt="Busch School of Business"
-                 class="h-11 w-auto">
-            <div class="hidden sm:block">
-                <p class="font-oswald font-bold uppercase tracking-wider text-xl leading-none"
+        <a href="{{ route('chat') }}" class="flex items-center gap-3.5 no-underline">
+            <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 w-auto">
+            <div class="hidden sm:block leading-none">
+                <p class="font-oswald font-semibold uppercase tracking-wide text-[17px] leading-none"
                    style="color:var(--cua-blue);">Course Planning Bot</p>
-                <p class="text-xs text-gray-500 mt-0.5 tracking-wide">Busch School of Business · CUA</p>
+                <p class="text-[11px] text-gray-400 mt-1 tracking-wider uppercase font-light">
+                    Busch School of Business &middot; CUA
+                </p>
             </div>
         </a>
 
-        {{-- User + actions --}}
-        <div class="flex items-center gap-3">
-            <span class="hidden sm:block text-sm text-gray-600">{{ Auth::user()->name }}</span>
+        <div class="flex items-center gap-1.5">
+            <span class="hidden sm:block text-[13px] text-gray-500 px-2">{{ Auth::user()->name }}</span>
             <a href="{{ route('profile.edit') }}"
-               class="hidden sm:block text-sm text-gray-500 hover:text-gray-800 transition-colors px-2 py-1">
+               class="hidden sm:block text-[13px] text-gray-400 hover:text-gray-700 transition-colors
+                      px-3 py-1.5 rounded-md hover:bg-gray-50">
                 Profile
             </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
-                        class="font-oswald font-semibold uppercase tracking-wide text-sm text-white px-4 py-2 transition-opacity hover:opacity-90"
+                        class="font-oswald font-semibold uppercase tracking-wide text-[13px] text-white
+                               px-4 py-1.5 rounded transition-opacity hover:opacity-85"
                         style="background:var(--cua-red);">
                     Sign Out
                 </button>
@@ -190,88 +288,114 @@
     </div>
 </header>
 
-{{-- ═══════════════════════════════
-     MAIN LAYOUT
-═══════════════════════════════ --}}
+{{-- MAIN LAYOUT ─────────────────────────────────────────── --}}
 <div class="flex flex-1 overflow-hidden">
 
-    {{-- ═══ SIDEBAR ═══ --}}
-    <aside x-data class="hidden md:flex w-64 bg-white flex-col shrink-0 border-r border-gray-200">
+    {{-- SIDEBAR ─────────────────────────────────────────── --}}
+    <aside x-data
+           class="hidden md:flex flex-col shrink-0 border-r"
+           style="width:244px; background:#FAFBFC; border-color:var(--border);">
 
-        {{-- Section heading --}}
-        <div class="px-5 pt-6 pb-4 border-b border-gray-200">
-            <p class="font-oswald font-bold uppercase tracking-widest text-base"
-               style="color:var(--cua-blue);">Quick Start</p>
+        {{-- Sidebar header --}}
+        <div class="px-5 pt-5 pb-3 border-b" style="border-color:var(--border);">
+            <p class="font-oswald font-semibold uppercase text-[10.5px] tracking-[0.16em]"
+               style="color:var(--text-muted);">Quick Start</p>
         </div>
 
-        {{-- Prompt buttons --}}
-        <nav class="flex-1 overflow-y-auto">
+        {{-- Nav buttons --}}
+        <nav class="flex-1 overflow-y-auto py-1">
             @php
-            $prompts = [
-                'Explain my degree requirements',
-                'Plan next semester',
-                'Explore specializations',
-                'Explore minors',
-                'Check graduation progress',
-                'Forms & requests',
+            $navItems = [
+                [
+                    'label' => 'Explain my degree requirements',
+                    'path'  => 'M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5',
+                ],
+                [
+                    'label' => 'Plan next semester',
+                    'path'  => 'M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z',
+                ],
+                [
+                    'label' => 'Explore specializations',
+                    'path'  => 'M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z',
+                ],
+                [
+                    'label' => 'Explore minors',
+                    'path'  => 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25',
+                ],
+                [
+                    'label' => 'Check graduation progress',
+                    'path'  => 'M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                ],
+                [
+                    'label' => 'Forms & requests',
+                    'path'  => 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
+                ],
             ];
             @endphp
 
-            @foreach($prompts as $prompt)
-            <button
-                class="qs-btn"
-                @click="$dispatch('quick-send', { message: '{{ $prompt }}' })">
-                {{ $prompt }}
+            @foreach($navItems as $item)
+            <button class="qs-btn"
+                    @click="$dispatch('quick-send', { message: '{{ $item['label'] }}' })">
+                <svg class="qs-icon w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['path'] }}"/>
+                </svg>
+                <span class="flex-1 min-w-0">{{ $item['label'] }}</span>
+                <svg class="qs-chevron w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
+                </svg>
             </button>
             @endforeach
         </nav>
 
         {{-- Sidebar footer --}}
-        <div class="px-5 py-5 border-t border-gray-200">
-            <p class="text-sm text-gray-500 leading-relaxed">
+        <div class="px-5 py-4 border-t" style="border-color:var(--border);">
+            <p class="text-[12px] leading-relaxed text-gray-400">
                 Questions?
                 <a href="mailto:busch-academic-services@cua.edu"
-                   class="transition-colors hover:underline"
-                   style="color:var(--cua-blue);">
-                    Contact Academic Services
-                </a>
+                   class="font-medium hover:underline transition-colors"
+                   style="color:var(--cua-blue);">Academic Services</a>
             </p>
         </div>
     </aside>
 
-    {{-- ═══ CHAT PANEL ═══ --}}
-    <div
-        class="flex-1 flex flex-col overflow-hidden"
-        x-data="chatApp()"
-        @quick-send.window="quickSend($event.detail.message)"
-    >
-        {{-- Messages --}}
-        <div
-            class="flex-1 overflow-y-auto chat-scroll px-5 sm:px-10 py-7 space-y-5 bg-[#F5F5F5]"
-            x-ref="messages"
-        >
+    {{-- CHAT PANEL ───────────────────────────────────────── --}}
+    <div class="flex-1 flex flex-col overflow-hidden"
+         x-data="chatApp()"
+         @quick-send.window="quickSend($event.detail.message)">
+
+        {{-- Messages scroll area --}}
+        <div class="flex-1 overflow-y-auto chat-scroll space-y-4"
+             style="padding: 1.75rem clamp(1.25rem, 5vw, 4rem);"
+             x-ref="messages">
+
             <template x-for="(msg, i) in messages" :key="i">
                 <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
 
-                    {{-- AI message --}}
+                    {{-- AI bubble --}}
                     <template x-if="msg.role === 'assistant'">
-                        <div class="max-w-[78%] bg-white border border-gray-200 shadow-sm"
-                             style="border-radius:2px 14px 14px 14px; padding:18px 22px;">
+                        <div class="msg-in max-w-[80%]"
+                             style="background:#fff; border:1px solid #E3E6EA;
+                                    border-radius:4px 16px 16px 16px; padding:15px 20px;
+                                    box-shadow:0 1px 2px rgba(0,0,0,0.05), 0 4px 14px rgba(0,0,0,0.04);">
                             <template x-if="msg.html">
                                 <div class="html-msg text-gray-800" x-html="msg.content"></div>
                             </template>
                             <template x-if="!msg.html">
-                                <p class="font-crimson text-[1.05rem] leading-[1.75] text-gray-800 whitespace-pre-wrap"
+                                <p class="text-gray-800 whitespace-pre-wrap"
+                                   style="font-family:'Crimson Text',Georgia,serif; font-size:1.0625rem;
+                                          line-height:1.82; font-feature-settings:'kern' 1,'liga' 1;"
                                    x-text="stripMarkdown(msg.content)"></p>
                             </template>
                         </div>
                     </template>
 
-                    {{-- User message --}}
+                    {{-- User bubble --}}
                     <template x-if="msg.role === 'user'">
-                        <div class="max-w-[78%] text-white shadow-sm"
-                             style="background:var(--cua-blue); border-radius:14px 14px 2px 14px; padding:18px 22px;">
-                            <p class="font-crimson text-[1.05rem] leading-[1.75] whitespace-pre-wrap"
+                        <div class="msg-in max-w-[80%]"
+                             style="background:var(--cua-blue); border-radius:16px 16px 4px 16px;
+                                    padding:13px 20px; box-shadow:0 2px 8px rgba(0,75,157,0.22);">
+                            <p class="text-white whitespace-pre-wrap"
+                               style="font-family:'Crimson Text',Georgia,serif; font-size:1.0625rem; line-height:1.75;"
                                x-text="msg.content"></p>
                         </div>
                     </template>
@@ -279,20 +403,25 @@
             </template>
 
             {{-- Typing indicator --}}
-            <div x-show="loading" class="flex justify-start">
-                <div class="bg-white border border-gray-200 shadow-sm px-5 py-4"
-                     style="border-radius:2px 14px 14px 14px;">
-                    <div class="flex gap-1.5 items-center" style="height:18px;">
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#aaa;"></span>
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#aaa;"></span>
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#aaa;"></span>
+            <div x-show="loading" x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                 class="flex justify-start">
+                <div style="background:#fff; border:1px solid #E3E6EA; border-radius:4px 16px 16px 16px;
+                             padding:13px 18px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                    <div class="flex gap-1.5 items-center" style="height:16px;">
+                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
+                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
+                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
                     </div>
                 </div>
             </div>
 
-            {{-- Error --}}
-            <div x-show="error" class="flex justify-center">
-                <div class="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm px-5 py-3 rounded">
+            {{-- Error banner --}}
+            <div x-show="error" x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                 class="flex justify-center">
+                <div class="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg"
+                     style="background:#FFF1F1; border:1px solid #FECACA; color:#B91C1C;">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                     </svg>
@@ -301,99 +430,92 @@
             </div>
         </div>
 
-        {{-- Input area --}}
-        <div class="bg-white border-t border-gray-200 px-5 sm:px-10 pt-4 pb-3 shrink-0">
+        {{-- Compose area --}}
+        <div class="bg-white shrink-0 border-t" style="border-color:var(--border);">
+            <div style="padding: 10px clamp(1.25rem, 5vw, 4rem) 10px;">
 
-            {{-- Mobile quick-start chips --}}
-            <div class="md:hidden flex gap-2 overflow-x-auto pb-3" style="scrollbar-width:none;">
-                @foreach([
-                    ['c' => 'Degree reqs',     'f' => 'Explain my degree requirements'],
-                    ['c' => 'Plan semester',    'f' => 'Plan next semester'],
-                    ['c' => 'Specializations',  'f' => 'Explore specializations'],
-                    ['c' => 'Minors',           'f' => 'Explore minors'],
-                    ['c' => 'Graduation',       'f' => 'Check graduation progress'],
-                    ['c' => 'Forms',            'f' => 'Forms & requests'],
-                ] as $item)
-                <button class="chip"
-                    @click="$dispatch('quick-send', { message: '{{ $item['f'] }}' })">
-                    {{ $item['c'] }}
-                </button>
-                @endforeach
+                {{-- Mobile chips --}}
+                <div class="md:hidden flex gap-2 overflow-x-auto pb-2.5" style="scrollbar-width:none;">
+                    @foreach([
+                        ['c' => 'Degree reqs',     'f' => 'Explain my degree requirements'],
+                        ['c' => 'Plan semester',    'f' => 'Plan next semester'],
+                        ['c' => 'Specializations',  'f' => 'Explore specializations'],
+                        ['c' => 'Minors',           'f' => 'Explore minors'],
+                        ['c' => 'Graduation',       'f' => 'Check graduation progress'],
+                        ['c' => 'Forms',            'f' => 'Forms & requests'],
+                    ] as $item)
+                    <button class="chip"
+                            @click="$dispatch('quick-send', { message: '{{ $item['f'] }}' })">
+                        {{ $item['c'] }}
+                    </button>
+                    @endforeach
+                </div>
+
+                {{-- Hidden file input --}}
+                <input type="file" x-ref="fileInput" accept=".csv,.pdf" class="hidden"
+                       @change="handleFileSelect($event)">
+
+                {{-- File tag --}}
+                <div x-show="fileName"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 -translate-y-1"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     class="mb-2">
+                    <span class="file-tag">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                        </svg>
+                        <span class="file-tag-name" x-text="fileName"></span>
+                        <button type="button" class="file-tag-remove" @click="removeFile()" aria-label="Remove file">&times;</button>
+                    </span>
+                </div>
+
+                {{-- Compose ring --}}
+                <form @submit.prevent="send()">
+                    <div class="compose-ring">
+                        <button type="button" class="attach-btn" @click="$refs.fileInput.click()"
+                                :disabled="loading"
+                                title="Attach Academic Planning Worksheet (.csv) or graduation report (.pdf)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                            </svg>
+                        </button>
+
+                        <textarea
+                            x-model="input"
+                            @keydown.enter.exact.prevent="send()"
+                            @keydown.enter.shift.exact="/* allow newline */"
+                            x-ref="input"
+                            :disabled="loading"
+                            placeholder="Ask about your degree, courses, specializations, or graduation requirements…"
+                        ></textarea>
+
+                        <button type="submit" class="send-btn"
+                                :disabled="loading || (!input.trim() && !file)">
+                            Send
+                        </button>
+                    </div>
+
+                    {{-- Keyboard hint --}}
+                    <p class="hidden sm:block text-[11px] text-gray-400 mt-1.5 pl-1 select-none">
+                        <span class="kbd">Enter</span> to send &nbsp;&middot;&nbsp;
+                        <span class="kbd">Shift+Enter</span> for new line &nbsp;&middot;&nbsp;
+                        <span class="kbd">📎</span> to attach APW (.csv) or graduation report (.pdf)
+                    </p>
+                </form>
             </div>
-
-            {{-- Hidden file input --}}
-            <input
-                type="file"
-                x-ref="fileInput"
-                accept=".csv,.pdf"
-                class="hidden"
-                @change="handleFileSelect($event)"
-            >
-
-            {{-- Filename tag --}}
-            <div x-show="fileName" class="mb-2">
-                <span class="file-tag">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                    </svg>
-                    <span class="file-tag-name" x-text="fileName"></span>
-                    <button type="button" class="file-tag-remove" @click="removeFile()" aria-label="Remove file">&times;</button>
-                </span>
-            </div>
-
-            {{-- Compose --}}
-            <form @submit.prevent="send()" class="flex items-end gap-2">
-                {{-- Paperclip button --}}
-                <button
-                    type="button"
-                    @click="$refs.fileInput.click()"
-                    :disabled="loading"
-                    title="Attach Academic Planning Worksheet (.csv) or graduation report (.pdf)"
-                    class="shrink-0 h-[52px] w-10 flex items-center justify-center rounded border border-gray-300
-                           bg-[#FAFAFA] text-gray-400 hover:text-blue-700 hover:border-blue-500
-                           transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-                    </svg>
-                </button>
-
-                <textarea
-                    x-model="input"
-                    @keydown.enter.exact.prevent="send()"
-                    @keydown.enter.shift.exact="/* allow newline */"
-                    x-ref="input"
-                    :disabled="loading"
-                    placeholder="Ask about your degree, courses, specializations, or graduation requirements…"
-                    class="flex-1 resize-none border border-gray-300 rounded px-4 py-3 text-base
-                           text-gray-800 placeholder-gray-400 leading-relaxed bg-[#FAFAFA]
-                           focus:outline-none focus:bg-white transition-colors disabled:opacity-50"
-                    style="font-family:'Roboto',sans-serif;"
-                    onfocus="this.style.borderColor='var(--cua-blue)'"
-                    onblur="this.style.borderColor=''"
-                ></textarea>
-
-                <button
-                    type="submit"
-                    :disabled="loading || (!input.trim() && !file)"
-                    class="shrink-0 font-oswald font-semibold uppercase tracking-wide text-sm text-white
-                           px-5 py-3 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed"
-                    style="background:var(--cua-red); border-radius:3px;">
-                    Send
-                </button>
-            </form>
         </div>
     </div>
 </div>
 
-{{-- ═══════════════════════════════
-     FOOTER UTILITY BAR
-═══════════════════════════════ --}}
-<div style="background:var(--cua-blue);" class="shrink-0 py-2 px-5 text-center">
-    <p class="text-white text-xs font-light">
-        AI guidance is informational — always consult with a
+{{-- FOOTER ──────────────────────────────────────────────── --}}
+<div style="background:var(--cua-blue);" class="shrink-0 py-2 px-6 text-center">
+    <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.85);">
+        AI guidance is informational — always verify with a
         <a href="https://business.catholic.edu/academics/academic-services/index.html"
            target="_blank"
-           class="underline underline-offset-2 text-white hover:text-blue-200 transition-colors">
+           class="underline underline-offset-2 hover:text-white transition-colors"
+           style="color:rgba(255,255,255,0.85);">
             human advisor
         </a>
         before finalizing your schedule or degree plan.
@@ -471,12 +593,10 @@ function chatApp() {
                 }
 
                 if (extracted.startsWith('APW:')) {
-                    // APW CSV: structured summary already contains analysis instructions
                     messageText = messageText
                         ? extracted + '\n\nAdditional student question: ' + messageText
                         : extracted;
                 } else {
-                    // PDF or other raw text
                     if (!messageText) {
                         messageText = 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
                     }
