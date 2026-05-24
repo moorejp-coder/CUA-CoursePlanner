@@ -1,16 +1,181 @@
 # Busch School Course Planning Bot
 
-## Problem
-Busch School undergraduate students at The Catholic University of America lack immediate, reliable access to personalized academic advising, leading to missed requirements, poor course sequencing, and delayed graduation.
+An AI-powered academic advising chatbot for undergraduate students at the **Tim & Steph Busch School of Business** at The Catholic University of America.
 
-## Solution
-The Busch School Course Planning Bot is a web-based AI advisor that gives students instant, personalized guidance on degree requirements, course planning, specializations, minors, and administrative processes by leveraging a large language model trained on the complete official Busch School curriculum.
+---
 
-## Target User
-Undergraduate students enrolled in the B.S.B.A. or B.S. in Accounting programs at the Tim & Steph Busch School of Business — particularly freshmen and sophomores navigating degree planning for the first time, and juniors and seniors verifying graduation readiness.
+## What It Does
 
-## Success Criteria
-- **Speed:** Students receive accurate advising responses in under 10 seconds, compared to 24–72 hours for an advisor email reply or scheduled appointment.
-- **Accuracy:** The bot correctly answers at least 90% of advising questions across a scripted test suite of 20 real student scenarios (degree requirements, prerequisites, specialization rules, form routing), validated against official Busch School curriculum documentation.
-- **Demo validation:** A recorded walkthrough demonstrates the bot handling five distinct student personas — incoming freshman, transfer student, double-specialization junior, senior verifying graduation readiness, and non-business student exploring a business minor — each against a real or sample Academic Planning Worksheet.
-- **Advisor load reduction:** Academic Services identifies at least 10 routine question types the bot handles fully, representing an estimated reduction in repeat inquiry volume.
+Students upload their Academic Planning Worksheet (APW) — a CSV export from Cardinal Station — and immediately get personalized guidance on:
+
+- Which degree requirements they have completed, are in progress, or still need
+- Course sequencing and prerequisites
+- All 12 BSBA specializations and the BSAccounting program
+- Business and non-business minors
+- How to register for internships, directed studies, and co-ops
+- Where to find and submit the right administrative forms
+
+No appointment needed. No waiting 48 hours for an email back. The bot reads the student's actual academic record and gives specific, actionable advice in seconds.
+
+---
+
+## Current Features (Through Milestone 3)
+
+- **Email login** — students register and authenticate with CUA email
+- **Chat interface** — clean, responsive conversation UI with CUA branding (cardinal red, blue, gold; Oswald + Crimson Text fonts)
+- **Sidebar quick-start buttons** — one-click prompts for the most common advising questions
+- **Forms & requests panel** — direct links to all Busch School Google Forms (internship approval, directed study, minor declaration, etc.)
+- **APW file upload** — drag or click to upload a CSV Academic Planning Worksheet
+- **PDF upload** — upload Cardinal Station graduation reports for extraction
+- **Compact APW parsing** — all 4 APW template versions supported (BSBA and BSAccounting, pre and post Spring 2024); data compressed to a token-efficient summary before sending to the AI
+- **Full curriculum system prompt** — all 12 specializations, prerequisites, liberal arts requirements, elective rules, and catalog year differences loaded as AI context
+- **Groq AI backend** — powered by `llama-3.3-70b-versatile` via the Groq API
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Laravel 13 (PHP 8.3+) |
+| Database | SQLite |
+| Frontend | Blade templates, Tailwind CSS v3, Alpine.js v3 |
+| AI | Groq API — `llama-3.3-70b-versatile` |
+| PDF parsing | `smalot/pdfparser` |
+| Build tool | Vite 8 |
+| Auth | Laravel Breeze |
+| Hosting | AWS (EC2 — coming in Milestone 7) |
+
+---
+
+## Live URL
+
+> Coming in Milestone 7 — AWS EC2 deployment.
+
+---
+
+## Screenshots
+
+> Coming soon.
+
+---
+
+## How to Run Locally
+
+### Prerequisites
+
+- PHP 8.3+
+- Composer
+- Node.js 20+ and npm
+- A [Groq API key](https://console.groq.com) (free tier works)
+
+### Setup
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/moorejp-coder/CUA-CoursePlanner.git
+cd CUA-CoursePlanner
+
+# 2. Install PHP dependencies
+composer install
+
+# 3. Install Node dependencies
+npm install
+
+# 4. Copy environment file
+cp .env.example .env
+
+# 5. Generate application key
+php artisan key:generate
+
+# 6. Add your Groq API key to .env
+#    Open .env and set: GROQ_API_KEY=gsk_your_key_here
+
+# 7. Run database migrations
+php artisan migrate
+
+# 8. Build frontend assets
+npm run build
+
+# 9. Start the development server
+php artisan serve
+```
+
+Open `http://localhost:8000` in your browser, register an account, and start chatting.
+
+For live asset rebuilding during development, run `npm run dev` in a separate terminal instead of step 8.
+
+---
+
+## How to Use APW Upload
+
+1. Log in and open the chat
+2. Go to **Cardinal Station → Academic Planning → Academic Planning Worksheet**
+3. Export your APW as a CSV file (File → Download → CSV)
+4. In the chat, click the **paperclip icon** (or press the keyboard shortcut shown)
+5. Select your CSV file
+6. The file name appears as a tag — press **Enter** or click **Send**
+7. The bot reads your completed, in-progress, and planned courses and gives you a personalized advising summary
+
+PDF uploads (Cardinal Station graduation reports) work the same way — just select a `.pdf` file instead.
+
+---
+
+## Environment Variables
+
+Create a `.env` file by copying `.env.example`, then set:
+
+```env
+APP_NAME="Busch School Course Planning Bot"
+APP_ENV=local
+APP_KEY=                        # generated by php artisan key:generate
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite            # database/database.sqlite is created by migrate
+
+GROQ_API_KEY=gsk_your_key_here  # required — get one free at console.groq.com
+```
+
+All other variables in `.env.example` can be left at their defaults for local development. **Never commit `.env` to version control.**
+
+---
+
+## Project Structure
+
+```
+CUA-CoursePlanner/
+├── app/
+│   └── Http/
+│       └── Controllers/
+│           ├── ChatController.php      # GET /chat, POST /api/chat → Groq API
+│           └── UploadController.php    # POST /api/upload → PDF/CSV extraction
+├── resources/
+│   └── views/
+│       └── chat.blade.php              # Main chat UI (Alpine.js, Tailwind)
+├── routes/
+│   └── web.php                         # All application routes
+├── storage/
+│   └── app/
+│       └── system_prompt.txt           # Full Busch School curriculum context
+├── public/
+│   └── build/                          # Vite-compiled CSS and JS (gitignored)
+├── ROADMAP.md                          # Milestone plan and open issues
+└── .env                                # Local secrets (gitignored)
+```
+
+---
+
+## Contest Info
+
+This project is submitted to the **[Contest Name]** competition. It is being built iteratively with public commits on GitHub to demonstrate a realistic development process from scaffold to production.
+
+See [ROADMAP.md](ROADMAP.md) for the full milestone plan, open issues, and success criteria.
+
+---
+
+## Problem & Solution
+
+**Problem:** Busch School undergraduates lack immediate, reliable access to personalized academic advising. Scheduling an advisor appointment or waiting for an email reply can take 24–72 hours — a real barrier during course registration, add/drop periods, and graduation planning.
+
+**Solution:** An AI advisor that reads the student's actual Academic Planning Worksheet and answers degree-planning questions instantly, accurately, and in plain language — available 24/7 at no cost to the student.
