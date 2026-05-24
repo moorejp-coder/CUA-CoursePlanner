@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return auth()->check()
         ? redirect()->route('chat')
-        : redirect()->route('login');
+        : view('welcome');
 });
 
 Route::get('/dashboard', function () {
