@@ -296,7 +296,7 @@
                 const mathReq = ['finance','mathematical_finance','accounting'];
                 return this.selected.some(s => mathReq.includes(s));
             },
-            onSubmit() {
+            submitForm() {
                 if (this.selected.length === 0) {
                     alert('Please select at least one specialization.');
                     return;
@@ -304,7 +304,7 @@
                 this.$refs.spec1.value = this.selected[0] || '';
                 this.$refs.spec2.value = this.selected[1] || '';
                 this.$refs.spec3.value = this.selected[2] || '';
-                this.$refs.theForm.submit();
+                document.getElementById('spec-form').submit();
             }
          }"
     >
@@ -331,9 +331,7 @@
             Note: MATH 111 is required for one or more of your selected specializations.
         </div>
 
-        <form method="POST" action="{{ route('onboarding.save', 2) }}"
-              @submit.prevent="onSubmit()"
-              x-ref="theForm">
+        <form id="spec-form" method="POST" action="{{ route('onboarding.save', 2) }}">
             @csrf
 
             <input type="hidden" name="specialization_1" x-ref="spec1">
@@ -367,7 +365,7 @@
 
             <div class="form-actions">
                 <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
-                <button type="submit" class="btn-primary">Next: Liberal Arts →</button>
+                <button type="button" class="btn-primary" @click="submitForm()">Next: Liberal Arts →</button>
             </div>
 
         </form>
