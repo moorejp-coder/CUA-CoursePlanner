@@ -296,15 +296,15 @@
                 const mathReq = ['finance','mathematical_finance','accounting'];
                 return this.selected.some(s => mathReq.includes(s));
             },
-            onSubmit(e) {
+            onSubmit() {
                 if (this.selected.length === 0) {
-                    e.preventDefault();
                     alert('Please select at least one specialization.');
                     return;
                 }
-                document.getElementById('spec1').value = this.selected[0] ?? '';
-                document.getElementById('spec2').value = this.selected[1] ?? '';
-                document.getElementById('spec3').value = this.selected[2] ?? '';
+                this.$refs.spec1.value = this.selected[0] || '';
+                this.$refs.spec2.value = this.selected[1] || '';
+                this.$refs.spec3.value = this.selected[2] || '';
+                this.$refs.theForm.submit();
             }
          }"
     >
@@ -331,12 +331,14 @@
             Note: MATH 111 is required for one or more of your selected specializations.
         </div>
 
-        <form method="POST" action="{{ route('onboarding.save', 2) }}" @submit="onSubmit($event)">
+        <form method="POST" action="{{ route('onboarding.save', 2) }}"
+              @submit.prevent="onSubmit()"
+              x-ref="theForm">
             @csrf
 
-            <input type="hidden" id="spec1" name="specialization_1" :value="selected[0] ?? ''">
-            <input type="hidden" id="spec2" name="specialization_2" :value="selected[1] ?? ''">
-            <input type="hidden" id="spec3" name="specialization_3" :value="selected[2] ?? ''">
+            <input type="hidden" name="specialization_1" x-ref="spec1">
+            <input type="hidden" name="specialization_2" x-ref="spec2">
+            <input type="hidden" name="specialization_3" x-ref="spec3">
 
             <div class="spec-grid">
                 @foreach($specs as $key => $spec)
