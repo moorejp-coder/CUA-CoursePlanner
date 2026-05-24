@@ -1,0 +1,192 @@
+{
+  "post_2024": {
+    "description": "For students admitted Spring 2024 or after",
+    "specializations": {
+      "people_and_organizations": {
+        "name": "People and Organizations",
+        "required": ["MGT 311", "MGT 330", "MGT 410"],
+        "electives": ["MGT 302", "MGT 310", "MGT 327", "ENT 351", "SRES 408", "SRES 411"],
+        "choose_count": 2
+      },
+      "technology_and_operations_management": {
+        "name": "Technology and Operations Management",
+        "required": ["MGT 332", "MGT 347"],
+        "electives": ["MGT 312", "MGT 351", "MGT 440", "MGT 465"],
+        "choose_count": 3
+      },
+      "data_analytics_for_business": {
+        "name": "Data Analytics for Business",
+        "required": ["DA 124", "MGT 331"],
+        "electives": ["MGT 351", "MGT 361", "DA 401", "DA 423"],
+        "choose_count": 2
+      },
+      "sports_management": {
+        "name": "Sports Management",
+        "required": ["MGT 311", "MGT 324", "MGT 327", "MKT 325"],
+        "electives": [],
+        "choose_count": 0,
+        "must_double_specialize": true
+      },
+      "finance": {
+        "name": "Finance",
+        "required": ["FIN 227", "FIN 332", "FIN 334", "FIN 436"],
+        "electives": ["FIN 313", "FIN 337", "FIN 342", "FIN 389", "FIN 391", "FIN 425", "FIN 450", "FIN 451", "FIN 491", "MGT 389", "ECON 338", "MATH 434"],
+        "choose_count": 1,
+        "prerequisites": ["MATH 111"]
+      },
+      "entrepreneurship": {
+        "name": "Entrepreneurship",
+        "required": ["ENT 372", "ENT 455", "ENT 472"],
+        "electives": ["ENT 351", "ENT 476", "ENT 494"],
+        "choose_count": 1,
+        "must_double_specialize": true
+      },
+      "marketing": {
+        "name": "Marketing",
+        "required": ["MKT 346", "MKT 348", "MKT 457"],
+        "electives": ["MKT 325", "MGT 347", "MKT 349", "MKT 350", "MKT 359", "MKT 362", "MKT 368", "MKT 380", "MKT 422", "MKT 495A"],
+        "choose_count": 2
+      },
+      "sales": {
+        "name": "Sales",
+        "required": ["MKT 349", "MKT 422", "MKT 435"],
+        "electives": ["MKT 348", "MKT 368", "MKT 495A", "ENT 351", "ENT 372", "MGT 311", "FIN 425", "MGT 347", "MGT 410", "DR 403"],
+        "choose_count": 2
+      },
+      "markets_and_political_economy": {
+        "name": "Markets and Political Economy",
+        "required": ["SRES 315", "SRES 325", "SRES 345", "SRES 470"],
+        "electives": ["SRES 260", "SRES 350", "SRES 408", "SRES 411", "SRES 476"],
+        "choose_count": 1
+      },
+      "accounting": {
+        "name": "Accounting",
+        "required": ["ACCT 310", "ACCT 311", "ACCT 315"],
+        "electives": ["ACCT 412", "ACCT 417", "ACCT 418"],
+        "choose_count": 1,
+        "must_double_specialize": true,
+        "prerequisites": ["MATH 111"]
+      },
+      "international_business": {
+        "name": "International Business",
+        "required": ["MKT 362", "MGT 390", "MGT 389"],
+        "electives": ["SRES 333", "MKT 380", "MGT 490", "CHN 240"],
+        "choose_count": 1,
+        "notes": "Language minor and abroad experience required"
+      },
+      "management": {
+        "name": "Management",
+        "required": ["MGT 310", "MGT 311", "MGT 312"],
+        "electives": ["MGT 240", "MGT 301", "MGT 324", "MGT 327", "MGT 365", "MGT 390", "MGT 475"],
+        "choose_count": 2
+      }
+    }
+  },
+  "pre_2024": {
+    "description": "For students admitted Fall 2020 through Spring 2024",
+    "specializations": {
+      "hr_management": {
+        "name": "HR Management",
+        "required": ["MGT 311", "MGT 330"],
+        "electives": ["MGT 302", "MGT 410", "SRES 408", "SRES 411"],
+        "choose_count": 2
+      },
+      "operations_management": {
+        "name": "Operations Management",
+        "required": ["MGT 311", "MGT 312", "MGT 361", "MGT 332"],
+        "electives": [],
+        "choose_count": 0
+      },
+      "data_analytics_for_business": {
+        "name": "Data Analytics for Business",
+        "required": ["DA 314", "MGT 331", "MGT 351", "MGT 361"],
+        "electives": [],
+        "choose_count": 0
+      },
+      "sports_management": {
+        "name": "Sports Management",
+        "required": ["MGT 311", "MGT 324", "MGT 327", "MKT 325"],
+        "electives": [],
+        "choose_count": 0
+      },
+      "technology_management": {
+        "name": "Technology Management",
+        "required": ["MGT 311", "MGT 347", "MGT 351", "MGT 440"],
+        "electives": [],
+        "choose_count": 0
+      },
+      "family_business": {
+        "name": "Family Business Co-Specialization",
+        "required": ["ENT 351", "ENT 451", "ENT 455"],
+        "electives": ["ENT 372", "ENT 472", "ENT 476", "MKT 422", "MKT 457"],
+        "choose_count": 1
+      },
+      "entrepreneurship": {
+        "name": "Entrepreneurship Co-Specialization",
+        "required": ["ENT 372", "ENT 472", "ENT 455", "ENT 476"],
+        "electives": [],
+        "choose_count": 0,
+        "must_double_specialize": true
+      },
+      "finance": {
+        "name": "Finance",
+        "required": ["FIN 332", "FIN 334", "FIN 436"],
+        "electives": ["FIN 227", "FIN 313", "FIN 337", "FIN 342", "FIN 389", "MGT 389", "FIN 391", "FIN 425", "FIN 450", "FIN 451", "FIN 491", "ECON 338"],
+        "choose_count": 1,
+        "prerequisites": ["MATH 111"]
+      },
+      "mathematical_finance": {
+        "name": "Mathematical Finance",
+        "required": ["FIN 332", "MATH 431", "MATH 434"],
+        "electives": ["FIN 313", "FIN 337", "FIN 450", "FIN 451", "ECON 338"],
+        "choose_count": 1,
+        "prerequisites": ["MATH 111"]
+      },
+      "marketing": {
+        "name": "Marketing",
+        "required": ["MKT 346", "MKT 348", "MKT 457"],
+        "electives": ["MKT 325", "MKT 350", "MKT 359", "MKT 362", "MKT 349", "MKT 422", "MKT 494", "MKT 495A"],
+        "choose_count": 1
+      },
+      "sales": {
+        "name": "Sales",
+        "required": ["MKT 349", "MKT 422", "MKT 435"],
+        "electives": ["DR 403", "MKT 348", "MGT 311", "FIN 425", "MKT 495A"],
+        "choose_count": 1
+      },
+      "markets_and_political_economy": {
+        "name": "Markets and Political Economy",
+        "required": ["SRES 315", "SRES 325", "SRES 470"],
+        "electives": ["SRES 260", "SRES 345", "SRES 350", "SRES 408", "SRES 411"],
+        "choose_count": 1
+      },
+      "accounting": {
+        "name": "Accounting Co-Specialization",
+        "required": ["ACCT 310", "ACCT 311", "ACCT 312"],
+        "electives": ["ACCT 412", "ACCT 417", "ACCT 418"],
+        "choose_count": 1,
+        "must_double_specialize": true,
+        "prerequisites": ["MATH 111"]
+      },
+      "international_business": {
+        "name": "International Business",
+        "required": ["MKT 362", "MGT 390"],
+        "elective_groups": [
+          {
+            "description": "Choose one finance or management elective",
+            "courses": ["FIN 389", "MGT 389"],
+            "choose_count": 1
+          },
+          {
+            "description": "Choose one international elective",
+            "courses": ["MGT 312", "MGT 380", "MKT 380", "MGT 490", "MGT 381", "MGT 382"],
+            "choose_count": 1
+          }
+        ],
+        "electives": [],
+        "choose_count": 0,
+        "notes": "Language minor and abroad experience required"
+      }
+    }
+  }
+}
