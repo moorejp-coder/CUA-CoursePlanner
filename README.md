@@ -21,13 +21,15 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 
 ## Features
 
-- **Login & Registration** — students register and sign in with their CUA email
-- **AI Chat Interface** — clean, responsive conversation UI with full CUA branding (cardinal red, blue, gold; Oswald + Crimson Text fonts)
+- **Landing Page** — CUA-branded homepage with hero, feature cards, how-it-works steps, and CTA sections using official Catholic University brand colors and fonts
+- **Login & Registration** — students register and sign in with their CUA email; auth pages styled to match the university portal aesthetic
+- **AI Chat Interface** — clean, responsive conversation UI with full CUA branding (cardinal red, blue, gold; Oswald + Crimson Text fonts); design consistent with landing page
 - **APW File Upload** — drag or click to upload a CSV Academic Planning Worksheet exported from Cardinal Station; all 4 APW template versions supported
 - **PDF Upload** — upload Cardinal Station graduation audit reports for AI extraction
 - **Forms & Requests Panel** — direct links to all Busch School Google Forms (internship approval, directed study, minor declaration, and more)
-- **Sidebar Quick-Start Prompts** — one-click buttons for the most common advising questions
+- **Sidebar Quick-Start Prompts** — one-click buttons for the most common advising questions; New Conversation button to reset the chat
 - **Full Curriculum Context** — all 12 BSBA specializations, prerequisites, liberal arts requirements, elective rules, and catalog year differences loaded as AI context
+- **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
 
 ---
 

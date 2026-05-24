@@ -96,12 +96,12 @@
             transition: color 0.12s, transform 0.12s;
         }
         .qs-btn:hover {
-            background: rgba(10, 50, 85, 0.06);
+            background: var(--cua-blue);
             border-left-color: var(--cua-blue);
-            color: var(--cua-blue);
+            color: #fff;
         }
-        .qs-btn:hover .qs-icon    { color: var(--cua-blue); }
-        .qs-btn:hover .qs-chevron { color: var(--cua-blue); transform: translateX(2px); }
+        .qs-btn:hover .qs-icon    { color: rgba(255,255,255,0.85); }
+        .qs-btn:hover .qs-chevron { color: rgba(255,255,255,0.6); transform: translateX(2px); }
         .qs-btn:active {
             background: rgba(178, 31, 44, 0.06);
             border-left-color: var(--cua-red);
@@ -122,13 +122,13 @@
             letter-spacing: 0.09em;
             text-transform: uppercase;
             color: white;
-            background: var(--cua-blue);
+            background: #B41100;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: background 0.12s;
         }
-        .new-chat-btn:hover { background: var(--cua-blue-mid); }
+        .new-chat-btn:hover { background: #8C0D00; }
 
         /* ── Compose ring ──────────────────────────────────── */
         .compose-ring {
@@ -281,7 +281,7 @@
     <div class="flex items-center justify-between px-5 h-[62px]">
 
         <a href="{{ route('chat') }}" class="flex items-center gap-3.5 no-underline">
-            <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-9 w-auto">
+            <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-9 w-auto" style="mix-blend-mode: multiply;">
             <div class="hidden sm:block leading-none">
                 <p class="font-oswald font-semibold uppercase tracking-wide text-[16px] text-white leading-none"
                    style="letter-spacing:0.04em;">Course Planning Bot</p>
@@ -325,7 +325,7 @@
     {{-- ── SIDEBAR ──────────────────────────────────────────── --}}
     <aside x-data
            class="hidden md:flex flex-col shrink-0 border-r"
-           style="width:252px; background:var(--sandstone); border-color:var(--border);">
+           style="width:252px; background:#fff; border-color:#e5e0d8;">
 
         {{-- New conversation --}}
         <div class="px-4 py-4 border-b" style="border-color:var(--border);">
@@ -418,11 +418,10 @@
                         <template x-if="msg.role === 'assistant'">
                             <div class="msg-in"
                                  style="max-width:82%; background:#fff;
-                                        border:1px solid var(--border-light);
-                                        border-left:3px solid var(--cua-gold);
-                                        border-radius:3px 14px 14px 14px;
+                                        border:1px solid #e5e0d8;
+                                        border-radius:16px;
                                         padding:15px 20px;
-                                        box-shadow:0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);">
+                                        box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);">
                                 <template x-if="msg.html">
                                     <div class="html-msg" x-html="msg.content"></div>
                                 </template>
@@ -456,11 +455,10 @@
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
                      class="flex justify-start">
-                    <div style="background:#fff; border:1px solid var(--border-light);
-                                border-left:3px solid var(--cua-gold);
-                                border-radius:3px 14px 14px 14px;
+                    <div style="background:#fff; border:1px solid #e5e0d8;
+                                border-radius:16px;
                                 padding:13px 18px;
-                                box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+                                box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);">
                         <div class="flex gap-1.5 items-center" style="height:16px;">
                             <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
                             <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
@@ -566,7 +564,7 @@
 </div>
 
 {{-- ── FOOTER ───────────────────────────────────────────────── --}}
-<div class="shrink-0 py-2 px-6 text-center" style="background:var(--cua-blue);">
+<div class="shrink-0 py-2 px-6 text-center" style="background:#071e38;">
     <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.5);">
         AI guidance is informational — always verify with a
         <a href="https://business.catholic.edu/academics/academic-services/index.html"

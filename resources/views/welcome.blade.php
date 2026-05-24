@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="/" class="flex items-center gap-3">
-                    <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 object-contain">
+                    <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
                 </a>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}"
@@ -46,7 +46,7 @@
 
         <div class="max-w-4xl mx-auto px-6 text-center text-white">
 
-            <p class="text-[#b18f50] text-xs uppercase tracking-widest mb-5" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.2em;">
+            <p class="text-[#C9A84C] text-xs uppercase tracking-widest mb-5" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.2em;">
                 Tim &amp; Steph Busch School of Business &nbsp;·&nbsp; The Catholic University of America
             </p>
 
@@ -56,9 +56,9 @@
             </h1>
 
             <div class="flex items-center justify-center gap-3 mb-8">
-                <div class="h-px w-16 bg-[#b18f50]/60"></div>
+                <div class="h-px w-16 bg-[#C9A84C]/60"></div>
                 <div class="h-1 w-10 bg-[#b21f2c]"></div>
-                <div class="h-px w-16 bg-[#b18f50]/60"></div>
+                <div class="h-px w-16 bg-[#C9A84C]/60"></div>
             </div>
 
             <p class="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl mx-auto"
@@ -90,22 +90,22 @@
         <div class="max-w-5xl mx-auto px-6">
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 text-center">
                 <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#b18f50] text-2xl font-bold block">12</span>
+                    <span class="text-[#C9A84C] text-2xl font-bold block">12</span>
                     BSBA Specializations
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#b18f50] text-2xl font-bold block">4</span>
+                    <span class="text-[#C9A84C] text-2xl font-bold block">4</span>
                     APW Versions Supported
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#b18f50] text-2xl font-bold block">24/7</span>
+                    <span class="text-[#C9A84C] text-2xl font-bold block">24/7</span>
                     Instant Answers
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#b18f50] text-2xl font-bold block">Free</span>
+                    <span class="text-[#C9A84C] text-2xl font-bold block">Free</span>
                     No Cost to Students
                 </div>
             </div>
@@ -242,7 +242,7 @@
              style="background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px);">
         <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#b21f2c]"></div>
         <div class="max-w-3xl mx-auto px-6 text-center text-white">
-            <p class="text-[#b18f50] text-xs uppercase tracking-widest mb-6" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.2em;">
+            <p class="text-[#C9A84C] text-xs uppercase tracking-widest mb-6" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.2em;">
                 Built for Busch School Students
             </p>
             <h2 class="text-3xl sm:text-4xl font-bold uppercase mb-6"
@@ -265,7 +265,7 @@
     <footer class="bg-[#071e38] py-10">
         <div class="max-w-6xl mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                <img src="/images/busch_logo.jpg" alt="Tim & Steph Busch School of Business" class="h-10 object-contain">
+                <img src="/images/busch_logo.jpg" alt="Tim & Steph Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
 
                 <p class="text-white/30 text-xs text-center leading-relaxed">
                     &copy; {{ date('Y') }} James Moore &nbsp;&middot;&nbsp; Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
