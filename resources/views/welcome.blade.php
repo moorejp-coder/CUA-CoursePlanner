@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="/" class="flex items-center gap-3">
-                    <img src="/images/cua_logo_dark.png" alt="The Catholic University of America" class="h-8 object-contain">
+                    <img src="/images/busch_logo_white.png" alt="The Busch School of Business at The Catholic University of America" class="h-10 object-contain">
                 </a>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}"
@@ -39,7 +39,7 @@
     {{-- ── Hero ───────────────────────────────────────────────────────── --}}
     <section
         class="relative overflow-hidden py-24 sm:py-32"
-        style="background-color: #0a3255; background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 1px, transparent 1px, transparent 14px);">
+        style="background-color: #0a3255;">
 
         {{-- Decorative red bar on the left edge --}}
         <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#b21f2c]"></div>
@@ -89,22 +89,22 @@
     <div class="bg-[#071e38] py-4 border-b border-white/5">
         <div class="max-w-5xl mx-auto px-6">
             <div class="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-12 text-center">
-                <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
+                <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
                     <span class="text-[#C9A84C] text-2xl font-bold block">12</span>
                     BSBA Specializations
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
-                <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
+                <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
                     <span class="text-[#C9A84C] text-2xl font-bold block">4</span>
                     APW Versions Supported
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
-                <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
+                <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
                     <span class="text-[#C9A84C] text-2xl font-bold block">24/7</span>
                     Instant Answers
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
-                <div class="text-white/60 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
+                <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
                     <span class="text-[#C9A84C] text-2xl font-bold block">Free</span>
                     No Cost to Students
                 </div>
@@ -238,8 +238,7 @@
     </section>
 
     {{-- ── Quote / CTA band ───────────────────────────────────────────── --}}
-    <section class="bg-[#0a3255] py-16 relative overflow-hidden"
-             style="background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 14px);">
+    <section class="bg-[#0a3255] py-16 relative overflow-hidden">
         <div class="absolute left-0 top-0 bottom-0 w-1 bg-[#b21f2c]"></div>
         <div class="max-w-3xl mx-auto px-6 text-center text-white">
             <p class="text-[#C9A84C] text-xs uppercase tracking-widest mb-6" style="font-family: 'Oswald', sans-serif; letter-spacing: 0.2em;">
@@ -265,7 +264,7 @@
     <footer class="bg-[#071e38] py-10">
         <div class="max-w-6xl mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                <img src="/images/cua_logo_dark.png" alt="The Catholic University of America" class="h-8 object-contain">
+                <img src="/images/busch_logo_white.png" alt="The Busch School of Business at The Catholic University of America" class="h-10 object-contain">
 
                 <p class="text-white/75 text-xs text-center leading-relaxed">
                     &copy; {{ date('Y') }} James Moore &nbsp;&middot;&nbsp; Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
@@ -273,7 +272,7 @@
                     <a href="https://business.catholic.edu/academics/academic-services/index.html" class="hover:text-white/60 underline transition-colors" target="_blank" rel="noopener">Academic Services</a>.
                 </p>
 
-                <div class="flex gap-5 text-xs text-white/40">
+                <div class="flex gap-5 text-xs text-white/60">
                     <a href="{{ route('login') }}" class="hover:text-white/70 transition-colors">Sign In</a>
                     <a href="{{ route('register') }}" class="hover:text-white/70 transition-colors">Register</a>
                 </div>

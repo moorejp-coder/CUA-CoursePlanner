@@ -28,10 +28,10 @@
                     <div class="px-8 pt-8 pb-5 text-center">
                         <a href="/">
                             <img
-                                src="/images/cua_logo_light.png"
-                                alt="The Catholic University of America"
+                                src="/images/busch_logo_color.png"
+                                alt="The Busch School of Business at The Catholic University of America"
                                 class="mx-auto mb-4 object-contain"
-                                style="max-height: 60px;">
+                                style="max-height: 56px;">
                         </a>
 
                         <h1 class="text-2xl font-bold uppercase tracking-wide text-[#B41100]" style="font-family: 'Oswald', sans-serif;">
