@@ -13,6 +13,8 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                oswald: ['Oswald', 'sans-serif'],
+                roboto: ['Roboto', 'sans-serif'],
             },
             colors: {
                 cua: {
