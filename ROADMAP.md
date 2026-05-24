@@ -37,13 +37,14 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ## Milestone 3 — APW Intelligence 🔄 IN PROGRESS
 **Delivers:** Bot reads and interprets a student's actual academic record.
-- CSV file upload for Academic Planning Worksheets
-- PDF file upload for Cardinal Station graduation reports
-- Parser for all 4 APW versions (BSBA and BSAccounting, pre and post Spring 2024)
-- Compact token-efficient APW summary sent to Groq
-- Bot accurately reads completed, in-progress, and needed courses
-- All 3 specializations detected from uploaded APW
-- Accurate interpretation validated against real student APWs
+- [x] CSV file upload for Academic Planning Worksheets
+- [x] PDF file upload for Cardinal Station graduation reports
+- [x] Parser for all 4 APW versions (BSBA and BSAccounting, pre and post Spring 2024)
+- [x] Compact token-efficient APW summary sent to Groq
+- [x] Bot accurately reads completed, in-progress, and needed courses
+- [x] All 3 specializations detected from uploaded APW (validated against Moore_APW.csv)
+- [x] Accurate interpretation validated against real student APWs
+- [ ] End-to-end accuracy test: upload APW and verify bot response against known facts
 
 ---
 
