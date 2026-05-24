@@ -74,17 +74,22 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 6 — Security & Code Quality
+## Milestone 6 — Security & Code Quality 🔄 IN PROGRESS
 **Delivers:** A submission that scores well on the code quality rubric.
-- Rate limiting on /api/chat to prevent abuse
-- Input validation and sanitization on all routes
-- API key stored securely in .env — never in code
-- CSRF protection on all POST routes
-- File upload validation (type, size, content)
-- No sensitive data logged or exposed in responses
-- .env excluded from GitHub confirmed
-- Code formatted with Laravel Pint
-- README explains how to run locally
+- [x] Rate limiting on /api/chat (20/min) and /api/upload (10/min)
+- [x] Rate limiting on login and register (5/min — brute-force protection)
+- [x] Input validation and HTML stripping on all routes
+- [x] Message max length reduced to 2,000 characters
+- [x] API key stored securely in .env — never in code or logs
+- [x] CSRF protection on all POST routes (Laravel default)
+- [x] File upload validation: MIME type server-side, 5MB max, double-extension rejection, filename sanitization
+- [x] SecurityHeaders middleware: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
+- [x] Session cookies: secure=true, httpOnly=true, sameSite=strict
+- [x] Strong password requirements: 8+ chars, mixed case, number
+- [x] No PII (student names) in log output
+- [x] Code formatted with Laravel Pint
+- [x] README security section documents all protections
+- [ ] Full test suite for security-critical paths
 
 ---
 

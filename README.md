@@ -121,6 +121,24 @@ All other variables in `.env.example` can be left at their defaults for local de
 
 ---
 
+## Security
+
+The following protections are implemented:
+
+| Layer | Protection |
+|-------|-----------|
+| HTTP headers | X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy, Content-Security-Policy |
+| Session cookies | HTTPS-only (`secure: true`), HttpOnly, SameSite=Strict |
+| API rate limiting | 20 req/min on `/api/chat`, 10 req/min on `/api/upload` |
+| Auth rate limiting | 5 req/min on login and register (brute-force protection) |
+| Input validation | Messages stripped of HTML tags, max 2,000 characters |
+| File uploads | 5MB max, MIME type validated server-side, double extensions rejected, filename sanitized |
+| Passwords | Min 8 chars, mixed case, at least one number (enforced at registration) |
+| Secrets | `GROQ_API_KEY` and `APP_KEY` in `.env` only, never in code or logs |
+| CSRF | Laravel CSRF tokens on all POST/PATCH/DELETE routes |
+
+---
+
 ## How to Use APW Upload
 
 1. Log in and open the chat
