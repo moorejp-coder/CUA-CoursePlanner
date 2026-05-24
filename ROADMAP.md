@@ -108,7 +108,33 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 8 — Database & User Management
+## Milestone 8 — Student Academic Profile System 🔄 IN PROGRESS
+**Delivers:** Personalized, persistent academic advising that knows every student's exact situation.
+- [x] `student_profiles` and `student_courses` database tables
+- [x] `StudentProfile` and `StudentCourse` Eloquent models with User relationships
+- [x] 6-step onboarding wizard (`/onboarding`) with CUA branding and progress bar
+  - Step 1: Basic info (name, admit term, degree, graduation); auto-detects catalog year
+  - Step 2: Specialization selection (up to 3) with Alpine.js warnings and MATH 111 notices
+  - Step 3: Liberal arts requirements completed (13 dropdowns across 10 LA categories)
+  - Step 4: Business core completed (Freshman/Sophomore + Junior/Senior sections, catalog-year-aware)
+  - Step 5: Specialization course status (required + electives per chosen spec)
+  - Step 6: Credits, GPA, in-progress courses, standing auto-calc, career discernment warnings
+- [x] New users redirected to `/onboarding` after registration/email verification
+- [x] Read-only Academic Profile page (`/profile/academic`) with completion percentages and status badges
+- [x] "Academic Profile" link in chat sidebar
+- [x] "Update via Bot" button navigates to chat with pre-filled message
+- [x] Bot profile context: every Groq API call prepends STUDENT PROFILE summary
+- [x] `[PROFILE_UPDATE: {...}]` tag: bot suggests course updates; student sees confirmation banner
+- [x] Accept/Dismiss flow POSTs to `/api/profile/suggest-update` and shows success toast
+- [x] September/January semester prompt banner: gold banner auto-suggests profile refresh
+- [x] `/api/profile/dismiss-prompt` tracks when semester prompt was last shown
+- [x] `storage/app/specializations.json` — authoritative pre/post-2024 specialization requirements
+- [ ] End-to-end test: new user registration → onboarding → chat → profile update flow
+- [ ] Deploy updated profile system to production EC2
+
+---
+
+## Milestone 9 — Database & User Management
 **Delivers:** Proper user accounts and conversation history.
 - User registration with email verification
 - Password reset flow working

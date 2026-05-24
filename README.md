@@ -29,6 +29,9 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 - **Forms & Requests Panel** — direct links to all Busch School Google Forms (internship approval, directed study, minor declaration, and more)
 - **Sidebar Quick-Start Prompts** — one-click buttons for the most common advising questions; New Conversation button to reset the chat
 - **Full Curriculum Context** — all 12 BSBA specializations, prerequisites, liberal arts requirements, elective rules, and catalog year differences loaded as AI context
+- **Student Academic Profile System** — 6-step onboarding wizard captures degree program, catalog year, specializations, completed courses, GPA, and standing; bot automatically reads profile for personalized advising; read-only Academic Profile page at `/profile/academic`
+- **Bot-Driven Profile Updates** — bot can suggest marking a course as completed via a `[PROFILE_UPDATE]` tag; student sees a confirmation banner and clicks Accept to update their record
+- **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
 - **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
 - **Accessibility** — high-contrast text throughout all dark sections; nav logo inverted to white on dark header; all em dashes removed for screen-reader compatibility
 
@@ -160,16 +163,21 @@ CUA-CoursePlanner/
 ├── app/
 │   └── Http/
 │       └── Controllers/
-│           ├── ChatController.php      # GET /chat, POST /api/chat → Groq API
-│           └── UploadController.php    # POST /api/upload → PDF/CSV extraction
+│           ├── ChatController.php           # GET /chat, POST /api/chat → Groq API
+│           ├── UploadController.php         # POST /api/upload → PDF/CSV extraction
+│           ├── OnboardingController.php     # 6-step academic profile wizard
+│           └── AcademicProfileController.php # Profile page + bot update API
 ├── resources/
 │   └── views/
-│       └── chat.blade.php              # Main chat UI (Alpine.js, Tailwind)
+│       ├── chat.blade.php              # Main chat UI (Alpine.js, Tailwind)
+│       ├── onboarding/                 # 6 wizard step views
+│       └── profile/academic.blade.php  # Read-only academic profile page
 ├── routes/
 │   └── web.php                         # All application routes
 ├── storage/
 │   └── app/
-│       └── system_prompt.txt           # Full Busch School curriculum context
+│       ├── system_prompt.txt           # Full Busch School curriculum context
+│       └── specializations.json        # Specialization requirements (pre/post 2024)
 ├── public/
 │   └── build/                          # Vite-compiled CSS and JS (gitignored)
 ├── deploy.sh                           # AWS EC2 deployment script
