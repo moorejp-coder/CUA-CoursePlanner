@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Smalot\PdfParser\Parser as PdfParser;
 
 class UploadController extends Controller
@@ -14,7 +15,7 @@ class UploadController extends Controller
             'file' => 'required|file|max:10240',
         ]);
 
-        $file      = $request->file('file');
+        $file = $request->file('file');
         $extension = strtolower($file->getClientOriginalExtension());
 
         if (! in_array($extension, ['csv', 'pdf'])) {
@@ -26,8 +27,8 @@ class UploadController extends Controller
 
         if ($extension === 'pdf') {
             $parser = new PdfParser;
-            $pdf    = $parser->parseFile($file->path());
-            $text   = $pdf->getText();
+            $pdf = $parser->parseFile($file->path());
+            $text = $pdf->getText();
         } else {
             $text = $this->buildApwPrompt((string) file_get_contents($file->path()));
         }
@@ -50,7 +51,7 @@ class UploadController extends Controller
     private function buildApwPrompt(string $rawCsv): string
     {
         // Parse CSV from string via in-memory stream
-        $rows   = [];
+        $rows = [];
         $stream = fopen('php://memory', 'r+');
         fwrite($stream, $rawCsv);
         rewind($stream);
@@ -66,28 +67,28 @@ class UploadController extends Controller
 
         // Status → symbol map (case-insensitive)
         $statusMap = [
-            'course completed'        => '✓',
-            'course in progress'      => '→',
-            'course planned'          => 'P',
+            'course completed' => '✓',
+            'course in progress' => '→',
+            'course planned' => 'P',
             'course needs planning 0' => '✗',
         ];
 
-        $sym  = fn (string $v): ?string => $statusMap[strtolower($v)] ?? null;
-        $code = fn (string $v): string  => preg_replace('/\s+/', '', $v);
+        $sym = fn (string $v): ?string => $statusMap[strtolower($v)] ?? null;
+        $code = fn (string $v): string => preg_replace('/\s+/', '', $v);
 
         // ── Student info: column A = label, column B = value ─────────
         $fieldMap = [
-            'name'     => ['last name, first name', 'last name/first name', 'student name', 'last name'],
-            'degree'   => ['degree'],
-            'admit'    => ['admit term'],
-            'grad'     => ['expected graduation term', 'expected graduation'],
-            'cr_done'  => ['credits completed'],
-            'cr_ip'    => ['credits in progress'],
-            'cr_plan'  => ['credits planned'],
+            'name' => ['last name, first name', 'last name/first name', 'student name', 'last name'],
+            'degree' => ['degree'],
+            'admit' => ['admit term'],
+            'grad' => ['expected graduation term', 'expected graduation'],
+            'cr_done' => ['credits completed'],
+            'cr_ip' => ['credits in progress'],
+            'cr_plan' => ['credits planned'],
             'standing' => ['projected standing'],
-            'gpa'      => ['cum gpa'],
-            'math'     => ['math placement'],
-            'lang'     => ['foreign language placement', 'language placement'],
+            'gpa' => ['cum gpa'],
+            'math' => ['math placement'],
+            'lang' => ['foreign language placement', 'language placement'],
         ];
 
         $info = array_fill_keys(array_keys($fieldMap), '?');
@@ -114,9 +115,9 @@ class UploadController extends Controller
         // ── Locate section headers (row + col) ───────────────────────
         $kwMap = [
             'degree' => 'degree requirements',
-            'spec'   => 'specialization requirements',
-            'la'     => 'liberal arts requirements',
-            'elec'   => 'free electives',
+            'spec' => 'specialization requirements',
+            'la' => 'liberal arts requirements',
+            'elec' => 'free electives',
         ];
 
         $hdrPos = [];
@@ -141,10 +142,10 @@ class UploadController extends Controller
         $byCol = array_map(fn ($h) => $h['col'], $hdrPos);
         asort($byCol);
         $sortedKeys = array_keys($byCol);
-        $colRanges  = [];
+        $colRanges = [];
 
         for ($i = 0; $i < count($sortedKeys); $i++) {
-            $k   = $sortedKeys[$i];
+            $k = $sortedKeys[$i];
             $min = $byCol[$k];
             $max = isset($sortedKeys[$i + 1]) ? $byCol[$sortedKeys[$i + 1]] - 1 : PHP_INT_MAX;
             $colRanges[$k] = [$min, $max];
@@ -169,10 +170,10 @@ class UploadController extends Controller
 
         // ── Collect courses + detect specialization name labels ───────
         $coreCourses = [];
-        $laCourses   = [];
+        $laCourses = [];
         $elecCourses = [];
-        $specBlocks  = []; // [['name' => string, 'courses' => string[]]]
-        $curSpec     = -1;
+        $specBlocks = []; // [['name' => string, 'courses' => string[]]]
+        $curSpec = -1;
 
         foreach ($rows as $row) {
             // Course/status pair scan — every column
@@ -182,9 +183,9 @@ class UploadController extends Controller
                     continue;
                 }
 
-                $left  = $c > 0 ? ($row[$c - 1] ?? '') : '';
+                $left = $c > 0 ? ($row[$c - 1] ?? '') : '';
                 $right = $row[$c + 1] ?? '';
-                $name  = $left !== '' ? $left : $right;
+                $name = $left !== '' ? $left : $right;
                 if ($name === '') {
                     continue;
                 }
@@ -198,10 +199,10 @@ class UploadController extends Controller
                     }
                     match ($key) {
                         'degree' => ($coreCourses[] = $entry),
-                        'la'     => ($laCourses[]   = $entry),
-                        'elec'   => ($elecCourses[]  = $entry),
-                        'spec'   => ($curSpec >= 0 ? ($specBlocks[$curSpec]['courses'][] = $entry) : null),
-                        default  => null,
+                        'la' => ($laCourses[] = $entry),
+                        'elec' => ($elecCourses[] = $entry),
+                        'spec' => ($curSpec >= 0 ? ($specBlocks[$curSpec]['courses'][] = $entry) : null),
+                        default => null,
                     };
                     break;
                 }
@@ -209,7 +210,7 @@ class UploadController extends Controller
 
             // Specialization name label: non-empty course col, empty/non-status status col
             if ($specCourseCol !== null && $specStatusCol !== null) {
-                $nameCell   = $row[$specCourseCol] ?? '';
+                $nameCell = $row[$specCourseCol] ?? '';
                 $statusCell = $row[$specStatusCol] ?? '';
 
                 if (
@@ -220,15 +221,16 @@ class UploadController extends Controller
                     && ! str_contains(strtolower($nameCell), 'requirements')
                 ) {
                     $specBlocks[] = ['name' => $nameCell, 'courses' => []];
-                    $curSpec      = count($specBlocks) - 1;
+                    $curSpec = count($specBlocks) - 1;
                 }
             }
         }
 
         // ── Build compact output ──────────────────────────────────────
-        $n   = $info;
-        $out = sprintf(
-            'APW: %s | %s | Admit %s | GPA %s | %s | Cr: %s/%s/%s | Grad: %s | Math: %s | Lang: %s',
+        $n = $info;
+        $out = "KEY: ✓=completed →=in-progress P=planned ✗=not-started\n\n";
+        $out .= sprintf(
+            'APW: %s | %s | Admit %s | GPA %s | %s | Cr: %s done/%s in-progress/%s planned | Grad: %s | Math: %s | Lang: %s',
             $n['name'], $n['degree'], $n['admit'], $n['gpa'], $n['standing'],
             $n['cr_done'], $n['cr_ip'], $n['cr_plan'], $n['grad'], $n['math'], $n['lang']
         );
@@ -262,9 +264,9 @@ class UploadController extends Controller
                     if ($s === null) {
                         continue;
                     }
-                    $left  = $c > 0 ? ($row[$c - 1] ?? '') : '';
+                    $left = $c > 0 ? ($row[$c - 1] ?? '') : '';
                     $right = $row[$c + 1] ?? '';
-                    $name  = $left !== '' ? $left : $right;
+                    $name = $left !== '' ? $left : $right;
                     if ($name !== '') {
                         $all[] = $code($name).$s;
                     }
@@ -275,7 +277,19 @@ class UploadController extends Controller
             }
         }
 
-        $out .= "\n\nAnalyze this student's BSBA/BSAccounting progress. List what still needs completing, flag any issues, and give specific actionable advice.";
+        $out .= "\n\nSECTION KEY:\n"
+            ."- CORE = required business core courses for the degree\n"
+            ."- SPEC1/SPEC2/SPEC3 = specialization requirement courses (each specialization listed separately)\n"
+            ."- LIBARTS = liberal arts and general education requirements\n"
+            ."- ELECTIVES = free elective credits\n"
+            ."\nUsing the above Academic Planning Worksheet data, provide a thorough academic advising response. Address:\n"
+            ."1. Which required courses (CORE, SPEC, LIBARTS) still have ✗ status and need to be planned\n"
+            ."2. Whether any in-progress (→) or planned (P) courses have prerequisites not yet completed (✓)\n"
+            ."3. Whether the student is on track to graduate by their expected graduation term\n"
+            ."4. Any critical rules that apply (e.g. MGT 475 + BUS 498 same semester, credit gate requirements, SRES 290 if post-Spring 2024)\n"
+            .'5. Recommended next steps and any concerns to raise with their academic advisor';
+
+        Log::info('APW parsed', ['student' => $n['name'], 'degree' => $n['degree'], 'compact' => $out]);
 
         return $out;
     }
