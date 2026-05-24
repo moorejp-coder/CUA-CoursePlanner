@@ -95,6 +95,7 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 - GROQ_API_KEY set securely on server
 - HTTPS enabled via AWS Certificate Manager or Let's Encrypt
 - Public URL with working login and chat — http://44.197.180.244
+- Custom domain purchased: buschcourseplanner.dev (DNS propagating as of 2026-05-24)
 - Deploy script automates future deployments
 - Billing alerts confirmed active
 - App stays live and accessible during judging period

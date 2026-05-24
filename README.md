@@ -51,9 +51,11 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 
 ## Live URL
 
+**https://buschcourseplanner.dev** *(DNS propagating — use IP below in the meantime)*
+
 **http://44.197.180.244**
 
-The app is live on AWS EC2. Register an account and start chatting.
+The app is deployed on AWS EC2. The custom domain `buschcourseplanner.dev` has been purchased and will be the permanent URL once DNS propagation completes. Register an account and start chatting.
 
 ---
 
