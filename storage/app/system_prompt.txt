@@ -66,7 +66,7 @@ Up to 2 courses may double-count between liberal arts and major.
 - FIN 226 (prereq: ACCT 205)
 - MATH 110 or 111 (if EXEMPT = complete)
 - BUS 199 (1cr, Fall, incoming only)
-- BUS 299A (1cr, 24+ credits) — Sales: MKT 299
+- BUS 299A (1cr, 24+ credits) [Sales equivalent: MKT 299]
 - MGT 250 (27+ credits required)
 - [Post-2024]: SRES 290
 
@@ -81,8 +81,8 @@ MGT 240, MGT 331, MGT 351, MGT 361, ECON 370, ACCT 425, EAM 406, ENT 519
 - MKT 345 or BUS 604
 - MGT 301
 - MGT 475 + BUS 498 (SAME semester, seniors, prereqs: ACCT 206, FIN 226, MKT 345, MGT 123)
-- BUS 399A (1cr, 54+ credits) — Sales: MKT 399
-- BUS 499A (1cr, 85+ credits) — Sales: MKT 499
+- BUS 399A (1cr, 54+ credits) [Sales equivalent: MKT 399]
+- BUS 499A (1cr, 85+ credits) [Sales equivalent: MKT 499]
 - Law elective (pick 1): MGT 321, 322, 371, 411, BUS 616
 - [Pre-2024]: MGT 365 or BUS 603
 
@@ -257,7 +257,7 @@ Application: https://enrollment-services.catholic.edu/forms/double-major-applica
 ### Required Core (all)
 SRES 101 or ECON 102/104 | ENT 118 | MGT 123A or 123B | ACCT 205 | FIN 226 | MGT 301 | MKT 345 | MGT 475 | BUS 399A | BUS 499A
 
-### Focus Area — Choose ONE pair
+### Focus Area: Choose ONE pair
 A: MGT 310 + MGT 311 (Management/People)
 B: MGT 332 + MGT 312 (Operations/Tech)
 C: MKT 346 + MKT 348 (Marketing)
@@ -269,4 +269,4 @@ H: ENT 372 + ENT 472 (Entrepreneurship)
 I: MGT 330 + MGT 410 (HR/People & Orgs)
 
 ### Comprehensive Exam
-ACCT 498 (0 credits) — NOT BUS 498
+ACCT 498 (0 credits) [NOT BUS 498]

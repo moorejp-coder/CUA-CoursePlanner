@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Course Planning Bot — Busch School of Business | The Catholic University of America</title>
+    <title>Course Planning Bot: Busch School of Business | The Catholic University of America</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="/" class="flex items-center gap-3">
-                    <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
+                    <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 object-contain" style="filter: brightness(0) invert(1);">
                 </a>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}"
@@ -63,14 +63,14 @@
 
             <p class="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl mx-auto"
                style="font-family: 'Crimson Text', serif;">
-                Upload your Academic Planning Worksheet and get instant, personalized guidance on degree requirements, course sequencing, and your path to graduation — no appointment needed.
+                Upload your Academic Planning Worksheet and get instant, personalized guidance on degree requirements, course sequencing, and your path to graduation. No appointment needed.
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('register') }}"
                    class="w-full sm:w-auto bg-[#b21f2c] hover:bg-[#8c1420] text-white font-bold uppercase tracking-wider px-8 py-4 rounded text-sm transition-colors duration-150 text-center"
                    style="font-family: 'Oswald', sans-serif; letter-spacing: 0.1em;">
-                    Start Planning — It's Free
+                    Start Planning. It's Free.
                 </a>
                 <a href="{{ route('login') }}"
                    class="w-full sm:w-auto border border-white/30 hover:border-white/70 text-white/80 hover:text-white px-8 py-4 rounded text-sm transition-colors duration-150 text-center"
@@ -79,7 +79,7 @@
                 </a>
             </div>
 
-            <p class="mt-8 text-xs text-white/30">
+            <p class="mt-8 text-xs text-white/70">
                 For Busch School undergraduate students &nbsp;·&nbsp; Free to use &nbsp;·&nbsp; No appointment needed
             </p>
         </div>
@@ -177,7 +177,7 @@
                             Find Every Form
                         </h3>
                         <p class="text-gray-600 text-sm leading-relaxed">
-                            Direct links to internship approval, directed study registration, minor declaration, and every Busch School administrative form — all in one place.
+                            Direct links to internship approval, directed study registration, minor declaration, and every Busch School administrative form, all in one place.
                         </p>
                     </div>
                 </div>
@@ -249,15 +249,15 @@
                 style="font-family: 'Oswald', sans-serif;">
                 Ready to Take Control<br>of Your Degree Plan?
             </h2>
-            <p class="text-white/65 mb-10 leading-relaxed" style="font-family: 'Crimson Text', serif; font-size: 1.125rem;">
-                No scheduling. No 48-hour wait for an email reply. Just clear, accurate advising — whenever you need it.
+            <p class="text-white/90 mb-10 leading-relaxed" style="font-family: 'Crimson Text', serif; font-size: 1.125rem;">
+                No scheduling. No 48-hour wait for an email reply. Just clear, accurate advising, whenever you need it.
             </p>
             <a href="{{ route('register') }}"
                class="inline-block bg-[#b21f2c] hover:bg-[#8c1420] text-white font-bold uppercase tracking-wider px-10 py-4 rounded text-sm transition-colors duration-150"
                style="font-family: 'Oswald', sans-serif; letter-spacing: 0.1em;">
                 Create a Free Account
             </a>
-            <p class="mt-5 text-xs text-white/30">Already have an account? <a href="{{ route('login') }}" class="text-white/50 hover:text-white underline transition-colors">Sign in here.</a></p>
+            <p class="mt-5 text-xs text-white/75">Already have an account? <a href="{{ route('login') }}" class="text-white hover:text-white/80 underline transition-colors">Sign in here.</a></p>
         </div>
     </section>
 
@@ -267,10 +267,10 @@
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
                 <img src="/images/busch_logo.jpg" alt="Tim & Steph Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
 
-                <p class="text-white/30 text-xs text-center leading-relaxed">
+                <p class="text-white/75 text-xs text-center leading-relaxed">
                     &copy; {{ date('Y') }} James Moore &nbsp;&middot;&nbsp; Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
                     This tool is for informational purposes only. For official advising decisions, please consult
-                    <a href="https://business.catholic.edu/undergraduate/academic-services/" class="hover:text-white/60 underline transition-colors" target="_blank" rel="noopener">Academic Services</a>.
+                    <a href="https://business.catholic.edu/academics/academic-services/index.html" class="hover:text-white/60 underline transition-colors" target="_blank" rel="noopener">Academic Services</a>.
                 </p>
 
                 <div class="flex gap-5 text-xs text-white/40">

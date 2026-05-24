@@ -30,6 +30,7 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 - **Sidebar Quick-Start Prompts** — one-click buttons for the most common advising questions; New Conversation button to reset the chat
 - **Full Curriculum Context** — all 12 BSBA specializations, prerequisites, liberal arts requirements, elective rules, and catalog year differences loaded as AI context
 - **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
+- **Accessibility** — high-contrast text throughout all dark sections; nav logo inverted to white on dark header; all em dashes removed for screen-reader compatibility
 
 ---
 

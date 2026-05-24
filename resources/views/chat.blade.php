@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Course Planning Bot — Busch School of Business</title>
+    <title>Course Planning Bot: Busch School of Business</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -293,23 +293,23 @@
         </a>
 
         <div class="flex items-center gap-2">
-            <span class="hidden sm:block text-[13px] px-2" style="color:rgba(255,255,255,0.5);">
+            <span class="hidden sm:block text-[13px] px-2" style="color:#fff;">
                 {{ Auth::user()->name }}
             </span>
             <a href="{{ route('profile.edit') }}"
                class="hidden sm:block text-[13px] px-3 py-1.5 rounded transition-colors"
-               style="color:rgba(255,255,255,0.6);"
-               onmouseover="this.style.color='#fff'; this.style.background='rgba(255,255,255,0.1)';"
-               onmouseout="this.style.color='rgba(255,255,255,0.6)'; this.style.background='transparent';">
+               style="color:#fff;"
+               onmouseover="this.style.background='rgba(255,255,255,0.1)';"
+               onmouseout="this.style.background='transparent';">
                 Profile
             </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
                         class="font-oswald font-semibold uppercase tracking-wide text-[12px] text-white px-4 py-1.5 rounded transition-colors"
-                        style="border:1px solid rgba(255,255,255,0.2); letter-spacing:0.07em;"
-                        onmouseover="this.style.borderColor='rgba(255,255,255,0.5)'; this.style.background='rgba(255,255,255,0.1)';"
-                        onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='transparent';">
+                        style="border:1px solid rgba(255,255,255,0.6); letter-spacing:0.07em;"
+                        onmouseover="this.style.borderColor='#fff'; this.style.background='rgba(255,255,255,0.1)';"
+                        onmouseout="this.style.borderColor='rgba(255,255,255,0.6)'; this.style.background='transparent';">
                     Sign Out
                 </button>
             </form>
@@ -565,12 +565,12 @@
 
 {{-- ── FOOTER ───────────────────────────────────────────────── --}}
 <div class="shrink-0 py-2 px-6 text-center" style="background:#071e38;">
-    <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.5);">
-        AI guidance is informational — always verify with a
+    <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.8);">
+        AI guidance is informational. Always verify with a
         <a href="https://business.catholic.edu/academics/academic-services/index.html"
            target="_blank"
            class="underline underline-offset-2 transition-colors hover:text-white"
-           style="color:rgba(255,255,255,0.5);">human advisor</a>
+           style="color:rgba(255,255,255,0.8);">human advisor</a>
         before finalizing your schedule or degree plan.
     </p>
 </div>
@@ -588,7 +588,7 @@ function chatApp() {
         init() {
             this.messages.push({
                 role: 'assistant',
-                content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies — or choose a topic from the sidebar.",
+                content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
             });
         },
 
