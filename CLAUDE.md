@@ -19,7 +19,8 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - laravel/pint (PINT) - v1
 - pestphp/pest (PEST) - v4
 - phpunit/phpunit (PHPUNIT) - v12
-- tailwindcss (TAILWINDCSS) - v4
+- alpinejs (ALPINEJS) - v3
+- tailwindcss (TAILWINDCSS) - v3
 
 ## Skills Activation
 
@@ -108,6 +109,13 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
 
+=== tests rules ===
+
+# Test Enforcement
+
+- Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test --compact` with a specific filename or filter.
+
 === laravel/core rules ===
 
 # Do Things the Laravel Way
@@ -155,3 +163,56 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+# Busch School Course Planning Bot — Claude Code Instructions
+
+## Project Overview
+This is a Laravel 13 PHP application for the CUA AI Vibe Coding Competition. It is an AI-powered academic advising chatbot for undergraduate students at the Tim & Steph Busch School of Business at The Catholic University of America.
+
+## Critical Rules — Follow These Every Session
+
+### 1. README Must Stay Current
+After completing ANY feature, fix, or milestone — no exceptions — update README.md with:
+- What the app currently does
+- Any new features added
+- Any changes to local setup steps
+- Then commit and push README.md immediately
+
+### 2. Commit After Every Feature
+- Commit to GitHub after every working change — not at the end of a session
+- Write commit messages that explain WHY, not just what changed
+- Example: "feat: add APW CSV parser to reduce token usage for Groq API"
+- Never bundle multiple unrelated changes into one commit
+
+### 3. Never Commit Secrets
+- GROQ_API_KEY and APP_KEY must stay in .env only
+- .env is in .gitignore — confirm before every push
+- Run: git diff --cached | grep -i "key\|secret\|password" before committing
+
+### 4. Milestone Checklist
+After each milestone is complete:
+- [ ] All features working locally at http://127.0.0.1:8000
+- [ ] All changes committed and pushed to GitHub
+- [ ] README.md updated with new features and setup instructions
+- [ ] ROADMAP.md updated to mark milestone as complete
+
+### 5. Tech Stack Reference
+- Backend: Laravel 13, PHP 8.5, SQLite
+- Frontend: Blade templates, Tailwind CSS, Alpine.js
+- AI: Groq API (llama-3.3-70b-versatile)
+- Fonts: Oswald Bold (headings), Crimson Text (body), Roboto (UI)
+- Colors: Cardinal Red #B41100, CUA Blue #004C70, Gold #C9A84C
+- Logo: /images/busch_logo.jpg
+
+### 6. Key Files
+- system_prompt.txt — full Busch School curriculum (do not truncate)
+- app/Http/Controllers/ChatController.php — Groq API integration
+- app/Http/Controllers/UploadController.php — APW CSV and PDF parser
+- resources/views/chat.blade.php — main chat UI
+
+### 7. Before Ending Every Session
+Always run these before stopping work:
+1. git status — confirm nothing is uncommitted
+2. git push — confirm everything is on GitHub
+3. Update README.md if any feature changed
+4. Note what was completed and what is next in ROADMAP.md
