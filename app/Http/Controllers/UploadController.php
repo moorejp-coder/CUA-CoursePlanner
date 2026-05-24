@@ -9,18 +9,53 @@ use Smalot\PdfParser\Parser as PdfParser;
 
 class UploadController extends Controller
 {
+    private const ALLOWED_EXTENSIONS = ['csv', 'pdf'];
+
+    private const ALLOWED_MIMES = [
+        'csv' => ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'],
+        'pdf' => ['application/pdf'],
+    ];
+
     public function handle(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => 'required|file|max:10240',
+            'file' => 'required|file|max:5120',
         ]);
 
         $file = $request->file('file');
+        $originalName = $file->getClientOriginalName();
+
+        // Reject filenames with special characters or double extensions
+        if (! preg_match('/^[\w\-. ]+$/', $originalName)) {
+            return response()->json(
+                ['error' => 'Invalid filename. Use only letters, numbers, hyphens, and underscores.'],
+                422,
+            );
+        }
+
+        // Reject double extensions (e.g. file.php.csv)
+        $parts = explode('.', $originalName);
+        if (count($parts) > 2) {
+            return response()->json(
+                ['error' => 'Invalid filename. Only one file extension is allowed.'],
+                422,
+            );
+        }
+
         $extension = strtolower($file->getClientOriginalExtension());
 
-        if (! in_array($extension, ['csv', 'pdf'])) {
+        if (! in_array($extension, self::ALLOWED_EXTENSIONS)) {
             return response()->json(
                 ['error' => 'Only .csv and .pdf files are accepted.'],
+                422,
+            );
+        }
+
+        // Server-side MIME type validation using finfo (not just the extension)
+        $detectedMime = $file->getMimeType();
+        if (! in_array($detectedMime, self::ALLOWED_MIMES[$extension])) {
+            return response()->json(
+                ['error' => 'File content does not match the expected type for .'.$extension.'.'],
                 422,
             );
         }
@@ -289,7 +324,7 @@ class UploadController extends Controller
             ."4. Any critical rules that apply (e.g. MGT 475 + BUS 498 same semester, credit gate requirements, SRES 290 if post-Spring 2024)\n"
             .'5. Recommended next steps and any concerns to raise with their academic advisor';
 
-        Log::info('APW parsed', ['student' => $n['name'], 'degree' => $n['degree'], 'compact' => $out]);
+        Log::info('APW parsed', ['degree' => $n['degree'], 'standing' => $n['standing'], 'grad' => $n['grad']]);
 
         return $out;
     }
