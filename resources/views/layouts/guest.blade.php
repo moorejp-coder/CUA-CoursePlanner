@@ -28,7 +28,7 @@
                     <div class="px-8 pt-8 pb-5 text-center">
                         <a href="/">
                             <img
-                                src="/images/busch_logo.jpg"
+                                src="/images/cua_logo.png"
                                 alt="Tim & Steph Busch School of Business"
                                 class="mx-auto mb-4 object-contain"
                                 style="max-height: 80px;">

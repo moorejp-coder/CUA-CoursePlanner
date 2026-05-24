@@ -19,7 +19,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <a href="/" class="flex items-center gap-3">
-                    <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 object-contain" style="filter: brightness(0) invert(1);">
+                    <img src="/images/cua_logo.png" alt="Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
                 </a>
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}"
@@ -265,7 +265,7 @@
     <footer class="bg-[#071e38] py-10">
         <div class="max-w-6xl mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center justify-between gap-6">
-                <img src="/images/busch_logo.jpg" alt="Tim & Steph Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
+                <img src="/images/cua_logo.png" alt="Tim & Steph Busch School of Business" class="h-10 object-contain" style="mix-blend-mode: multiply;">
 
                 <p class="text-white/75 text-xs text-center leading-relaxed">
                     &copy; {{ date('Y') }} James Moore &nbsp;&middot;&nbsp; Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
