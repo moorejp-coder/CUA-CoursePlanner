@@ -386,6 +386,17 @@
                 </svg>
             </button>
             @endforeach
+
+            <div style="height:1px; background:#e8e2db; margin:8px 16px;"></div>
+            <a href="{{ route('profile.academic') }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px 9px 16px;font-size:13px;font-family:'Roboto',sans-serif;color:#4b5563;border-left:3px solid transparent;text-decoration:none;transition:background 0.12s,border-color 0.12s,color 0.12s;" onmouseover="this.style.background='#0a3255';this.style.borderLeftColor='#0a3255';this.style.color='#fff';" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent';this.style.color='#4b5563';">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="currentColor" viewBox="0 0 16 16" style="color:#b8b3ad;flex-shrink:0;">
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/>
+                </svg>
+                <span>Academic Profile</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style="color:#d4cec8;margin-left:auto;">
+                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </a>
         </nav>
 
         {{-- Sidebar footer --}}
@@ -590,6 +601,13 @@ function chatApp() {
                 role: 'assistant',
                 content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
             });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const autoMsg = urlParams.get('msg');
+            if (autoMsg) {
+                this.input = autoMsg;
+                this.$nextTick(() => this.send());
+            }
         },
 
         newChat() {
