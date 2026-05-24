@@ -272,6 +272,85 @@
             line-height: 1.4;
             color: #7c7169;
         }
+
+        /* ── Profile update suggestion banner ──────────────── */
+        .profile-update-banner {
+            background: #fffbea;
+            border: 1.5px solid #C9A84C;
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 13.5px;
+            font-family: 'Roboto', sans-serif;
+            color: #1a1a1a;
+        }
+        .profile-update-banner .pub-text { flex: 1; min-width: 200px; }
+        .pub-accept {
+            background: #003366;
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+            transition: background 0.15s;
+        }
+        .pub-accept:hover { background: #0a3255; }
+        .pub-dismiss {
+            background: transparent;
+            color: #666;
+            border: 1px solid #ccc;
+            padding: 6px 14px;
+            border-radius: 5px;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* ── Semester prompt banner ─────────────────────────── */
+        .semester-banner {
+            background: linear-gradient(90deg, #C9A84C 0%, #b89438 100%);
+            color: #1a1a1a;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13.5px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 500;
+            flex-wrap: wrap;
+            cursor: pointer;
+        }
+        .semester-banner:hover { filter: brightness(0.96); }
+        .semester-banner-dismiss {
+            margin-left: auto;
+            background: rgba(0,0,0,0.12);
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #1a1a1a;
+        }
+
+        /* ── Success toast ──────────────────────────────────── */
+        .success-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #003366;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Roboto', sans-serif;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
@@ -414,6 +493,66 @@
          x-data="chatApp()"
          @quick-send.window="quickSend($event.detail.message)"
          @new-chat.window="newChat()">
+
+        {{-- Semester prompt banner (Phase 7) --}}
+        <div x-show="semesterBanner"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="semester-banner shrink-0"
+             @click="sendSemesterPrompt()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0;">
+                <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/>
+                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
+            </svg>
+            <span>A new semester has started. Tell me what courses you completed and I will update your academic profile.</span>
+            <button class="semester-banner-dismiss"
+                    @click.stop="dismissSemesterBanner()"
+                    aria-label="Dismiss">✕</button>
+        </div>
+
+        {{-- Profile update suggestion banner (Phase 6) --}}
+        <div x-show="profileUpdate !== null"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             class="shrink-0 px-4 py-2.5" style="background:#fef9ec; border-bottom:1px solid #e8d98a;">
+            <div class="profile-update-banner max-w-3xl mx-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#C9A84C" viewBox="0 0 16 16" style="flex-shrink:0;">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                <div class="pub-text">
+                    <span>Your advisor suggests marking </span>
+                    <strong x-text="profileUpdate ? profileUpdate.course_code : ''"></strong>
+                    <span> as </span>
+                    <strong x-text="profileUpdate ? profileUpdate.status : ''"></strong>
+                    <template x-if="profileUpdate && profileUpdate.grade">
+                        <span> (Grade: <strong x-text="profileUpdate.grade"></strong></span>
+                    </template>
+                    <template x-if="profileUpdate && profileUpdate.semester">
+                        <span x-text="profileUpdate && profileUpdate.grade ? ', ' + profileUpdate.semester + ')' : (profileUpdate ? ', ' + profileUpdate.semester : '')"></span>
+                    </template>
+                    <template x-if="profileUpdate && profileUpdate.grade && !profileUpdate.semester">
+                        <span>)</span>
+                    </template>
+                </div>
+                <button class="pub-accept" @click="acceptProfileUpdate()">Accept</button>
+                <button class="pub-dismiss" @click="profileUpdate = null">Dismiss</button>
+            </div>
+        </div>
+
+        {{-- Success toast --}}
+        <div x-show="successToast"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="success-toast">
+            Profile updated successfully!
+        </div>
 
         {{-- Messages scroll area --}}
         <div class="flex-1 overflow-y-auto chat-scroll"
@@ -595,6 +734,9 @@ function chatApp() {
         error: null,
         file: null,
         fileName: null,
+        profileUpdate: null,
+        semesterBanner: false,
+        successToast: false,
 
         init() {
             this.messages.push({
@@ -607,6 +749,76 @@ function chatApp() {
             if (autoMsg) {
                 this.input = autoMsg;
                 this.$nextTick(() => this.send());
+            }
+
+            this.checkSemesterPrompt();
+        },
+
+        checkSemesterPrompt() {
+            const month = new Date().getMonth() + 1; // 1-12
+            if (month !== 9 && month !== 1) return;
+
+            const shownAt = @json(auth()->user()?->studentProfile?->semester_prompt_shown_at);
+            if (!shownAt) {
+                this.semesterBanner = true;
+                return;
+            }
+            const shownDate = new Date(shownAt);
+            const fourMonthsAgo = new Date();
+            fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
+            if (shownDate < fourMonthsAgo) {
+                this.semesterBanner = true;
+            }
+        },
+
+        sendSemesterPrompt() {
+            this.semesterBanner = false;
+            this.dismissSemesterBanner();
+            this.input = 'A new semester has started. Tell me what courses you completed and I will update your academic profile.';
+            this.send();
+        },
+
+        dismissSemesterBanner() {
+            this.semesterBanner = false;
+            fetch('/api/profile/dismiss-prompt', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Content-Type': 'application/json',
+                },
+            }).catch(() => {});
+        },
+
+        async acceptProfileUpdate() {
+            if (!this.profileUpdate) return;
+            const update = this.profileUpdate;
+            this.profileUpdate = null;
+
+            try {
+                await fetch('/api/profile/suggest-update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: JSON.stringify(update),
+                });
+                this.successToast = true;
+                setTimeout(() => { this.successToast = false; }, 3000);
+            } catch {
+                this.error = 'Could not update profile. Please try again.';
+            }
+        },
+
+        extractProfileUpdate(text) {
+            const match = text.match(/\[PROFILE_UPDATE:\s*(\{[^}]+\})\]/s);
+            if (!match) return { text, update: null };
+            try {
+                const update = JSON.parse(match[1]);
+                const cleanText = text.replace(match[0], '').trim();
+                return { text: cleanText, update };
+            } catch {
+                return { text: text.replace(match[0], '').trim(), update: null };
             }
         },
 
@@ -711,7 +923,11 @@ function chatApp() {
                 if (!res.ok) {
                     this.error = data.error ?? 'Something went wrong. Please try again.';
                 } else {
-                    this.messages.push({ role: 'assistant', content: data.message });
+                    const { text, update } = this.extractProfileUpdate(data.message);
+                    this.messages.push({ role: 'assistant', content: text });
+                    if (update) {
+                        this.profileUpdate = update;
+                    }
                 }
             } catch {
                 this.error = 'Could not reach the server. Check your connection and try again.';

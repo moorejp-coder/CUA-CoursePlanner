@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Academic profile
     Route::get('/profile/academic', [AcademicProfileController::class, 'show'])->name('profile.academic');
+    Route::post('/api/profile/suggest-update', [AcademicProfileController::class, 'suggestUpdate'])->middleware('throttle:30,1')->name('profile.suggest-update');
+    Route::post('/api/profile/dismiss-prompt', [AcademicProfileController::class, 'dismissSemesterPrompt'])->middleware('throttle:10,1')->name('profile.dismiss-prompt');
 
     // Onboarding wizard
     Route::get('/onboarding', [OnboardingController::class, 'index'])->name('onboarding');
