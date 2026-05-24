@@ -14,53 +14,56 @@
 
     <style>
         :root {
-            --cua-blue:   #004B9D;
-            --cua-red:    #CC0000;
-            --cua-dark:   #111827;
-            --surface:    #F6F7F9;
-            --blue-tint:  #EFF5FF;
-            --border:     #E3E6EA;
-            --text-muted: #6B7280;
+            --cua-blue:      #0a3255;
+            --cua-blue-mid:  #1a4a6e;
+            --cua-red:       #b21f2c;
+            --cua-red-dark:  #8c1420;
+            --cua-gold:      #b18f50;
+            --sandstone:     #f7f3ed;
+            --limestone:     #efebe9;
+            --border:        #e2ddd8;
+            --border-light:  #ede9e4;
+            --text-muted:    #6b7280;
         }
 
         * { box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', sans-serif;
-            background: var(--surface);
-            color: var(--cua-dark);
+            background: var(--limestone);
+            color: #1a1a1a;
         }
 
         /* ── Message entry animation ───────────────────────── */
         @keyframes msgIn {
-            from { opacity: 0; transform: translateY(7px); }
+            from { opacity: 0; transform: translateY(6px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .msg-in { animation: msgIn 0.2s ease-out forwards; }
+        .msg-in { animation: msgIn 0.18s ease-out forwards; }
 
         /* ── Rendered HTML in AI bubbles ───────────────────── */
         .html-msg {
             font-family: 'Crimson Text', Georgia, serif;
-            font-size: 1.0625rem;
-            line-height: 1.82;
-            font-feature-settings: "kern" 1, "liga" 1;
+            font-size: 1.075rem;
+            line-height: 1.85;
+            color: #1f2937;
         }
-        .html-msg p { margin-bottom: 0.65rem; }
+        .html-msg p { margin-bottom: 0.7rem; }
         .html-msg p:last-child { margin-bottom: 0; }
-        .html-msg ul { margin: 0.4rem 0 0.65rem 1.4rem; list-style: disc; }
-        .html-msg ul li { margin-bottom: 0.38rem; }
+        .html-msg ul { margin: 0.5rem 0 0.7rem 1.35rem; list-style: disc; }
+        .html-msg ul li { margin-bottom: 0.4rem; }
         .html-msg a { color: var(--cua-blue); text-decoration: underline; text-underline-offset: 2px; }
         .html-msg a:hover { color: var(--cua-red); }
 
         /* ── Scrollbar ─────────────────────────────────────── */
         .chat-scroll::-webkit-scrollbar { width: 4px; }
         .chat-scroll::-webkit-scrollbar-track { background: transparent; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 4px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #cec9c3; border-radius: 4px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #b8b3ad; }
 
         /* ── Typing dots ───────────────────────────────────── */
         @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); opacity: .38; }
+            0%, 60%, 100% { transform: translateY(0); opacity: .35; }
             30%            { transform: translateY(-5px); opacity: 1; }
         }
         .typing-dot { animation: typingBounce 1.4s ease-in-out infinite; }
@@ -74,10 +77,10 @@
             gap: 10px;
             width: 100%;
             text-align: left;
-            padding: 10px 14px 10px 18px;
-            font-size: 13.5px;
+            padding: 9px 14px 9px 16px;
+            font-size: 13px;
             font-family: 'Roboto', sans-serif;
-            color: #374151;
+            color: #4b5563;
             background: transparent;
             border: none;
             border-left: 3px solid transparent;
@@ -85,25 +88,47 @@
             transition: background 0.12s, border-color 0.12s, color 0.12s;
             line-height: 1.45;
         }
-        .qs-icon  { color: #9CA3AF; flex-shrink: 0; transition: color 0.12s; }
+        .qs-icon    { color: #b8b3ad; flex-shrink: 0; transition: color 0.12s; }
         .qs-chevron {
-            color: #D1D5DB;
+            color: #d4cec8;
             flex-shrink: 0;
             margin-left: auto;
             transition: color 0.12s, transform 0.12s;
         }
         .qs-btn:hover {
-            background: var(--blue-tint);
+            background: rgba(10, 50, 85, 0.06);
             border-left-color: var(--cua-blue);
             color: var(--cua-blue);
         }
         .qs-btn:hover .qs-icon    { color: var(--cua-blue); }
         .qs-btn:hover .qs-chevron { color: var(--cua-blue); transform: translateX(2px); }
         .qs-btn:active {
-            background: #FEF2F2;
+            background: rgba(178, 31, 44, 0.06);
             border-left-color: var(--cua-red);
             color: var(--cua-red);
         }
+
+        /* ── New chat button ───────────────────────────────── */
+        .new-chat-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 9px 16px;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            font-size: 12.5px;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+            color: white;
+            background: var(--cua-blue);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.12s;
+        }
+        .new-chat-btn:hover { background: var(--cua-blue-mid); }
 
         /* ── Compose ring ──────────────────────────────────── */
         .compose-ring {
@@ -111,14 +136,14 @@
             align-items: flex-end;
             gap: 2px;
             background: #fff;
-            border: 1.5px solid #D1D5DB;
+            border: 1.5px solid #d4cec8;
             border-radius: 14px;
             padding: 4px 4px 4px 2px;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
         .compose-ring:focus-within {
             border-color: var(--cua-blue);
-            box-shadow: 0 0 0 3px rgba(0, 75, 157, 0.09);
+            box-shadow: 0 0 0 3px rgba(10, 50, 85, 0.1);
         }
         .compose-ring textarea {
             flex: 1;
@@ -129,13 +154,13 @@
             font-family: 'Roboto', sans-serif;
             font-size: 15px;
             line-height: 1.6;
-            color: var(--cua-dark);
+            color: #1a1a1a;
             padding: 9px 8px 9px 12px;
             min-height: 42px;
             max-height: 140px;
             field-sizing: content;
         }
-        .compose-ring textarea::placeholder { color: #9CA3AF; }
+        .compose-ring textarea::placeholder { color: #a89f97; }
         .compose-ring textarea:disabled { opacity: 0.5; }
 
         /* ── Attach button ─────────────────────────────────── */
@@ -149,12 +174,15 @@
             border: none;
             border-radius: 10px;
             background: transparent;
-            color: #9CA3AF;
+            color: #a89f97;
             cursor: pointer;
             flex-shrink: 0;
             transition: background 0.12s, color 0.12s;
         }
-        .attach-btn:hover:not(:disabled) { background: var(--blue-tint); color: var(--cua-blue); }
+        .attach-btn:hover:not(:disabled) {
+            background: rgba(10, 50, 85, 0.07);
+            color: var(--cua-blue);
+        }
         .attach-btn:disabled { opacity: 0.38; cursor: not-allowed; }
 
         /* ── Send button ───────────────────────────────────── */
@@ -173,19 +201,19 @@
             text-transform: uppercase;
             cursor: pointer;
             flex-shrink: 0;
-            transition: opacity 0.12s, transform 0.1s;
+            transition: background 0.12s, transform 0.1s;
         }
-        .send-btn:hover:not(:disabled) { opacity: 0.87; }
+        .send-btn:hover:not(:disabled) { background: var(--cua-red-dark); }
         .send-btn:active:not(:disabled) { transform: scale(0.965); }
-        .send-btn:disabled { opacity: 0.27; cursor: not-allowed; }
+        .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* ── File attachment tag ───────────────────────────── */
         .file-tag {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: var(--blue-tint);
-            border: 1px solid #BFDBFE;
+            background: rgba(10, 50, 85, 0.06);
+            border: 1px solid rgba(10, 50, 85, 0.18);
             color: var(--cua-blue);
             font-size: 12.5px;
             font-family: 'Roboto', sans-serif;
@@ -203,7 +231,7 @@
             background: none;
             border: none;
             cursor: pointer;
-            color: #93C5FD;
+            color: #9ca3af;
             font-size: 16px;
             line-height: 1;
             padding: 0;
@@ -217,7 +245,7 @@
             flex-shrink: 0;
             font-size: 12.5px;
             font-family: 'Roboto', sans-serif;
-            color: #4B5563;
+            color: #4b5563;
             background: #fff;
             border: 1px solid var(--border);
             padding: 5px 13px;
@@ -226,80 +254,93 @@
             cursor: pointer;
             transition: background 0.12s, color 0.12s, border-color 0.12s;
         }
-        .chip:hover { background: var(--cua-blue); border-color: var(--cua-blue); color: #fff; }
+        .chip:hover {
+            background: var(--cua-blue);
+            border-color: var(--cua-blue);
+            color: #fff;
+        }
 
         /* ── Keyboard hint ─────────────────────────────────── */
         .kbd {
             display: inline-block;
-            font-family: 'Roboto Mono', monospace, 'Roboto', sans-serif;
             font-size: 10px;
-            background: #F3F4F6;
-            border: 1px solid #D1D5DB;
+            background: #f3f0ec;
+            border: 1px solid #d4cec8;
             border-bottom-width: 2px;
             border-radius: 3px;
             padding: 1px 4px;
             line-height: 1.4;
-            color: #6B7280;
+            color: #7c7169;
         }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden">
 
-{{-- TOP UTILITY BAR ─────────────────────────────────────── --}}
-<div style="background:var(--cua-blue);" class="shrink-0 py-1.5 px-6">
-    <p class="text-white text-xs font-light tracking-wide">
-        The Catholic University of America &nbsp;&middot;&nbsp; Busch School of Business
-    </p>
-</div>
-
-{{-- HEADER ──────────────────────────────────────────────── --}}
-<header class="bg-white shrink-0"
-        style="border-bottom:2.5px solid var(--cua-red); box-shadow:0 1px 4px rgba(0,0,0,0.07);">
-    <div class="flex items-center justify-between px-5 h-[66px]">
+{{-- ── HEADER ──────────────────────────────────────────────── --}}
+<header class="shrink-0" style="background:var(--cua-blue); box-shadow:0 2px 12px rgba(0,0,0,0.22);">
+    <div class="flex items-center justify-between px-5 h-[62px]">
 
         <a href="{{ route('chat') }}" class="flex items-center gap-3.5 no-underline">
-            <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-10 w-auto">
+            <img src="/images/busch_logo.jpg" alt="Busch School of Business" class="h-9 w-auto">
             <div class="hidden sm:block leading-none">
-                <p class="font-oswald font-semibold uppercase tracking-wide text-[17px] leading-none"
-                   style="color:var(--cua-blue);">Course Planning Bot</p>
-                <p class="text-[11px] text-gray-400 mt-1 tracking-wider uppercase font-light">
+                <p class="font-oswald font-semibold uppercase tracking-wide text-[16px] text-white leading-none"
+                   style="letter-spacing:0.04em;">Course Planning Bot</p>
+                <p class="text-[10px] mt-1 tracking-wider uppercase font-light"
+                   style="color:rgba(255,255,255,0.45);">
                     Busch School of Business &middot; CUA
                 </p>
             </div>
         </a>
 
-        <div class="flex items-center gap-1.5">
-            <span class="hidden sm:block text-[13px] text-gray-500 px-2">{{ Auth::user()->name }}</span>
+        <div class="flex items-center gap-2">
+            <span class="hidden sm:block text-[13px] px-2" style="color:rgba(255,255,255,0.5);">
+                {{ Auth::user()->name }}
+            </span>
             <a href="{{ route('profile.edit') }}"
-               class="hidden sm:block text-[13px] text-gray-400 hover:text-gray-700 transition-colors
-                      px-3 py-1.5 rounded-md hover:bg-gray-50">
+               class="hidden sm:block text-[13px] px-3 py-1.5 rounded transition-colors"
+               style="color:rgba(255,255,255,0.6);"
+               onmouseover="this.style.color='#fff'; this.style.background='rgba(255,255,255,0.1)';"
+               onmouseout="this.style.color='rgba(255,255,255,0.6)'; this.style.background='transparent';">
                 Profile
             </a>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
-                        class="font-oswald font-semibold uppercase tracking-wide text-[13px] text-white
-                               px-4 py-1.5 rounded transition-opacity hover:opacity-85"
-                        style="background:var(--cua-red);">
+                        class="font-oswald font-semibold uppercase tracking-wide text-[12px] text-white px-4 py-1.5 rounded transition-colors"
+                        style="border:1px solid rgba(255,255,255,0.2); letter-spacing:0.07em;"
+                        onmouseover="this.style.borderColor='rgba(255,255,255,0.5)'; this.style.background='rgba(255,255,255,0.1)';"
+                        onmouseout="this.style.borderColor='rgba(255,255,255,0.2)'; this.style.background='transparent';">
                     Sign Out
                 </button>
             </form>
         </div>
     </div>
+    {{-- Gold accent line --}}
+    <div class="h-[2px]" style="background:linear-gradient(to right, var(--cua-gold) 0%, rgba(177,143,80,0.2) 60%, transparent 100%);"></div>
 </header>
 
-{{-- MAIN LAYOUT ─────────────────────────────────────────── --}}
+{{-- ── MAIN LAYOUT ─────────────────────────────────────────── --}}
 <div class="flex flex-1 overflow-hidden">
 
-    {{-- SIDEBAR ─────────────────────────────────────────── --}}
+    {{-- ── SIDEBAR ──────────────────────────────────────────── --}}
     <aside x-data
            class="hidden md:flex flex-col shrink-0 border-r"
-           style="width:244px; background:#FAFBFC; border-color:var(--border);">
+           style="width:252px; background:var(--sandstone); border-color:var(--border);">
 
-        {{-- Sidebar header --}}
-        <div class="px-5 pt-5 pb-3 border-b" style="border-color:var(--border);">
-            <p class="font-oswald font-semibold uppercase text-[10.5px] tracking-[0.16em]"
-               style="color:var(--text-muted);">Quick Start</p>
+        {{-- New conversation --}}
+        <div class="px-4 py-4 border-b" style="border-color:var(--border);">
+            <button class="new-chat-btn" @click="$dispatch('new-chat')">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                </svg>
+                New Conversation
+            </button>
+        </div>
+
+        {{-- Section label --}}
+        <div class="px-5 pt-4 pb-1.5">
+            <p class="font-oswald font-semibold uppercase text-[10px] tracking-[0.18em]"
+               style="color:var(--cua-blue); opacity:0.5;">Quick Start</p>
         </div>
 
         {{-- Nav buttons --}}
@@ -349,100 +390,116 @@
 
         {{-- Sidebar footer --}}
         <div class="px-5 py-4 border-t" style="border-color:var(--border);">
-            <p class="text-[12px] leading-relaxed text-gray-400">
-                Questions?
-                <a href="mailto:busch-academic-services@cua.edu"
-                   class="font-medium hover:underline transition-colors"
+            <p class="text-[11.5px] leading-relaxed" style="color:#a89f97;">
+                Questions? <a href="mailto:busch-academic-services@cua.edu"
+                   class="font-medium hover:underline"
                    style="color:var(--cua-blue);">Academic Services</a>
             </p>
         </div>
     </aside>
 
-    {{-- CHAT PANEL ───────────────────────────────────────── --}}
+    {{-- ── CHAT PANEL ──────────────────────────────────────── --}}
     <div class="flex-1 flex flex-col overflow-hidden"
          x-data="chatApp()"
-         @quick-send.window="quickSend($event.detail.message)">
+         @quick-send.window="quickSend($event.detail.message)"
+         @new-chat.window="newChat()">
 
         {{-- Messages scroll area --}}
-        <div class="flex-1 overflow-y-auto chat-scroll space-y-4"
-             style="padding: 1.75rem clamp(1.25rem, 5vw, 4rem);"
+        <div class="flex-1 overflow-y-auto chat-scroll"
+             style="background:var(--limestone); padding: 1.75rem clamp(1rem, 4vw, 3.5rem);"
              x-ref="messages">
 
-            <template x-for="(msg, i) in messages" :key="i">
-                <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+            <div class="max-w-3xl mx-auto space-y-5">
 
-                    {{-- AI bubble --}}
-                    <template x-if="msg.role === 'assistant'">
-                        <div class="msg-in max-w-[80%]"
-                             style="background:#fff; border:1px solid #E3E6EA;
-                                    border-radius:4px 16px 16px 16px; padding:15px 20px;
-                                    box-shadow:0 1px 2px rgba(0,0,0,0.05), 0 4px 14px rgba(0,0,0,0.04);">
-                            <template x-if="msg.html">
-                                <div class="html-msg text-gray-800" x-html="msg.content"></div>
-                            </template>
-                            <template x-if="!msg.html">
-                                <p class="text-gray-800 whitespace-pre-wrap"
-                                   style="font-family:'Crimson Text',Georgia,serif; font-size:1.0625rem;
-                                          line-height:1.82; font-feature-settings:'kern' 1,'liga' 1;"
-                                   x-text="stripMarkdown(msg.content)"></p>
-                            </template>
+                <template x-for="(msg, i) in messages" :key="i">
+                    <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'">
+
+                        {{-- AI bubble --}}
+                        <template x-if="msg.role === 'assistant'">
+                            <div class="msg-in"
+                                 style="max-width:82%; background:#fff;
+                                        border:1px solid var(--border-light);
+                                        border-left:3px solid var(--cua-gold);
+                                        border-radius:3px 14px 14px 14px;
+                                        padding:15px 20px;
+                                        box-shadow:0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);">
+                                <template x-if="msg.html">
+                                    <div class="html-msg" x-html="msg.content"></div>
+                                </template>
+                                <template x-if="!msg.html">
+                                    <p style="font-family:'Crimson Text',Georgia,serif; font-size:1.075rem;
+                                              line-height:1.85; color:#1f2937; white-space:pre-wrap;
+                                              font-feature-settings:'kern' 1,'liga' 1;"
+                                       x-text="stripMarkdown(msg.content)"></p>
+                                </template>
+                            </div>
+                        </template>
+
+                        {{-- User bubble --}}
+                        <template x-if="msg.role === 'user'">
+                            <div class="msg-in"
+                                 style="max-width:75%; background:var(--cua-blue);
+                                        border-radius:14px 14px 3px 14px;
+                                        padding:13px 18px;
+                                        box-shadow:0 2px 10px rgba(10,50,85,0.25);">
+                                <p style="font-family:'Crimson Text',Georgia,serif; font-size:1.05rem;
+                                          line-height:1.75; color:#fff; white-space:pre-wrap;"
+                                   x-text="msg.content"></p>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                {{-- Typing indicator --}}
+                <div x-show="loading"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     class="flex justify-start">
+                    <div style="background:#fff; border:1px solid var(--border-light);
+                                border-left:3px solid var(--cua-gold);
+                                border-radius:3px 14px 14px 14px;
+                                padding:13px 18px;
+                                box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+                        <div class="flex gap-1.5 items-center" style="height:16px;">
+                            <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
+                            <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
+                            <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
                         </div>
-                    </template>
-
-                    {{-- User bubble --}}
-                    <template x-if="msg.role === 'user'">
-                        <div class="msg-in max-w-[80%]"
-                             style="background:var(--cua-blue); border-radius:16px 16px 4px 16px;
-                                    padding:13px 20px; box-shadow:0 2px 8px rgba(0,75,157,0.22);">
-                            <p class="text-white whitespace-pre-wrap"
-                               style="font-family:'Crimson Text',Georgia,serif; font-size:1.0625rem; line-height:1.75;"
-                               x-text="msg.content"></p>
-                        </div>
-                    </template>
-                </div>
-            </template>
-
-            {{-- Typing indicator --}}
-            <div x-show="loading" x-transition:enter="transition ease-out duration-150"
-                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                 class="flex justify-start">
-                <div style="background:#fff; border:1px solid #E3E6EA; border-radius:4px 16px 16px 16px;
-                             padding:13px 18px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
-                    <div class="flex gap-1.5 items-center" style="height:16px;">
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
-                        <span class="typing-dot w-2 h-2 rounded-full" style="background:#BEC3CA;"></span>
                     </div>
                 </div>
-            </div>
 
-            {{-- Error banner --}}
-            <div x-show="error" x-transition:enter="transition ease-out duration-150"
-                 x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                 class="flex justify-center">
-                <div class="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg"
-                     style="background:#FFF1F1; border:1px solid #FECACA; color:#B91C1C;">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                    </svg>
-                    <span x-text="error"></span>
+                {{-- Error banner --}}
+                <div x-show="error"
+                     x-transition:enter="transition ease-out duration-150"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="flex justify-center">
+                    <div class="flex items-center gap-2 text-sm px-4 py-2.5 rounded-lg"
+                         style="background:#fff1f2; border:1px solid #fecdd3; color:#9f1239;">
+                        <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <span x-text="error"></span>
+                    </div>
                 </div>
+
             </div>
         </div>
 
-        {{-- Compose area --}}
-        <div class="bg-white shrink-0 border-t" style="border-color:var(--border);">
-            <div style="padding: 10px clamp(1.25rem, 5vw, 4rem) 10px;">
+        {{-- ── Compose area ──────────────────────────────── --}}
+        <div class="shrink-0 border-t" style="background:#fff; border-color:var(--border);">
+            <div style="padding:10px clamp(1rem, 4vw, 3.5rem) 10px;">
 
                 {{-- Mobile chips --}}
                 <div class="md:hidden flex gap-2 overflow-x-auto pb-2.5" style="scrollbar-width:none;">
                     @foreach([
-                        ['c' => 'Degree reqs',     'f' => 'Explain my degree requirements'],
-                        ['c' => 'Plan semester',    'f' => 'Plan next semester'],
-                        ['c' => 'Specializations',  'f' => 'Explore specializations'],
-                        ['c' => 'Minors',           'f' => 'Explore minors'],
-                        ['c' => 'Graduation',       'f' => 'Check graduation progress'],
-                        ['c' => 'Forms',            'f' => 'Forms & requests'],
+                        ['c' => 'Degree reqs',    'f' => 'Explain my degree requirements'],
+                        ['c' => 'Plan semester',   'f' => 'Plan next semester'],
+                        ['c' => 'Specializations', 'f' => 'Explore specializations'],
+                        ['c' => 'Minors',          'f' => 'Explore minors'],
+                        ['c' => 'Graduation',      'f' => 'Check graduation progress'],
+                        ['c' => 'Forms',           'f' => 'Forms & requests'],
                     ] as $item)
                     <button class="chip"
                             @click="$dispatch('quick-send', { message: '{{ $item['f'] }}' })">
@@ -462,7 +519,7 @@
                      x-transition:enter-end="opacity-100 translate-y-0"
                      class="mb-2">
                     <span class="file-tag">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                         </svg>
                         <span class="file-tag-name" x-text="fileName"></span>
@@ -473,10 +530,11 @@
                 {{-- Compose ring --}}
                 <form @submit.prevent="send()">
                     <div class="compose-ring">
-                        <button type="button" class="attach-btn" @click="$refs.fileInput.click()"
+                        <button type="button" class="attach-btn"
+                                @click="$refs.fileInput.click()"
                                 :disabled="loading"
-                                title="Attach Academic Planning Worksheet (.csv) or graduation report (.pdf)">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                                title="Attach APW (.csv) or graduation report (.pdf)">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
                             </svg>
                         </button>
@@ -496,8 +554,7 @@
                         </button>
                     </div>
 
-                    {{-- Keyboard hint --}}
-                    <p class="hidden sm:block text-[11px] text-gray-400 mt-1.5 pl-1 select-none">
+                    <p class="hidden sm:block text-[11px] mt-1.5 pl-1 select-none" style="color:#a89f97;">
                         <span class="kbd">Enter</span> to send &nbsp;&middot;&nbsp;
                         <span class="kbd">Shift+Enter</span> for new line &nbsp;&middot;&nbsp;
                         <span class="kbd">📎</span> to attach APW (.csv) or graduation report (.pdf)
@@ -508,16 +565,14 @@
     </div>
 </div>
 
-{{-- FOOTER ──────────────────────────────────────────────── --}}
-<div style="background:var(--cua-blue);" class="shrink-0 py-2 px-6 text-center">
-    <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.85);">
+{{-- ── FOOTER ───────────────────────────────────────────────── --}}
+<div class="shrink-0 py-2 px-6 text-center" style="background:var(--cua-blue);">
+    <p class="text-xs font-light tracking-wide" style="color:rgba(255,255,255,0.5);">
         AI guidance is informational — always verify with a
         <a href="https://business.catholic.edu/academics/academic-services/index.html"
            target="_blank"
-           class="underline underline-offset-2 hover:text-white transition-colors"
-           style="color:rgba(255,255,255,0.85);">
-            human advisor
-        </a>
+           class="underline underline-offset-2 transition-colors hover:text-white"
+           style="color:rgba(255,255,255,0.5);">human advisor</a>
         before finalizing your schedule or degree plan.
     </p>
 </div>
@@ -537,6 +592,17 @@ function chatApp() {
                 role: 'assistant',
                 content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies — or choose a topic from the sidebar.",
             });
+        },
+
+        newChat() {
+            this.messages = [];
+            this.input = '';
+            this.error = null;
+            this.loading = false;
+            this.file = null;
+            this.fileName = null;
+            this.init();
+            this.$nextTick(() => this.scrollToBottom());
         },
 
         stripMarkdown(text) {

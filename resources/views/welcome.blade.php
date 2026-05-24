@@ -268,7 +268,7 @@
                 <img src="/images/busch_logo.jpg" alt="Tim & Steph Busch School of Business" class="h-10 object-contain">
 
                 <p class="text-white/30 text-xs text-center leading-relaxed">
-                    &copy; {{ date('Y') }} Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
+                    &copy; {{ date('Y') }} James Moore &nbsp;&middot;&nbsp; Tim &amp; Steph Busch School of Business &nbsp;&middot;&nbsp; The Catholic University of America<br>
                     This tool is for informational purposes only. For official advising decisions, please consult
                     <a href="https://business.catholic.edu/undergraduate/academic-services/" class="hover:text-white/60 underline transition-colors" target="_blank" rel="noopener">Academic Services</a>.
                 </p>
