@@ -1,3 +1,13 @@
+## MANDATORY AFTER EVERY FEATURE OR MILESTONE
+Before ending any work session or moving to the next task, always:
+1. Update README.md with what the app does and how to run it locally
+2. Commit and push ALL changes to GitHub with a clear descriptive commit message
+3. Mark the completed milestone as done in ROADMAP.md
+4. Run: git status to confirm nothing is uncommitted
+5. Run: git push to confirm everything is on GitHub
+
+This is required by the CUA AI Vibe Coding Competition rubric (15% of total score).
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
