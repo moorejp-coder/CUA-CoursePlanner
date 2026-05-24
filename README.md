@@ -48,7 +48,9 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 
 ## Live URL
 
-> Coming soon — deploying to AWS EC2.
+**http://44.197.180.244**
+
+The app is live on AWS EC2. Register an account and start chatting.
 
 ---
 

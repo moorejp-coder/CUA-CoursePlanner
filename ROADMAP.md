@@ -88,13 +88,13 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 7 — AWS Production Deployment
+## Milestone 7 — AWS Production Deployment ✅ COMPLETE
 **Delivers:** A live, publicly accessible app the judges can visit.
 - Laravel app deployed to AWS EC2 (t2.micro, free tier)
 - Environment variables configured on server
 - GROQ_API_KEY set securely on server
 - HTTPS enabled via AWS Certificate Manager or Let's Encrypt
-- Public URL with working login and chat
+- Public URL with working login and chat — http://44.197.180.244
 - Deploy script automates future deployments
 - Billing alerts confirmed active
 - App stays live and accessible during judging period
