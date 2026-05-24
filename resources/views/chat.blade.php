@@ -281,7 +281,7 @@
     <div class="flex items-center justify-between px-5 h-[62px]">
 
         <a href="{{ route('chat') }}" class="flex items-center gap-3.5 no-underline">
-            <img src="/images/cua_logo.png" alt="Busch School of Business" class="h-9 w-auto" style="mix-blend-mode: multiply;">
+            <img src="/images/cua_logo_dark.png" alt="The Catholic University of America" class="h-7 w-auto">
             <div class="hidden sm:block leading-none">
                 <p class="font-oswald font-semibold uppercase tracking-wide text-[16px] text-white leading-none"
                    style="letter-spacing:0.04em;">Course Planning Bot</p>
