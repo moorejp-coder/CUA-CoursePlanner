@@ -17,12 +17,14 @@ class ChatController extends Controller
 
     public function message(Request $request): JsonResponse
     {
-        $request->validate([
-            'message' => 'required|string|max:100000',
+        $validated = $request->validate([
+            'message' => 'required|string|max:2000',
             'history' => 'array|max:50',
             'history.*.role' => 'required|in:user,assistant',
             'history.*.content' => 'required|string|max:4000',
         ]);
+
+        $cleanMessage = strip_tags($validated['message']);
 
         $systemPrompt = file_get_contents(storage_path('app/system_prompt.txt'));
 
@@ -30,11 +32,11 @@ class ChatController extends Controller
 
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule]];
 
-        foreach ($request->input('history', []) as $turn) {
-            $messages[] = ['role' => $turn['role'], 'content' => $turn['content']];
+        foreach ($validated['history'] ?? [] as $turn) {
+            $messages[] = ['role' => $turn['role'], 'content' => strip_tags($turn['content'])];
         }
 
-        $messages[] = ['role' => 'user', 'content' => $request->message];
+        $messages[] = ['role' => 'user', 'content' => $cleanMessage];
 
         try {
             $response = Http::withToken(config('services.groq.key'))
@@ -47,7 +49,7 @@ class ChatController extends Controller
         } catch (\Throwable $e) {
             Log::error('Groq API connection error', [
                 'exception' => $e->getMessage(),
-                'trace'     => $e->getTraceAsString(),
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json(
@@ -58,9 +60,8 @@ class ChatController extends Controller
 
         if (! $response->successful()) {
             Log::error('Groq API error response', [
-                'status'  => $response->status(),
-                'headers' => $response->headers(),
-                'body'    => $response->body(),
+                'status' => $response->status(),
+                'body' => $response->body(),
             ]);
 
             return response()->json(
@@ -70,9 +71,9 @@ class ChatController extends Controller
         }
 
         Log::info('Groq API success', [
-            'status'      => $response->status(),
-            'model'       => $response->json('model'),
-            'usage'       => $response->json('usage'),
+            'status' => $response->status(),
+            'model' => $response->json('model'),
+            'usage' => $response->json('usage'),
             'finish_reason' => $response->json('choices.0.finish_reason'),
         ]);
 
