@@ -41,6 +41,7 @@ class OnboardingController extends Controller
             'totalSteps' => self::TOTAL_STEPS,
             'data' => $data,
             'specializations' => $specializationsJson,
+            'socialScienceAutoFill' => $step === 3 ? $this->computeSocialScienceAutoFill($data) : null,
         ]);
     }
 
@@ -150,6 +151,8 @@ class OnboardingController extends Controller
             $data[$field] = $raw;
         }
 
+        $data['la_social_science_autofilled'] = $request->boolean('la_social_science_autofilled');
+
         return $data;
     }
 
@@ -236,6 +239,34 @@ class OnboardingController extends Controller
         return $validated;
     }
 
+    private function computeSocialScienceAutoFill(array $data): ?array
+    {
+        $notCompleted = ['', 'not_yet', 'in_progress'];
+        $sres101 = $data['core_sres101'] ?? '';
+        $sres102 = $data['core_sres102'] ?? '';
+
+        $sres101Done = ! in_array($sres101, $notCompleted);
+        $sres102Done = ! in_array($sres102, $notCompleted);
+
+        if (! $sres101Done && ! $sres102Done) {
+            return null;
+        }
+
+        // Prefer SRES 101 when both are completed
+        $fillValue = $sres101Done ? $sres101 : $sres102;
+        $note = "Auto-filled: {$fillValue} fulfills the Social Science requirement through Economic Thought.";
+
+        // Keep active unless student manually chose a different real course
+        $current = $data['la_social_science'] ?? '';
+        $manuallyChanged = $current && ! in_array($current, ['not_yet', '', $fillValue]);
+
+        return [
+            'value' => $fillValue,
+            'note' => $note,
+            'active' => ! $manuallyChanged,
+        ];
+    }
+
     private function determineCatalogYear(string $admitTerm): string
     {
         // Spring 2024 or after = post_2024, else pre_2024
@@ -305,9 +336,15 @@ class OnboardingController extends Controller
             'la_math_thinking' => ['category' => 'liberal_arts', 'name' => 'Math Thinking'],
         ];
 
+        $ssAutofilled = ! empty($data['la_social_science_autofilled']);
+
         foreach ($laMap as $key => $meta) {
             $val = $data[$key] ?? '';
             if ($val && $val !== 'not_yet') {
+                $note = null;
+                if ($key === 'la_social_science' && $ssAutofilled) {
+                    $note = 'Fulfilled through Economic Thought via business core requirement.';
+                }
                 $courses[] = [
                     'user_id' => $user->id,
                     'course_code' => $val,
@@ -316,6 +353,7 @@ class OnboardingController extends Controller
                     'status' => 'completed',
                     'grade' => null,
                     'semester_completed' => null,
+                    'notes' => $note,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
@@ -378,6 +416,7 @@ class OnboardingController extends Controller
                 'status' => $status,
                 'grade' => null,
                 'semester_completed' => null,
+                'notes' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
@@ -396,6 +435,7 @@ class OnboardingController extends Controller
                     'status' => $val,
                     'grade' => null,
                     'semester_completed' => null,
+                    'notes' => null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];

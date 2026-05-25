@@ -265,6 +265,36 @@
             color: #555;
             margin: 0.5rem 0 0.75rem;
         }
+
+        /* Auto-fill styles */
+        .autofill-badge {
+            display: inline-block;
+            background: var(--cua-gold);
+            color: #5c3d00;
+            font-size: 0.68rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+            letter-spacing: 0.02em;
+        }
+
+        select.autofill-border {
+            border-color: var(--cua-gold) !important;
+            box-shadow: 0 0 0 2px rgba(201,168,76,0.25);
+        }
+
+        .autofill-note {
+            font-size: 0.8rem;
+            color: #6b4d00;
+            background: #fffbea;
+            border-left: 3px solid var(--cua-gold);
+            padding: 0.3rem 0.6rem;
+            border-radius: 3px;
+            margin-top: 0.3rem;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -328,12 +358,12 @@
             'ANTH 101','ANTH 110','ANTH 201','ANTH 203','ANTH 211',
             'ANTH 226','ANTH 240','ANTH 260',
             'CEE 201',
-            'ECON 101','ECON 102','ECON 103','ECON 104',
+            'ECON 100','ECON 101','ECON 102','ECON 103','ECON 104','ECON 200',
             'GS 101',
             'PSY 201','PSY 226','PSY 261',
             'SOC 101','SOC 102','SOC 102H','SOC 202','SOC 206',
             'SOC 210','SOC 281','SOC 330','SOC 358','SOC 358H',
-            'SRES 345',
+            'SRES 101','SRES 102','SRES 345',
             'SSS 101','SSS 226',
             'HSEV 203','HSSS 101','HSSS 102','HSSS 204',
         ];
@@ -365,6 +395,26 @@
             'HSMS 230','HSMS 330','HSSS 203',
             'math_exempt',
         ];
+
+        // Social Science auto-fill from Economic Thought (SRES/ECON in business core)
+        $ssAutoFill  = $socialScienceAutoFill ?? null;
+        $ssValue     = $ssAutoFill['value'] ?? null;
+        $ssNote      = $ssAutoFill['note'] ?? null;
+        $ssActive    = $ssAutoFill['active'] ?? false;
+
+        $sessionSS = $data['la_social_science'] ?? null;
+        $oldSS     = old('la_social_science');
+
+        if ($oldSS !== null) {
+            $currentSS      = $oldSS;
+            $showSsAutoFill = $ssActive && $oldSS === $ssValue;
+        } elseif ($ssActive && ($sessionSS === null || $sessionSS === '' || $sessionSS === 'not_yet')) {
+            $currentSS      = $ssValue;
+            $showSsAutoFill = true;
+        } else {
+            $currentSS      = $sessionSS ?? 'not_yet';
+            $showSsAutoFill = $ssActive && $currentSS === $ssValue;
+        }
     @endphp
 
     <div class="wizard-card">
@@ -438,9 +488,9 @@
 
                 {{-- Foundations in Natural Science (searchable) --}}
                 <div class="form-group">
-                    <label class="field-label" for="la_natural_science">Foundations in Natural Science</label>
-                    <input type="text" id="filter_la_natural_science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="la_natural_science" name="la_natural_science">
+                    <label class="field-label" for="select-natural-science">Foundations in Natural Science</label>
+                    <input type="text" id="filter-natural-science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <select id="select-natural-science" name="la_natural_science">
                         <option value="not_yet" {{ old('la_natural_science', $data['la_natural_science'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                         @foreach($natSciOptions as $val => $label)
                             <option value="{{ $val }}" {{ old('la_natural_science', $data['la_natural_science'] ?? '') === $val ? 'selected' : '' }}>{{ $label }}</option>
@@ -450,9 +500,9 @@
 
                 {{-- Explorations in Literature (searchable) --}}
                 <div class="form-group">
-                    <label class="field-label" for="la_literature">Explorations in Literature</label>
-                    <input type="text" id="filter_la_literature" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="la_literature" name="la_literature">
+                    <label class="field-label" for="select-literature">Explorations in Literature</label>
+                    <input type="text" id="filter-literature" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <select id="select-literature" name="la_literature">
                         <option value="not_yet" {{ old('la_literature', $data['la_literature'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                         @foreach($litOptions as $c)
                             <option value="{{ $c }}" {{ old('la_literature', $data['la_literature'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
@@ -462,9 +512,9 @@
 
                 {{-- Explorations in Fine Arts (searchable) --}}
                 <div class="form-group">
-                    <label class="field-label" for="la_fine_arts">Explorations in Fine Arts</label>
-                    <input type="text" id="filter_la_fine_arts" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="la_fine_arts" name="la_fine_arts">
+                    <label class="field-label" for="select-fine-arts">Explorations in Fine Arts</label>
+                    <input type="text" id="filter-fine-arts" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <select id="select-fine-arts" name="la_fine_arts">
                         <option value="not_yet" {{ old('la_fine_arts', $data['la_fine_arts'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                         @foreach($fineArtsOptions as $c)
                             <option value="{{ $c }}" {{ old('la_fine_arts', $data['la_fine_arts'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
@@ -472,23 +522,33 @@
                     </select>
                 </div>
 
-                {{-- Foundations in Social Science (searchable) --}}
-                <div class="form-group">
-                    <label class="field-label" for="la_social_science">Foundations in Social Science</label>
-                    <input type="text" id="filter_la_social_science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="la_social_science" name="la_social_science">
-                        <option value="not_yet" {{ old('la_social_science', $data['la_social_science'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
+                {{-- Foundations in Social Science (searchable, auto-fill from SRES/ECON) --}}
+                <div class="form-group"
+                     x-data="{ autofilled: {{ $showSsAutoFill ? 'true' : 'false' }}, autoFillValue: '{{ e($ssValue ?? '') }}' }">
+                    <label class="field-label" for="select-social-science">
+                        Foundations in Social Science
+                        <span x-show="autofilled" class="autofill-badge" {{ $showSsAutoFill ? '' : 'style="display:none;"' }}>Auto-filled from Economic Thought</span>
+                    </label>
+                    <input type="text" id="filter-social-science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <input type="hidden" name="la_social_science_autofilled" :value="autofilled ? '1' : '0'" value="{{ $showSsAutoFill ? '1' : '0' }}">
+                    <select id="select-social-science" name="la_social_science"
+                            :class="{ 'autofill-border': autofilled }"
+                            @change="autofilled = ($event.target.value === autoFillValue && autoFillValue !== '')">
+                        <option value="not_yet" {{ $currentSS === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                         @foreach($socialSciOptions as $c)
-                            <option value="{{ $c }}" {{ old('la_social_science', $data['la_social_science'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
+                            <option value="{{ $c }}" {{ $currentSS === $c ? 'selected' : '' }}>{{ $c }}</option>
                         @endforeach
                     </select>
+                    @if($ssNote)
+                    <p x-show="autofilled" class="autofill-note" {{ $showSsAutoFill ? '' : 'style="display:none;"' }}>{{ $ssNote }}</p>
+                    @endif
                 </div>
 
                 {{-- Foundations in History or Politics (searchable) --}}
                 <div class="form-group">
-                    <label class="field-label" for="la_history_politics">Foundations in History or Politics</label>
-                    <input type="text" id="filter_la_history_politics" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="la_history_politics" name="la_history_politics">
+                    <label class="field-label" for="select-history-politics">Foundations in History or Politics</label>
+                    <input type="text" id="filter-history-politics" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <select id="select-history-politics" name="la_history_politics">
                         <option value="not_yet" {{ old('la_history_politics', $data['la_history_politics'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                         @foreach($histPolOptions as $c)
                             <option value="{{ $c }}" {{ old('la_history_politics', $data['la_history_politics'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
@@ -589,57 +649,59 @@
     </div>
 
     <script>
-        function initSearchableSelect(filterId, selectId) {
-            var filterInput = document.getElementById(filterId);
-            var select = document.getElementById(selectId);
-            if (!filterInput || !select) { return; }
-            filterInput.addEventListener('input', function () {
-                var q = this.value.toLowerCase().trim();
-                var options = select.options;
-                for (var i = 0; i < options.length; i++) {
-                    var opt = options[i];
-                    if (opt.value === 'not_yet' || q === '') {
-                        opt.hidden = false;
+        document.addEventListener('DOMContentLoaded', function() {
+            var filters = [
+                { input: 'filter-natural-science',  select: 'select-natural-science' },
+                { input: 'filter-literature',        select: 'select-literature' },
+                { input: 'filter-fine-arts',         select: 'select-fine-arts' },
+                { input: 'filter-social-science',    select: 'select-social-science' },
+                { input: 'filter-history-politics',  select: 'select-history-politics' },
+            ];
+
+            filters.forEach(function(pair) {
+                var input  = document.getElementById(pair.input);
+                var select = document.getElementById(pair.select);
+                if (!input || !select) { return; }
+                var allOptions = Array.from(select.options);
+                input.addEventListener('input', function() {
+                    var query = this.value.toLowerCase().trim();
+                    select.innerHTML = '';
+                    allOptions.forEach(function(option) {
+                        if (option.value === '' || option.value === 'not_yet' || option.text.toLowerCase().includes(query)) {
+                            select.appendChild(option.cloneNode(true));
+                        }
+                    });
+                });
+            });
+
+            function initElecovalidator(inputId, errorId, validator) {
+                var input   = document.getElementById(inputId);
+                var errorEl = document.getElementById(errorId);
+                if (!input || !errorEl) { return; }
+                input.addEventListener('input', function () {
+                    var val = this.value.trim().toUpperCase();
+                    if (val === '') {
+                        errorEl.textContent = '';
+                        this.classList.remove('input-error', 'input-valid');
+                    } else if (validator(val)) {
+                        errorEl.textContent = '';
+                        this.classList.remove('input-error');
+                        this.classList.add('input-valid');
                     } else {
-                        opt.hidden = opt.text.toLowerCase().indexOf(q) === -1;
+                        errorEl.textContent = this.dataset.errorMsg;
+                        this.classList.add('input-error');
+                        this.classList.remove('input-valid');
                     }
-                }
+                });
+            }
+
+            initElecovalidator('la_phil_elective', 'err_la_phil_elective', function(val) {
+                return val.indexOf('PHIL ') === 0 || val === 'HSPH 203' || val === 'HSPH 204';
             });
-        }
 
-        initSearchableSelect('filter_la_natural_science',   'la_natural_science');
-        initSearchableSelect('filter_la_literature',        'la_literature');
-        initSearchableSelect('filter_la_fine_arts',         'la_fine_arts');
-        initSearchableSelect('filter_la_social_science',    'la_social_science');
-        initSearchableSelect('filter_la_history_politics',  'la_history_politics');
-
-        function initElecovalidator(inputId, errorId, validator) {
-            var input = document.getElementById(inputId);
-            var errorEl = document.getElementById(errorId);
-            if (!input || !errorEl) { return; }
-            input.addEventListener('input', function () {
-                var val = this.value.trim().toUpperCase();
-                if (val === '') {
-                    errorEl.textContent = '';
-                    this.classList.remove('input-error', 'input-valid');
-                } else if (validator(val)) {
-                    errorEl.textContent = '';
-                    this.classList.remove('input-error');
-                    this.classList.add('input-valid');
-                } else {
-                    errorEl.textContent = this.dataset.errorMsg;
-                    this.classList.add('input-error');
-                    this.classList.remove('input-valid');
-                }
+            initElecovalidator('la_theology_elective', 'err_la_theology_elective', function(val) {
+                return val.indexOf('TRS ') === 0 || val.indexOf('HSTR ') === 0 || val === 'HSEV 102';
             });
-        }
-
-        initElecovalidator('la_phil_elective', 'err_la_phil_elective', function (val) {
-            return val.indexOf('PHIL ') === 0 || val === 'HSPH 203' || val === 'HSPH 204';
-        });
-
-        initElecovalidator('la_theology_elective', 'err_la_theology_elective', function (val) {
-            return val.indexOf('TRS ') === 0 || val.indexOf('HSTR ') === 0 || val === 'HSEV 102';
         });
     </script>
 
