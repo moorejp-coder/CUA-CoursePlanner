@@ -15,13 +15,41 @@
 <body class="antialiased" style="font-family: 'Roboto', sans-serif;">
 
     {{-- ── Navigation ────────────────────────────────────────────────── --}}
-    <nav class="bg-[#0a3255] sticky top-0 z-50 shadow-lg">
+    <nav id="main-nav" class="bg-[#0a3255] sticky top-0 z-50 transition-shadow duration-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
-                <a href="/" class="flex items-center gap-3">
+
+                {{-- Logo --}}
+                <a href="/" class="flex items-center gap-3 flex-shrink-0">
                     <img src="/images/busch_logo_white.png" alt="The Busch School of Business at The Catholic University of America" class="h-10 object-contain">
                 </a>
-                <div class="flex items-center gap-3">
+
+                {{-- Center nav links (desktop) --}}
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#how-it-works"
+                       class="text-white text-sm font-medium transition-colors duration-150 hover:text-[#C9A84C] underline-offset-4 hover:underline"
+                       style="font-family: 'Roboto', sans-serif;">
+                        How It Works
+                    </a>
+                    <a href="#features"
+                       class="text-white text-sm font-medium transition-colors duration-150 hover:text-[#C9A84C] underline-offset-4 hover:underline"
+                       style="font-family: 'Roboto', sans-serif;">
+                        Features
+                    </a>
+                    <a href="{{ route('login') }}"
+                       class="text-white text-sm font-medium transition-colors duration-150 hover:text-[#C9A84C] underline-offset-4 hover:underline"
+                       style="font-family: 'Roboto', sans-serif;">
+                        Forms
+                    </a>
+                    <a href="mailto:busch-academic-services@cua.edu"
+                       class="text-white text-sm font-medium transition-colors duration-150 hover:text-[#C9A84C] underline-offset-4 hover:underline"
+                       style="font-family: 'Roboto', sans-serif;">
+                        Contact
+                    </a>
+                </div>
+
+                {{-- Right: Sign In, Get Started, Hamburger --}}
+                <div class="flex items-center gap-3 flex-shrink-0">
                     <a href="{{ route('login') }}"
                        class="text-white/70 hover:text-white text-sm transition-colors duration-150 px-3 py-2 hidden sm:block">
                         Sign In
@@ -31,7 +59,50 @@
                        style="font-family: 'Oswald', sans-serif;">
                         Get Started
                     </a>
+                    {{-- Hamburger (mobile only) --}}
+                    <button id="nav-hamburger"
+                            class="md:hidden flex flex-col justify-center gap-[5px] w-8 h-8 focus:outline-none"
+                            aria-label="Open navigation menu"
+                            onclick="toggleMobileMenu()">
+                        <span class="block w-6 h-0.5 bg-white rounded transition-all duration-200 hamburger-bar"></span>
+                        <span class="block w-6 h-0.5 bg-white rounded transition-all duration-200 hamburger-bar"></span>
+                        <span class="block w-6 h-0.5 bg-white rounded transition-all duration-200 hamburger-bar"></span>
+                    </button>
                 </div>
+
+            </div>
+        </div>
+
+        {{-- Mobile dropdown menu --}}
+        <div id="mobile-menu" class="hidden md:hidden bg-[#071e38] border-t border-white/10">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col gap-1">
+                <a href="#how-it-works"
+                   class="text-white text-sm font-medium py-2.5 border-b border-white/10 hover:text-[#C9A84C] transition-colors duration-150"
+                   style="font-family: 'Roboto', sans-serif;"
+                   onclick="closeMobileMenu()">
+                    How It Works
+                </a>
+                <a href="#features"
+                   class="text-white text-sm font-medium py-2.5 border-b border-white/10 hover:text-[#C9A84C] transition-colors duration-150"
+                   style="font-family: 'Roboto', sans-serif;"
+                   onclick="closeMobileMenu()">
+                    Features
+                </a>
+                <a href="{{ route('login') }}"
+                   class="text-white text-sm font-medium py-2.5 border-b border-white/10 hover:text-[#C9A84C] transition-colors duration-150"
+                   style="font-family: 'Roboto', sans-serif;">
+                    Forms
+                </a>
+                <a href="mailto:busch-academic-services@cua.edu"
+                   class="text-white text-sm font-medium py-2.5 border-b border-white/10 hover:text-[#C9A84C] transition-colors duration-150"
+                   style="font-family: 'Roboto', sans-serif;">
+                    Contact
+                </a>
+                <a href="{{ route('login') }}"
+                   class="text-white/70 text-sm py-2.5 hover:text-white transition-colors duration-150"
+                   style="font-family: 'Roboto', sans-serif;">
+                    Sign In
+                </a>
             </div>
         </div>
     </nav>
@@ -113,7 +184,7 @@
     </div>
 
     {{-- ── Features ───────────────────────────────────────────────────── --}}
-    <section class="bg-[#efebe9] py-20">
+    <section id="features" class="bg-[#efebe9] py-20">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center mb-14">
                 <h2 class="text-3xl font-bold uppercase text-[#0a3255] mb-3"
@@ -187,7 +258,7 @@
     </section>
 
     {{-- ── How it works ───────────────────────────────────────────────── --}}
-    <section class="bg-white py-20">
+    <section id="how-it-works" class="bg-white py-20">
         <div class="max-w-4xl mx-auto px-6">
             <div class="text-center mb-14">
                 <h2 class="text-3xl font-bold uppercase text-[#0a3255] mb-3"
@@ -279,6 +350,46 @@
             </div>
         </div>
     </footer>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        #main-nav.scrolled { box-shadow: 0 4px 20px rgba(0,0,0,0.35); }
+    </style>
+
+    <script>
+        // Add shadow to nav when scrolled past the hero
+        var nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', function () {
+            if (window.scrollY > 60) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        }, { passive: true });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            var menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+
+        // Smooth scroll for anchor links (offset for sticky nav height)
+        document.querySelectorAll('a[href^="#"]').forEach(function (link) {
+            link.addEventListener('click', function (e) {
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    var offset = 72; // nav height
+                    var top = target.getBoundingClientRect().top + window.scrollY - offset;
+                    window.scrollTo({ top: top, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
