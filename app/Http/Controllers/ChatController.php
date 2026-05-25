@@ -113,6 +113,20 @@ class ChatController extends Controller
             'IN PROGRESS: '.($inProgress ?: 'None'),
         ];
 
+        if ($profile->degree === 'bs_accounting') {
+            $acctCourses = $user->studentCourses->where('requirement_category', 'accounting');
+            $acctParts = $acctCourses->map(function ($c) {
+                $status = match ($c->status) {
+                    'completed' => 'done',
+                    'in_progress' => 'IP',
+                    default => 'needed',
+                };
+
+                return "{$c->course_code}({$status})";
+            })->join(' ');
+            $lines[] = 'ACCT REQUIREMENTS: '.($acctParts ?: 'Not yet entered');
+        }
+
         return "\n\n".implode("\n", $lines);
     }
 }
