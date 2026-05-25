@@ -134,7 +134,7 @@
 
             <p class="text-lg sm:text-xl text-white/75 leading-relaxed mb-10 max-w-2xl mx-auto"
                style="font-family: 'Crimson Text', serif;">
-                Upload your Academic Planning Worksheet and get instant, personalized guidance on degree requirements, course sequencing, and your path to graduation. No appointment needed.
+                Get instant personalized guidance on degree requirements, course sequencing, specializations, and graduation planning — built specifically for Busch School students.
             </p>
 
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -166,8 +166,8 @@
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#C9A84C] text-2xl font-bold block">4</span>
-                    APW Versions Supported
+                    <span class="text-[#C9A84C] text-2xl font-bold block">120</span>
+                    Credits Tracked
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
@@ -207,10 +207,10 @@
                         </div>
                         <h3 class="font-bold uppercase text-[#0a3255] mb-3 text-base"
                             style="font-family: 'Oswald', sans-serif;">
-                            Know Your Requirements
+                            Build Your Academic Profile
                         </h3>
                         <p class="text-gray-600 text-sm leading-relaxed">
-                            Upload your APW and instantly see which degree requirements you've completed, what's in progress, and exactly what remains before graduation.
+                            Set up your degree program, specializations, and completed courses in minutes. Your advisor remembers your full academic history and gives personalized answers every time.
                         </p>
                     </div>
                 </div>
@@ -286,10 +286,10 @@
                          style="font-family: 'Oswald', sans-serif;">02</div>
                     <h3 class="font-bold uppercase text-[#0a3255] mb-3 text-base"
                         style="font-family: 'Oswald', sans-serif;">
-                        Upload Your APW
+                        Build Your Profile
                     </h3>
                     <p class="text-sm text-gray-500 leading-relaxed">
-                        Export your Academic Planning Worksheet from Cardinal Station as a CSV and drop it into the chat.
+                        Tell us your degree, specializations, and completed courses. Your advisor uses this to give personalized answers every time.
                     </p>
                 </div>
                 <div class="relative">
