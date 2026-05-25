@@ -115,12 +115,12 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 - [x] 6-step onboarding wizard (`/onboarding`) with CUA branding and progress bar
   - Step 1: Basic info (name, admit term, degree, graduation); auto-detects catalog year
   - Step 2: Specialization selection (up to 3) with Alpine.js warnings and MATH 111 notices
-  - Step 3: Liberal arts requirements completed (13 dropdowns across 10 LA categories)
-  - Step 4: Business core completed (Freshman/Sophomore + Junior/Senior sections, catalog-year-aware)
+  - Step 3: Liberal arts requirements (15 slots: all LA categories with searchable dropdowns, text electives)
+  - Step 4: Business core (12 sections, catalog-year-aware, BUS 606/616/603 equivalents) + Transfer Credits section
   - Step 5: Specialization course status (required + electives per chosen spec)
   - Step 6: Credits, GPA, in-progress courses, standing auto-calc, career discernment warnings
 - [x] New users redirected to `/onboarding` after registration/email verification
-- [x] Read-only Academic Profile page (`/profile/academic`) with completion percentages and status badges
+- [x] Academic Profile page (`/profile/academic`) redesigned: all 15 LA slots + all core slots (including "not yet" rows), per-spec blocks with elective lists, completion summary cards with progress bars, transfer credits section
 - [x] "Academic Profile" link in chat sidebar
 - [x] "Update via Bot" button navigates to chat with pre-filled message
 - [x] Bot profile context: every Groq API call prepends STUDENT PROFILE summary

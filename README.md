@@ -29,7 +29,8 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 - **Forms & Requests Panel** — direct links to all Busch School Google Forms (internship approval, directed study, minor declaration, and more)
 - **Sidebar Quick-Start Prompts** — one-click buttons for the most common advising questions; New Conversation button to reset the chat
 - **Full Curriculum Context** — all 12 BSBA specializations, prerequisites, liberal arts requirements, elective rules, and catalog year differences loaded as AI context
-- **Student Academic Profile System** — 6-step onboarding wizard captures degree program, catalog year, specializations, completed courses, GPA, and standing; bot automatically reads profile for personalized advising; read-only Academic Profile page at `/profile/academic`
+- **Student Academic Profile System** — 6-step onboarding wizard captures degree program, catalog year, specializations, liberal arts (15 slots), business core (catalog-year-aware), specialization courses, transfer credits, GPA, and standing; bot automatically reads profile for personalized advising
+- **Academic Profile Page** — redesigned view at `/profile/academic` shows every required LA slot (15) and core slot including "not yet" rows, per-specialization blocks with elective lists, completion summary cards with progress bars, and transfer credit records
 - **Bot-Driven Profile Updates** — bot can suggest marking a course as completed via a `[PROFILE_UPDATE]` tag; student sees a confirmation banner and clicks Accept to update their record
 - **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
 - **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
