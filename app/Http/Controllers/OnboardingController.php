@@ -527,6 +527,60 @@ class OnboardingController extends Controller
             ];
         }
 
+        // BS Accounting requirements from step_accounting
+        if (($data['degree'] ?? '') === 'bs_accounting') {
+            $acctNames = [
+                'ACCT 310' => 'Intermediate Accounting I',
+                'ACCT 311' => 'Intermediate Accounting II',
+                'ACCT 312' => 'Intermediate Accounting III',
+                'ACCT 315' => 'Cost Accounting',
+                'ACCT 412' => 'Auditing',
+                'ACCT 417' => 'Government and Non-Profit Accounting',
+                'ACCT 418' => 'Advanced Accounting',
+                'ACCT 419' => 'Federal Income Taxation',
+                'ACCT 422' => 'Accounting Analytics',
+                'ACCT 442' => 'Accounting Ethics',
+                'FIN 332' => 'Corporate Finance',
+                'FIN 334' => 'Investments',
+                'ACCT 480' => 'Accounting Elective',
+                'ACCT 491' => 'Accounting Elective',
+                'ECON 370' => 'Accounting Elective',
+            ];
+
+            foreach ($data['acct_courses'] ?? [] as $code => $status) {
+                if ($status !== 'not_yet' && isset($acctNames[$code])) {
+                    $courses[] = [
+                        'user_id' => $user->id,
+                        'course_code' => $code,
+                        'course_name' => $acctNames[$code],
+                        'requirement_category' => 'accounting',
+                        'status' => $status,
+                        'grade' => null,
+                        'semester_completed' => null,
+                        'notes' => null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                }
+            }
+
+            $elective = $data['acct_elective'] ?? 'not_yet';
+            if ($elective && $elective !== 'not_yet' && isset($acctNames[$elective])) {
+                $courses[] = [
+                    'user_id' => $user->id,
+                    'course_code' => $elective,
+                    'course_name' => 'Accounting Elective',
+                    'requirement_category' => 'accounting',
+                    'status' => 'completed',
+                    'grade' => null,
+                    'semester_completed' => null,
+                    'notes' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
+        }
+
         // Specialization courses from step 5
         foreach ($data as $key => $val) {
             if (str_starts_with($key, 'spec_course_') && $val !== 'not_yet') {
