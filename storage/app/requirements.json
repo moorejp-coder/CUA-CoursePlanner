@@ -65,7 +65,11 @@
                     "MGT 330 — Human Resource Management",
                     "ELECTIVES (choose 2):",
                     "MGT 302, MGT 410, SRES 408, SRES 411"
-                ]
+                ],
+                "name": "HR Management",
+                "required": ["MGT 311", "MGT 330"],
+                "electives": ["MGT 302", "MGT 410", "SRES 408", "SRES 411"],
+                "choose_count": 2
             },
             "operations_management": {
                 "label": "Operations Management",
@@ -75,7 +79,11 @@
                     "MGT 312 — Operations Management",
                     "MGT 332 — Supply Chain Management",
                     "MGT 361 — Project Management"
-                ]
+                ],
+                "name": "Operations Management",
+                "required": ["MGT 311", "MGT 312", "MGT 332", "MGT 361"],
+                "electives": [],
+                "choose_count": 0
             },
             "data_analytics_for_business": {
                 "label": "Data Analytics for Business",
@@ -85,7 +93,11 @@
                     "MGT 331 — Business Analytics",
                     "MGT 351 — Business Intelligence",
                     "MGT 361 — Project Management"
-                ]
+                ],
+                "name": "Data Analytics for Business",
+                "required": ["DA 314", "MGT 331", "MGT 351", "MGT 361"],
+                "electives": [],
+                "choose_count": 0
             },
             "sports_management": {
                 "label": "Sports Management  ⚠ MUST DOUBLE SPECIALIZE",
@@ -95,7 +107,12 @@
                     "MGT 324 — Sports Management",
                     "MGT 327 — Sports Law and Ethics",
                     "MKT 325 — Sports Marketing"
-                ]
+                ],
+                "name": "Sports Management",
+                "required": ["MGT 311", "MGT 324", "MGT 327", "MKT 325"],
+                "electives": [],
+                "choose_count": 0,
+                "must_double_specialize": true
             },
             "technology_management": {
                 "label": "Technology Management",
@@ -105,7 +122,11 @@
                     "MGT 347 — Technology and Innovation Management",
                     "MGT 351 — Business Intelligence",
                     "MGT 440 — Management of Technology"
-                ]
+                ],
+                "name": "Technology Management",
+                "required": ["MGT 311", "MGT 347", "MGT 351", "MGT 440"],
+                "electives": [],
+                "choose_count": 0
             },
             "family_business": {
                 "label": "Family Business Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE",
@@ -116,7 +137,12 @@
                     "ENT 455 — Entrepreneurial Strategy",
                     "ELECTIVE (choose 1):",
                     "ENT 372, ENT 472, ENT 476, MKT 422, MKT 457"
-                ]
+                ],
+                "name": "Family Business Co-Specialization",
+                "required": ["ENT 351", "ENT 451", "ENT 455"],
+                "electives": ["ENT 372", "ENT 472", "ENT 476", "MKT 422", "MKT 457"],
+                "choose_count": 1,
+                "must_double_specialize": true
             },
             "entrepreneurship": {
                 "label": "Entrepreneurship Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE",
@@ -126,7 +152,12 @@
                     "ENT 455 — Entrepreneurial Strategy",
                     "ENT 472 — Entrepreneurial Finance",
                     "ENT 476 — Entrepreneurial Leadership"
-                ]
+                ],
+                "name": "Entrepreneurship Co-Specialization",
+                "required": ["ENT 372", "ENT 455", "ENT 472", "ENT 476"],
+                "electives": [],
+                "choose_count": 0,
+                "must_double_specialize": true
             },
             "finance": {
                 "label": "Finance  ⚠ Requires MATH 111",
@@ -137,7 +168,12 @@
                     "FIN 436 — Advanced Corporate Finance",
                     "ELECTIVE (choose 1):",
                     "FIN 227, FIN 313, FIN 337, FIN 342, FIN 389, FIN 391, FIN 425, FIN 450, FIN 451, FIN 491, MGT 389, ECON 338"
-                ]
+                ],
+                "name": "Finance",
+                "required": ["FIN 332", "FIN 334", "FIN 436"],
+                "electives": ["FIN 227", "FIN 313", "FIN 337", "FIN 342", "FIN 389", "FIN 391", "FIN 425", "FIN 450", "FIN 451", "FIN 491", "MGT 389", "ECON 338"],
+                "choose_count": 1,
+                "prerequisites": ["MATH 111"]
             },
             "mathematical_finance": {
                 "label": "Mathematical Finance  ⚠ Requires MATH 111",
@@ -148,7 +184,12 @@
                     "MATH 434 — Mathematical Finance II",
                     "ELECTIVE (choose 1):",
                     "FIN 313, FIN 337, FIN 450, FIN 451, ECON 338"
-                ]
+                ],
+                "name": "Mathematical Finance",
+                "required": ["FIN 332", "MATH 431", "MATH 434"],
+                "electives": ["FIN 313", "FIN 337", "FIN 450", "FIN 451", "ECON 338"],
+                "choose_count": 1,
+                "prerequisites": ["MATH 111"]
             },
             "marketing": {
                 "label": "Marketing",
@@ -159,7 +200,11 @@
                     "MKT 457 — Strategic Marketing",
                     "ELECTIVE (choose 1):",
                     "MKT 325, MKT 349, MKT 350, MKT 359, MKT 362, MKT 422, MKT 494, MKT 495A"
-                ]
+                ],
+                "name": "Marketing",
+                "required": ["MKT 346", "MKT 348", "MKT 457"],
+                "electives": ["MKT 325", "MKT 349", "MKT 350", "MKT 359", "MKT 362", "MKT 422", "MKT 494", "MKT 495A"],
+                "choose_count": 1
             },
             "sales": {
                 "label": "Sales",
@@ -171,7 +216,11 @@
                     "ELECTIVE (choose 1):",
                     "DR 403, MKT 348, MGT 311, FIN 425, MKT 495A",
                     "NOTE: May substitute MKT 299/399/499 for BUS 299A/399A/499A"
-                ]
+                ],
+                "name": "Sales",
+                "required": ["MKT 349", "MKT 422", "MKT 435"],
+                "electives": ["DR 403", "MKT 348", "MGT 311", "FIN 425", "MKT 495A"],
+                "choose_count": 1
             },
             "markets_and_political_economy": {
                 "label": "Markets and Political Economy",
@@ -182,7 +231,11 @@
                     "SRES 470 — Senior Seminar in Political Economy",
                     "ELECTIVE (choose 1):",
                     "SRES 260, SRES 345, SRES 350, SRES 408, SRES 411"
-                ]
+                ],
+                "name": "Markets and Political Economy",
+                "required": ["SRES 315", "SRES 325", "SRES 470"],
+                "electives": ["SRES 260", "SRES 345", "SRES 350", "SRES 408", "SRES 411"],
+                "choose_count": 1
             },
             "accounting": {
                 "label": "Accounting Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE + MATH 111",
@@ -193,7 +246,13 @@
                     "ACCT 312 — Intermediate Accounting III (Pre-2024)",
                     "ELECTIVE (choose 1):",
                     "ACCT 412, ACCT 417, ACCT 418"
-                ]
+                ],
+                "name": "Accounting Co-Specialization",
+                "required": ["ACCT 310", "ACCT 311", "ACCT 312"],
+                "electives": ["ACCT 412", "ACCT 417", "ACCT 418"],
+                "choose_count": 1,
+                "must_double_specialize": true,
+                "prerequisites": ["MATH 111"]
             },
             "international_business": {
                 "label": "International Business",
@@ -206,8 +265,51 @@
                     "ELECTIVE GROUP 2 (choose 1):",
                     "MGT 312, MGT 380, MKT 380, MGT 490, MGT 381, MGT 382",
                     "ADDITIONAL: Language minor required + study abroad experience"
-                ]
+                ],
+                "name": "International Business",
+                "required": ["MKT 362", "MGT 390"],
+                "elective_groups": [
+                    {
+                        "description": "Choose one finance or management elective",
+                        "courses": ["FIN 389", "MGT 389"],
+                        "choose_count": 1
+                    },
+                    {
+                        "description": "Choose one international elective",
+                        "courses": ["MGT 312", "MGT 380", "MKT 380", "MGT 490", "MGT 381", "MGT 382"],
+                        "choose_count": 1
+                    }
+                ],
+                "electives": [],
+                "choose_count": 0,
+                "notes": "Language minor and abroad experience required"
             }
+        },
+        "accounting_courses": [
+            {"code": "ACCT 310", "name": "Intermediate Accounting I",        "pre": "ACCT 206",        "sem": "Fall"},
+            {"code": "ACCT 311", "name": "Intermediate Accounting II",       "pre": "ACCT 310",        "sem": "Spring"},
+            {"code": "ACCT 312", "name": "Intermediate Accounting III",      "pre": "ACCT 311",        "sem": "Spring"},
+            {"code": "ACCT 315", "name": "Cost Accounting",                  "pre": "ACCT 206",        "sem": "—"},
+            {"code": "ACCT 412", "name": "Auditing",                         "pre": "ACCT 311",        "sem": "Spring"},
+            {"code": "ACCT 417", "name": "Government and Non-Profit Acct.",  "pre": null,              "sem": "Fall"},
+            {"code": "ACCT 418", "name": "Advanced Accounting",              "pre": "ACCT 311",        "sem": "Spring"},
+            {"code": "ACCT 419", "name": "Federal Income Taxation",          "pre": null,              "sem": "Fall"},
+            {"code": "ACCT 422", "name": "Accounting Analytics",             "pre": "ACCT 311",        "sem": "Fall"},
+            {"code": "FIN 332",  "name": "Corporate Finance",                "pre": "FIN 226, MATH 111", "sem": "Spring"},
+            {"code": "FIN 334",  "name": "Investments",                      "pre": "FIN 332",         "sem": "Fall"}
+        ],
+        "accounting_electives": [],
+        "business_core_options": {
+            "info_gateway": ["MGT 240", "MGT 331", "MGT 351", "MGT 361", "ACCT 425", "ECON 370", "EAM 406", "ENT 519", "BUS 606"],
+            "ethics": ["MGT 301", "ACCT 442"],
+            "law": [
+                {"code": "MGT 321", "label": "MGT 321 (Fall only)"},
+                {"code": "MGT 322", "label": "MGT 322 (Spring only)"},
+                {"code": "MGT 371", "label": "MGT 371"},
+                {"code": "MGT 411", "label": "MGT 411 / SRES 411"},
+                {"code": "ACCT 480", "label": "ACCT 480"},
+                {"code": "BUS 616",  "label": "BUS 616"}
+            ]
         }
     },
     "post_2024": {
@@ -262,7 +364,11 @@
                     "MGT 410 — Staffing and Talent Management",
                     "ELECTIVES (choose 2):",
                     "MGT 302, MGT 310, MGT 327, ENT 351, SRES 408, SRES 411"
-                ]
+                ],
+                "name": "People and Organizations",
+                "required": ["MGT 311", "MGT 330", "MGT 410"],
+                "electives": ["MGT 302", "MGT 310", "MGT 327", "ENT 351", "SRES 408", "SRES 411"],
+                "choose_count": 2
             },
             "technology_and_operations_management": {
                 "label": "Technology and Operations Management",
@@ -272,7 +378,11 @@
                     "MGT 347 — Technology and Innovation Management",
                     "ELECTIVES (choose 3):",
                     "MGT 312, MGT 351, MGT 440, MGT 465"
-                ]
+                ],
+                "name": "Technology and Operations Management",
+                "required": ["MGT 332", "MGT 347"],
+                "electives": ["MGT 312", "MGT 351", "MGT 440", "MGT 465"],
+                "choose_count": 3
             },
             "data_analytics_for_business": {
                 "label": "Data Analytics for Business",
@@ -282,7 +392,11 @@
                     "MGT 331 — Business Analytics",
                     "ELECTIVES (choose 2):",
                     "MGT 351, MGT 361, DA 401, DA 423"
-                ]
+                ],
+                "name": "Data Analytics for Business",
+                "required": ["DA 124", "MGT 331"],
+                "electives": ["MGT 351", "MGT 361", "DA 401", "DA 423"],
+                "choose_count": 2
             },
             "sports_management": {
                 "label": "Sports Management  ⚠ MUST DOUBLE SPECIALIZE",
@@ -292,7 +406,12 @@
                     "MGT 324 — Sports Management",
                     "MGT 327 — Sports Law and Ethics",
                     "MKT 325 — Sports Marketing"
-                ]
+                ],
+                "name": "Sports Management",
+                "required": ["MGT 311", "MGT 324", "MGT 327", "MKT 325"],
+                "electives": [],
+                "choose_count": 0,
+                "must_double_specialize": true
             },
             "finance": {
                 "label": "Finance  ⚠ Requires MATH 111",
@@ -304,7 +423,12 @@
                     "FIN 436 — Advanced Corporate Finance",
                     "ELECTIVE (choose 1):",
                     "FIN 313, FIN 337, FIN 342, FIN 389, FIN 391, FIN 425, FIN 450, FIN 451, FIN 491, MGT 389, ECON 338, MATH 434"
-                ]
+                ],
+                "name": "Finance",
+                "required": ["FIN 227", "FIN 332", "FIN 334", "FIN 436"],
+                "electives": ["FIN 313", "FIN 337", "FIN 342", "FIN 389", "FIN 391", "FIN 425", "FIN 450", "FIN 451", "FIN 491", "MGT 389", "ECON 338", "MATH 434"],
+                "choose_count": 1,
+                "prerequisites": ["MATH 111"]
             },
             "entrepreneurship": {
                 "label": "Entrepreneurship  ⚠ MUST DOUBLE SPECIALIZE",
@@ -315,7 +439,12 @@
                     "ENT 472 — Entrepreneurial Finance",
                     "ELECTIVE (choose 1):",
                     "ENT 351, ENT 476, ENT 494"
-                ]
+                ],
+                "name": "Entrepreneurship",
+                "required": ["ENT 372", "ENT 455", "ENT 472"],
+                "electives": ["ENT 351", "ENT 476", "ENT 494"],
+                "choose_count": 1,
+                "must_double_specialize": true
             },
             "marketing": {
                 "label": "Marketing",
@@ -326,7 +455,11 @@
                     "MKT 457 — Strategic Marketing",
                     "ELECTIVES (choose 2):",
                     "MKT 325, MGT 347, MKT 349, MKT 350, MKT 359, MKT 362, MKT 368, MKT 380, MKT 422, MKT 495A"
-                ]
+                ],
+                "name": "Marketing",
+                "required": ["MKT 346", "MKT 348", "MKT 457"],
+                "electives": ["MKT 325", "MGT 347", "MKT 349", "MKT 350", "MKT 359", "MKT 362", "MKT 368", "MKT 380", "MKT 422", "MKT 495A"],
+                "choose_count": 2
             },
             "sales": {
                 "label": "Sales",
@@ -338,7 +471,11 @@
                     "ELECTIVES (choose 2):",
                     "MKT 348, MKT 368, MKT 495A, ENT 351, ENT 372, MGT 311, FIN 425, MGT 347, MGT 410, DR 403",
                     "NOTE: May substitute MKT 299/399/499 for BUS 299A/399A/499A"
-                ]
+                ],
+                "name": "Sales",
+                "required": ["MKT 349", "MKT 422", "MKT 435"],
+                "electives": ["MKT 348", "MKT 368", "MKT 495A", "ENT 351", "ENT 372", "MGT 311", "FIN 425", "MGT 347", "MGT 410", "DR 403"],
+                "choose_count": 2
             },
             "markets_and_political_economy": {
                 "label": "Markets and Political Economy",
@@ -350,7 +487,11 @@
                     "SRES 470 — Senior Seminar in Political Economy",
                     "ELECTIVE (choose 1):",
                     "SRES 260, SRES 350, SRES 408, SRES 411, SRES 476"
-                ]
+                ],
+                "name": "Markets and Political Economy",
+                "required": ["SRES 315", "SRES 325", "SRES 345", "SRES 470"],
+                "electives": ["SRES 260", "SRES 350", "SRES 408", "SRES 411", "SRES 476"],
+                "choose_count": 1
             },
             "accounting": {
                 "label": "Accounting Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE + MATH 111",
@@ -361,7 +502,13 @@
                     "ACCT 315 — Cost Accounting (Post-2024)",
                     "ELECTIVE (choose 1):",
                     "ACCT 412, ACCT 417, ACCT 418"
-                ]
+                ],
+                "name": "Accounting Co-Specialization",
+                "required": ["ACCT 310", "ACCT 311", "ACCT 315"],
+                "electives": ["ACCT 412", "ACCT 417", "ACCT 418"],
+                "choose_count": 1,
+                "must_double_specialize": true,
+                "prerequisites": ["MATH 111"]
             },
             "international_business": {
                 "label": "International Business",
@@ -374,7 +521,12 @@
                     "ELECTIVE GROUP 2 (choose 1):",
                     "MGT 312, MGT 380, MKT 380, MGT 490, MGT 381, MGT 382",
                     "ADDITIONAL: Language minor required + study abroad experience"
-                ]
+                ],
+                "name": "International Business",
+                "required": ["MKT 362", "MGT 390", "MGT 389"],
+                "electives": ["SRES 333", "MKT 380", "MGT 490", "CHN 240"],
+                "choose_count": 1,
+                "notes": "Language minor and abroad experience required"
             },
             "management": {
                 "label": "Management",
@@ -385,8 +537,37 @@
                     "MGT 332 — Supply Chain Management",
                     "ELECTIVES (choose 2):",
                     "MGT 302, MGT 312, MGT 347, MGT 351, MGT 361, MGT 440, MGT 465"
-                ]
+                ],
+                "name": "Management",
+                "required": ["MGT 310", "MGT 311", "MGT 312"],
+                "electives": ["MGT 240", "MGT 301", "MGT 324", "MGT 327", "MGT 365", "MGT 390", "MGT 475"],
+                "choose_count": 2
             }
+        },
+        "accounting_courses": [
+            {"code": "ACCT 310", "name": "Intermediate Accounting I",        "pre": "ACCT 206",        "sem": "Fall"},
+            {"code": "ACCT 311", "name": "Intermediate Accounting II",       "pre": "ACCT 310",        "sem": "Spring"},
+            {"code": "ACCT 315", "name": "Cost Accounting",                  "pre": "ACCT 206",        "sem": "—"},
+            {"code": "ACCT 412", "name": "Auditing",                         "pre": "ACCT 311",        "sem": "Spring"},
+            {"code": "ACCT 417", "name": "Government and Non-Profit Acct.",  "pre": null,              "sem": "Fall"},
+            {"code": "ACCT 418", "name": "Advanced Accounting",              "pre": "ACCT 311",        "sem": "Spring"},
+            {"code": "ACCT 419", "name": "Federal Income Taxation",          "pre": null,              "sem": "Fall"},
+            {"code": "ACCT 422", "name": "Accounting Analytics",             "pre": "ACCT 311",        "sem": "Fall"},
+            {"code": "FIN 332",  "name": "Corporate Finance",                "pre": "FIN 226, MATH 111", "sem": "Spring"},
+            {"code": "FIN 334",  "name": "Investments",                      "pre": "FIN 332",         "sem": "Fall"}
+        ],
+        "accounting_electives": ["ACCT 480", "ACCT 491", "ECON 370"],
+        "business_core_options": {
+            "info_gateway": ["MGT 240", "MGT 331", "MGT 351", "MGT 361", "ACCT 425", "ECON 370", "EAM 406", "ENT 519", "BUS 606"],
+            "ethics": ["MGT 301", "ACCT 442"],
+            "law": [
+                {"code": "MGT 321", "label": "MGT 321 (Fall only)"},
+                {"code": "MGT 322", "label": "MGT 322 (Spring only)"},
+                {"code": "MGT 371", "label": "MGT 371"},
+                {"code": "MGT 411", "label": "MGT 411 / SRES 411"},
+                {"code": "ACCT 480", "label": "ACCT 480"},
+                {"code": "BUS 616",  "label": "BUS 616"}
+            ]
         }
     }
 }

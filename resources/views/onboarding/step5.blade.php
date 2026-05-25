@@ -245,7 +245,7 @@
 
     @php
         $catalogYear = $data['catalog_year'] ?? 'post_2024';
-        $allSpecs    = $specializations[$catalogYear]['specializations'] ?? [];
+        $allSpecs    = $requirements[$catalogYear]['specializations'] ?? [];
 
         $selectedSpecs = array_values(array_filter([
             $data['specialization_1'] ?? null,

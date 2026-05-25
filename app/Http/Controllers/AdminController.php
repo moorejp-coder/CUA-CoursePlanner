@@ -110,21 +110,37 @@ class AdminController extends Controller
 
         $existing = $this->loadRequirements();
 
-        $rebuild = function (string $year) use ($raw, $toLines, $existing): array {
+        $structuredKeys = ['name', 'required', 'electives', 'elective_groups', 'choose_count', 'must_double_specialize', 'prerequisites', 'notes'];
+
+        $rebuild = function (string $year) use ($raw, $toLines, $existing, $structuredKeys): array {
             $specData = $existing[$year]['specializations'] ?? [];
             $updatedSpecs = [];
             foreach ($raw[$year]['spec'] ?? [] as $slug => $text) {
-                $updatedSpecs[$slug] = [
+                $entry = [
                     'label' => $specData[$slug]['label'] ?? ucwords(str_replace('_', ' ', $slug)),
                     'courses' => $toLines($text),
                 ];
+                foreach ($structuredKeys as $key) {
+                    if (array_key_exists($key, $specData[$slug] ?? [])) {
+                        $entry[$key] = $specData[$slug][$key];
+                    }
+                }
+                $updatedSpecs[$slug] = $entry;
             }
 
-            return [
+            $result = [
                 'business_core' => $toLines($raw[$year]['business_core']),
                 'bs_accounting' => $toLines($raw[$year]['bs_accounting']),
                 'specializations' => $updatedSpecs,
             ];
+
+            foreach (['accounting_courses', 'accounting_electives', 'business_core_options'] as $preserve) {
+                if (isset($existing[$year][$preserve])) {
+                    $result[$preserve] = $existing[$year][$preserve];
+                }
+            }
+
+            return $result;
         };
 
         $requirements = [

@@ -244,7 +244,7 @@
 
     @php
         $catalogYear = $data['catalog_year'] ?? 'post_2024';
-        $specs = $specializations[$catalogYear]['specializations'] ?? [];
+        $specs = $requirements[$catalogYear]['specializations'] ?? [];
 
         $descriptions = [
             'people_and_organizations'          => 'Focus on human resources, organizational behavior, and leadership.',
@@ -266,6 +266,9 @@
             'mathematical_finance'              => 'Combine quantitative methods and finance theory. Requires MATH 111.',
         ];
 
+        $mustDoubleSpecs = array_values(array_keys(array_filter($specs, fn ($s) => ! empty($s['must_double_specialize']))));
+        $mathReqSpecs    = array_values(array_keys(array_filter($specs, fn ($s) => ! empty($s['prerequisites']) && in_array('MATH 111', (array) $s['prerequisites']))));
+
         $preSelected = array_filter([
             $data['specialization_1'] ?? null,
             $data['specialization_2'] ?? null,
@@ -278,6 +281,8 @@
          x-data="{
             selected: {{ $preSelectedJson }},
             maxAllowed: 3,
+            needDouble: {{ Js::from($mustDoubleSpecs) }},
+            mathReq: {{ Js::from($mathReqSpecs) }},
             toggle(key) {
                 const idx = this.selected.indexOf(key);
                 if (idx >= 0) {
@@ -289,12 +294,10 @@
             isSelected(key) { return this.selected.includes(key); },
             isDisabled(key) { return this.selected.length >= this.maxAllowed && !this.selected.includes(key); },
             hasDouble() {
-                const needDouble = ['sports_management','entrepreneurship'];
-                return this.selected.some(s => needDouble.includes(s));
+                return this.selected.some(s => this.needDouble.includes(s));
             },
             hasMath111() {
-                const mathReq = ['finance','mathematical_finance','accounting'];
-                return this.selected.some(s => mathReq.includes(s));
+                return this.selected.some(s => this.mathReq.includes(s));
             },
             submitForm() {
                 if (this.selected.length === 0) {

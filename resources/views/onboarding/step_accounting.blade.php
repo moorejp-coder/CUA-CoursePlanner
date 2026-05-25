@@ -223,30 +223,12 @@
     @include('onboarding.partials.header', ['step' => 'accounting'])
 
     @php
-        $isPost2024 = ($data['catalog_year'] ?? 'post_2024') === 'post_2024';
-        $v = fn(string $field) => $data[$field] ?? 'not_yet';
-        $ac = fn(string $code) => $data['acct_courses'][$code] ?? 'not_yet';
-
-        $requiredCourses = [
-            ['code' => 'ACCT 310', 'name' => 'Intermediate Accounting I',           'pre' => 'ACCT 206'],
-            ['code' => 'ACCT 311', 'name' => 'Intermediate Accounting II',          'pre' => 'ACCT 310'],
-        ];
-
-        if (! $isPost2024) {
-            $requiredCourses[] = ['code' => 'ACCT 312', 'name' => 'Intermediate Accounting III', 'pre' => 'ACCT 311'];
-        }
-
-        $requiredCourses = array_merge($requiredCourses, [
-            ['code' => 'ACCT 315', 'name' => 'Cost Accounting',                    'pre' => 'ACCT 206'],
-            ['code' => 'ACCT 412', 'name' => 'Auditing',                           'pre' => 'ACCT 311'],
-            ['code' => 'ACCT 417', 'name' => 'Government and Non-Profit Acct.',    'pre' => null],
-            ['code' => 'ACCT 418', 'name' => 'Advanced Accounting',                'pre' => 'ACCT 311'],
-            ['code' => 'ACCT 419', 'name' => 'Federal Income Taxation',            'pre' => null],
-            ['code' => 'ACCT 422', 'name' => 'Accounting Analytics',               'pre' => 'ACCT 311'],
-            ['code' => 'ACCT 442', 'name' => 'Accounting Ethics',                  'pre' => null],
-            ['code' => 'FIN 332',  'name' => 'Corporate Finance',                  'pre' => 'FIN 226, MATH 111'],
-            ['code' => 'FIN 334',  'name' => 'Investments',                        'pre' => 'FIN 332'],
-        ]);
+        $catalogYear       = $data['catalog_year'] ?? 'post_2024';
+        $isPost2024        = $catalogYear === 'post_2024';
+        $v                 = fn (string $field) => $data[$field] ?? 'not_yet';
+        $ac                = fn (string $code) => $data['acct_courses'][$code] ?? 'not_yet';
+        $requiredCourses   = $requirements[$catalogYear]['accounting_courses'] ?? [];
+        $accountingElectives = $requirements[$catalogYear]['accounting_electives'] ?? [];
     @endphp
 
     <div class="wizard-card">
@@ -295,15 +277,15 @@
                 </tbody>
             </table>
 
-            @if($isPost2024)
+            @if(!empty($accountingElectives))
             <h3 class="step-heading">Accounting Elective (choose one)</h3>
             <div class="elective-group">
                 <p class="elective-label">Select the elective you have completed (or plan to complete):</p>
                 <select name="acct_elective" class="elective-select">
-                    <option value="not_yet"   {{ ($data['acct_elective'] ?? 'not_yet') === 'not_yet'   ? 'selected' : '' }}>Not yet completed</option>
-                    <option value="ACCT 480"  {{ ($data['acct_elective'] ?? '') === 'ACCT 480'  ? 'selected' : '' }}>ACCT 480</option>
-                    <option value="ACCT 491"  {{ ($data['acct_elective'] ?? '') === 'ACCT 491'  ? 'selected' : '' }}>ACCT 491</option>
-                    <option value="ECON 370"  {{ ($data['acct_elective'] ?? '') === 'ECON 370'  ? 'selected' : '' }}>ECON 370</option>
+                    <option value="not_yet" {{ ($data['acct_elective'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
+                    @foreach($accountingElectives as $elective)
+                        <option value="{{ $elective }}" {{ ($data['acct_elective'] ?? '') === $elective ? 'selected' : '' }}>{{ $elective }}</option>
+                    @endforeach
                 </select>
             </div>
             @else

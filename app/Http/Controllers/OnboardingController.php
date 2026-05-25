@@ -7,6 +7,7 @@ use App\Models\StudentProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class OnboardingController extends Controller
@@ -54,7 +55,7 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step.accounting');
         }
 
-        $specializationsJson = json_decode(file_get_contents(storage_path('app/specializations.json')), true);
+        $requirements = json_decode(Storage::get('requirements.json'), true) ?? [];
         [$wizardStep, $wizardTotal] = $this->computeWizardProgress($step, $isAccounting);
 
         return view("onboarding.step{$step}", [
@@ -64,7 +65,7 @@ class OnboardingController extends Controller
             'wizardTotal' => $wizardTotal,
             'degree' => $data['degree'] ?? 'bsba',
             'data' => $data,
-            'specializations' => $specializationsJson,
+            'requirements' => $requirements,
             'socialScienceAutoFill' => $step === 3 ? $this->computeSocialScienceAutoFill($data) : null,
         ]);
     }
@@ -81,6 +82,8 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step', 5);
         }
 
+        $requirements = json_decode(Storage::get('requirements.json'), true) ?? [];
+
         return view('onboarding.step_accounting', [
             'step' => 'accounting',
             'totalSteps' => self::TOTAL_STEPS,
@@ -88,6 +91,7 @@ class OnboardingController extends Controller
             'wizardTotal' => 5,
             'degree' => 'bs_accounting',
             'data' => $data,
+            'requirements' => $requirements,
         ]);
     }
 

@@ -292,6 +292,7 @@
         $isSingleSpec = empty($data['specialization_2'] ?? '') && empty($data['specialization_3'] ?? '');
         $showElectives = ! $isPost2024 && $isSingleSpec;
         $v = fn (string $key, string $default = 'not_yet') => old($key, $data[$key] ?? $default);
+        $coreOptions = $requirements[$catalogYear]['business_core_options'] ?? [];
     @endphp
 
     <div class="wizard-card">
@@ -485,7 +486,7 @@
                 <label class="field-label" for="core_info_gateway">Info Management Course</label>
                 <select id="core_info_gateway" name="core_info_gateway">
                     <option value="not_yet"  {{ $v('core_info_gateway') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
-                    @foreach(['MGT 240','MGT 331','MGT 351','MGT 361','ACCT 425','ECON 370','EAM 406','ENT 519','BUS 606'] as $c)
+                    @foreach($coreOptions['info_gateway'] ?? [] as $c)
                         <option value="{{ $c }}" {{ $v('core_info_gateway') === $c ? 'selected' : '' }}>{{ $c }}</option>
                     @endforeach
                 </select>
@@ -498,22 +499,21 @@
                 <div class="form-group">
                     <label class="field-label" for="core_ethics">Business Ethics (choose one)</label>
                     <select id="core_ethics" name="core_ethics">
-                        <option value="not_yet"   {{ $v('core_ethics', 'not_yet') === 'not_yet'   ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="MGT 301"   {{ $v('core_ethics', 'not_yet') === 'MGT 301'   ? 'selected' : '' }}>MGT 301</option>
-                        <option value="ACCT 442"  {{ $v('core_ethics', 'not_yet') === 'ACCT 442'  ? 'selected' : '' }}>ACCT 442</option>
+                        <option value="not_yet" {{ $v('core_ethics', 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
+                        @foreach($coreOptions['ethics'] ?? [] as $c)
+                            <option value="{{ $c }}" {{ $v('core_ethics', 'not_yet') === $c ? 'selected' : '' }}>{{ $c }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="field-label" for="core_law">Business Law (choose one)</label>
                     <select id="core_law" name="core_law">
-                        <option value="not_yet"   {{ $v('core_law') === 'not_yet'   ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="MGT 321"   {{ $v('core_law') === 'MGT 321'   ? 'selected' : '' }}>MGT 321 (Fall only)</option>
-                        <option value="MGT 322"   {{ $v('core_law') === 'MGT 322'   ? 'selected' : '' }}>MGT 322 (Spring only)</option>
-                        <option value="MGT 371"   {{ $v('core_law') === 'MGT 371'   ? 'selected' : '' }}>MGT 371</option>
-                        <option value="MGT 411"   {{ $v('core_law') === 'MGT 411'   ? 'selected' : '' }}>MGT 411 / SRES 411</option>
-                        <option value="ACCT 480"  {{ $v('core_law') === 'ACCT 480'  ? 'selected' : '' }}>ACCT 480</option>
-                        <option value="BUS 616"   {{ $v('core_law') === 'BUS 616'   ? 'selected' : '' }}>BUS 616</option>
+                        <option value="not_yet" {{ $v('core_law') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
+                        @foreach($coreOptions['law'] ?? [] as $opt)
+                            @php $code = is_array($opt) ? $opt['code'] : $opt; $label = is_array($opt) ? $opt['label'] : $opt; @endphp
+                            <option value="{{ $code }}" {{ $v('core_law') === $code ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
 
