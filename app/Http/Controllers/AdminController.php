@@ -90,22 +90,50 @@ class AdminController extends Controller
 
     public function saveRequirements(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'sections' => ['required', 'array'],
-            'sections.*.key' => ['required', 'string'],
-            'sections.*.courses' => ['required', 'string'],
+        $request->validate([
+            'data' => ['required', 'array'],
+            'data.liberal_arts' => ['required', 'string'],
+            'data.pre_2024' => ['required', 'array'],
+            'data.pre_2024.business_core' => ['required', 'string'],
+            'data.pre_2024.bs_accounting' => ['required', 'string'],
+            'data.pre_2024.spec' => ['required', 'array'],
+            'data.pre_2024.spec.*' => ['required', 'string'],
+            'data.post_2024' => ['required', 'array'],
+            'data.post_2024.business_core' => ['required', 'string'],
+            'data.post_2024.bs_accounting' => ['required', 'string'],
+            'data.post_2024.spec' => ['required', 'array'],
+            'data.post_2024.spec.*' => ['required', 'string'],
         ]);
 
-        $requirements = $this->loadRequirements();
+        $raw = $request->input('data');
+        $toLines = fn (string $text): array => array_values(array_filter(array_map('trim', explode("\n", $text))));
 
-        foreach ($validated['sections'] as $section) {
-            $courses = array_values(array_filter(
-                array_map('trim', explode("\n", $section['courses']))
-            ));
-            data_set($requirements, $section['key'], $courses);
-        }
+        $existing = $this->loadRequirements();
 
-        file_put_contents(storage_path('app/requirements.json'), json_encode($requirements, JSON_PRETTY_PRINT));
+        $rebuild = function (string $year) use ($raw, $toLines, $existing): array {
+            $specData = $existing[$year]['specializations'] ?? [];
+            $updatedSpecs = [];
+            foreach ($raw[$year]['spec'] ?? [] as $slug => $text) {
+                $updatedSpecs[$slug] = [
+                    'label' => $specData[$slug]['label'] ?? ucwords(str_replace('_', ' ', $slug)),
+                    'courses' => $toLines($text),
+                ];
+            }
+
+            return [
+                'business_core' => $toLines($raw[$year]['business_core']),
+                'bs_accounting' => $toLines($raw[$year]['bs_accounting']),
+                'specializations' => $updatedSpecs,
+            ];
+        };
+
+        $requirements = [
+            'liberal_arts' => $toLines($raw['liberal_arts']),
+            'pre_2024' => $rebuild('pre_2024'),
+            'post_2024' => $rebuild('post_2024'),
+        ];
+
+        file_put_contents(storage_path('app/requirements.json'), json_encode($requirements, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
         return redirect()->route('admin.requirements')->with('success', 'Requirements updated successfully.');
     }
