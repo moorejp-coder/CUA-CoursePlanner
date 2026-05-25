@@ -55,37 +55,55 @@ Up to 2 courses may double-count between liberal arts and major.
 
 ---
 
-## BSBA CORE REQUIREMENTS
+## BSBA CORE REQUIREMENTS (Pre-2024: admitted Fall 2020 – Spring 2024)
 
-### Freshman/Sophomore
-- ENT 118A (Fall, first-year) or ENT 118B (Spring, any)
-- MGT 123A (Spring, freshmen) or MGT 123B (Fall/Spring, soph+)
-- SRES 101/101H or ECON 102/104
-- SRES 102/102H or ECON 101/103
-- ACCT 205
-- ACCT 206 (prereq: ACCT 205)
-- FIN 226 (prereq: ACCT 205)
-- MATH 110 or 111 (if EXEMPT = complete)
-- BUS 199 (1cr, Fall, incoming only)
-- BUS 299A (1cr, 24+ credits) [Sales equivalent: MKT 299]
-- MGT 250 (27+ credits required)
-- [Post-2024]: SRES 290
+### Section 1 — Business Foundations
+- ENT 118A (Fall, first-year) or ENT 118B (Spring, any year)
+- MGT 123A (Spring, freshmen) or MGT 123B (Fall/Spring, sophomores+)
 
-### Stats Requirement
-- Post-2024: MGT 265
-- Pre-2024: ECON 223 or MGT 265
+### Section 2 — Economic Thought
+- SRES 101: Markets and Prosperity I (or ECON 100/102 equivalent)
+- SRES 102: Markets and Prosperity II (or ECON 200/101 equivalent)
+- [Post-2024 only]: SRES 290 — Catholic Social Thought in Business
 
-### Info Management Gateway (pick 1)
-MGT 240, MGT 331, MGT 351, MGT 361, ECON 370, ACCT 425, EAM 406, ENT 519
+### Section 3 — Accounting
+- ACCT 205: Introductory Accounting (prerequisite for ACCT 206 and FIN 226)
+- ACCT 206: Managerial Accounting (requires ACCT 205)
 
-### Junior/Senior
-- MKT 345 or BUS 604
-- MGT 301
-- MGT 475 + BUS 498 (SAME semester, seniors, prereqs: ACCT 206, FIN 226, MKT 345, MGT 123)
-- BUS 399A (1cr, 54+ credits) [Sales equivalent: MKT 399]
-- BUS 499A (1cr, 85+ credits) [Sales equivalent: MKT 499]
-- Law elective (pick 1): MGT 321, 322, 371, 411, BUS 616
-- [Pre-2024]: MGT 365 or BUS 603
+### Section 4 — Finance
+- FIN 226: Introduction to Finance (requires ACCT 205)
+
+### Section 5 — Communications
+- MGT 250: Business Communications
+
+### Section 6 — Marketing
+- MKT 345: Marketing Management
+
+### Section 7 — Mathematics and Statistics
+- Statistics: MGT 265 (Post-2024) or ECON 223 / MGT 265 (Pre-2024)
+- Mathematics: MATH 110, MATH 111, or Level 1/2 Placement Exempt. Finance and Accounting require MATH 111. Level 3 placement requires MATH 110 first.
+- [Pre-2024 only]: MGT 365 — Quantitative Methods in Decision Making
+
+### Section 8 — Information Management Gateway (choose one, must not duplicate specialization)
+MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519
+
+### Section 9 — Ethics and Law
+- Business Ethics (choose one): MGT 301, ACCT 442
+- Business Law (choose one): MGT 321 (Fall only), MGT 322 (Spring only), MGT 371, MGT 411 / SRES 411, ACCT 480
+
+### Section 10 — Business Strategy and Comprehensive Assessment (SAME semester, senior year)
+- MGT 475: Business Strategy (prereqs: ACCT 206, FIN 226, MKT 345, MGT 123)
+- BUS 498: Comprehensive Assessment — 0 credits (taken same semester as MGT 475)
+
+### Section 11 — Career Discernment (1 credit each)
+- BUS 199 (Fall only): complete by 30 credits
+- BUS 299A: complete by 60 credits [Sales students: MKT 299]
+- BUS 399A: complete by 90 credits [Sales students: MKT 399]
+- BUS 499A: complete during senior year [Sales students: MKT 499]
+
+### Section 12 — Business Electives (Pre-2024 single-specialization students only)
+Two additional BUS/MGT/MKT/FIN/ACCT/ECON/ENT/SRES elective courses required.
+Not required for double-specialization students.
 
 ---
 

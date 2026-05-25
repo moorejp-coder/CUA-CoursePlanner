@@ -155,19 +155,45 @@ class OnboardingController extends Controller
 
     private function validateStep4(Request $request): array
     {
-        // Business core — save all posted values freely
+        $prefixes = ['BUS ', 'MGT ', 'MKT ', 'FIN ', 'ACCT ', 'ECON ', 'ENT ', 'SRES '];
+
+        $electiveRule = fn (string $label) => [
+            'nullable',
+            function ($attribute, $value, $fail) use ($label, $prefixes) {
+                $v = strtoupper(trim((string) $value));
+                if (! $v) {
+                    return;
+                }
+                foreach ($prefixes as $p) {
+                    if (str_starts_with($v, $p)) {
+                        return;
+                    }
+                }
+                $fail("{$label} must be a BUS, MGT, MKT, FIN, ACCT, ECON, ENT, or SRES course code.");
+            },
+        ];
+
+        $request->validate([
+            'core_elective_1' => $electiveRule('Business Elective 1'),
+            'core_elective_2' => $electiveRule('Business Elective 2'),
+        ]);
+
         $fields = [
             'core_ent118', 'core_mgt123', 'core_sres101', 'core_sres102',
             'core_acct205', 'core_acct206', 'core_fin226', 'core_math',
             'core_bus199', 'core_bus299a', 'core_mgt250', 'core_sres290',
-            'core_stats', 'core_info_gateway', 'core_mkt345', 'core_mgt301',
+            'core_stats', 'core_info_gateway', 'core_mkt345', 'core_ethics',
             'core_law', 'core_mgt365', 'core_bus399a', 'core_bus499a',
-            'core_mgt475', 'core_bus498',
+            'core_mgt475', 'core_bus498', 'core_elective_1', 'core_elective_2',
         ];
 
         $data = [];
         foreach ($fields as $field) {
-            $data[$field] = $request->input($field, '');
+            $raw = $request->input($field, '');
+            if (in_array($field, ['core_elective_1', 'core_elective_2'])) {
+                $raw = strtoupper(trim($raw));
+            }
+            $data[$field] = $raw;
         }
 
         return $data;
@@ -286,46 +312,63 @@ class OnboardingController extends Controller
 
         // Business core
         $coreMap = [
-            'core_ent118' => ['code' => '', 'name' => 'ENT 118'],
-            'core_mgt123' => ['code' => '', 'name' => 'MGT 123'],
-            'core_sres101' => ['code' => '', 'name' => 'SRES 101/ECON'],
-            'core_sres102' => ['code' => '', 'name' => 'SRES 102/ECON'],
+            'core_ent118' => ['code' => '',         'name' => 'ENT 118'],
+            'core_mgt123' => ['code' => '',         'name' => 'MGT 123'],
+            'core_sres101' => ['code' => '',         'name' => 'SRES 101/ECON'],
+            'core_sres102' => ['code' => '',         'name' => 'SRES 102/ECON'],
             'core_acct205' => ['code' => 'ACCT 205', 'name' => 'Financial Accounting'],
             'core_acct206' => ['code' => 'ACCT 206', 'name' => 'Managerial Accounting'],
-            'core_fin226' => ['code' => 'FIN 226', 'name' => 'Financial Management'],
-            'core_math' => ['code' => '', 'name' => 'Math Requirement'],
-            'core_bus199' => ['code' => 'BUS 199', 'name' => 'Career Discernment I'],
+            'core_fin226' => ['code' => 'FIN 226',  'name' => 'Financial Management'],
+            'core_math' => ['code' => '',         'name' => 'Math Requirement'],
+            'core_bus199' => ['code' => 'BUS 199',  'name' => 'Career Discernment I'],
             'core_bus299a' => ['code' => 'BUS 299A', 'name' => 'Career Discernment II'],
-            'core_mgt250' => ['code' => 'MGT 250', 'name' => 'Foundations of Mgmt'],
+            'core_mgt250' => ['code' => 'MGT 250',  'name' => 'Business Communications'],
             'core_sres290' => ['code' => 'SRES 290', 'name' => 'SRES 290'],
-            'core_stats' => ['code' => '', 'name' => 'Statistics'],
-            'core_info_gateway' => ['code' => '', 'name' => 'Info Management Gateway'],
-            'core_mkt345' => ['code' => 'MKT 345', 'name' => 'Principles of Marketing'],
-            'core_mgt301' => ['code' => 'MGT 301', 'name' => 'Organizational Behavior'],
-            'core_law' => ['code' => '', 'name' => 'Law Elective'],
-            'core_mgt365' => ['code' => 'MGT 365', 'name' => 'Business Strategy'],
+            'core_stats' => ['code' => '',         'name' => 'Statistics'],
+            'core_info_gateway' => ['code' => '',         'name' => 'Info Management Gateway'],
+            'core_mkt345' => ['code' => 'MKT 345',  'name' => 'Marketing Management'],
+            'core_ethics' => ['code' => '',         'name' => 'Business Ethics'],
+            'core_law' => ['code' => '',         'name' => 'Business Law'],
+            'core_mgt365' => ['code' => 'MGT 365',  'name' => 'Quantitative Methods'],
             'core_bus399a' => ['code' => 'BUS 399A', 'name' => 'Career Discernment III'],
             'core_bus499a' => ['code' => 'BUS 499A', 'name' => 'Career Discernment IV'],
-            'core_mgt475' => ['code' => 'MGT 475', 'name' => 'Strategic Management'],
-            'core_bus498' => ['code' => 'BUS 498', 'name' => 'Business Capstone'],
+            'core_mgt475' => ['code' => 'MGT 475',  'name' => 'Business Strategy'],
+            'core_bus498' => ['code' => 'BUS 498',  'name' => 'Comprehensive Assessment'],
+            'core_elective_1' => ['code' => '',         'name' => 'Business Elective 1'],
+            'core_elective_2' => ['code' => '',         'name' => 'Business Elective 2'],
         ];
 
         foreach ($coreMap as $key => $meta) {
             $val = $data[$key] ?? '';
-            if ($val && $val !== 'not_yet') {
-                $code = $meta['code'] ?: $val;
-                $courses[] = [
-                    'user_id' => $user->id,
-                    'course_code' => $code,
-                    'course_name' => $meta['name'],
-                    'requirement_category' => 'business_core',
-                    'status' => 'completed',
-                    'grade' => null,
-                    'semester_completed' => null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+            if (! $val || $val === 'not_yet') {
+                continue;
             }
+
+            if ($val === 'in_progress') {
+                $code = $meta['code'] ?: null;
+                if (! $code) {
+                    continue;
+                }
+                $status = 'in_progress';
+            } elseif ($val === 'Completed') {
+                $code = $meta['code'];
+                $status = 'completed';
+            } else {
+                $code = $val;
+                $status = 'completed';
+            }
+
+            $courses[] = [
+                'user_id' => $user->id,
+                'course_code' => $code,
+                'course_name' => $meta['name'],
+                'requirement_category' => 'business_core',
+                'status' => $status,
+                'grade' => null,
+                'semester_completed' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
 
         // Specialization courses from step 5

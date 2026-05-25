@@ -106,20 +106,28 @@
 
         .step-heading {
             font-family: 'Oswald', sans-serif;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--cua-navy);
-            margin: 1.5rem 0 0.75rem;
-            padding-bottom: 0.4rem;
+            margin: 1.5rem 0 0.4rem;
+            padding-bottom: 0.3rem;
             border-bottom: 2px solid var(--cua-gold);
         }
 
         .step-heading:first-of-type { margin-top: 0; }
 
+        .section-note {
+            font-size: 0.82rem;
+            color: #555;
+            margin: 0 0 0.75rem;
+            line-height: 1.5;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 1rem;
+            margin-bottom: 0.25rem;
         }
 
         @media (max-width: 520px) {
@@ -127,6 +135,7 @@
         }
 
         .form-group { margin-bottom: 0.75rem; }
+        .form-group.narrow { max-width: 320px; }
 
         label.field-label {
             display: block;
@@ -136,7 +145,7 @@
             color: #333;
         }
 
-        select {
+        select, .text-input {
             width: 100%;
             padding: 0.55rem 0.8rem;
             border: 1.5px solid #ccc;
@@ -147,10 +156,27 @@
             background: #fff;
         }
 
-        select:focus {
+        select:focus, .text-input:focus {
             outline: none;
             border-color: var(--cua-navy);
             box-shadow: 0 0 0 2px rgba(0,51,102,0.12);
+        }
+
+        .text-input.input-error { border-color: var(--cua-red); }
+        .text-input.input-valid { border-color: #22c55e; }
+
+        .field-hint {
+            font-size: 0.78rem;
+            color: #777;
+            margin: 0.3rem 0 0;
+            line-height: 1.4;
+        }
+
+        .field-error {
+            font-size: 0.8rem;
+            color: var(--cua-red);
+            margin: 0.25rem 0 0;
+            min-height: 1.1em;
         }
 
         .btn-primary {
@@ -197,7 +223,7 @@
             border-left: 4px solid var(--cua-gold);
             padding: 0.75rem 1rem;
             border-radius: 4px;
-            margin: 0.75rem 0;
+            margin: 0 0 1rem;
             font-size: 0.9rem;
         }
 
@@ -206,10 +232,23 @@
             border-left: 4px solid var(--cua-navy);
             padding: 0.75rem 1rem;
             border-radius: 4px;
-            margin: 0 0 1rem;
+            margin: 0.5rem 0 0.75rem;
             font-size: 0.88rem;
             color: var(--cua-dark);
         }
+
+        .catalog-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.1rem 0.5rem;
+            border-radius: 4px;
+            margin-left: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .badge-pre  { background: #fef3c7; color: #92400e; }
+        .badge-post { background: #d1fae5; color: #065f46; }
     </style>
 </head>
 <body>
@@ -217,15 +256,16 @@
     @include('onboarding.partials.header', ['step' => $step, 'totalSteps' => $totalSteps])
 
     @php
-        $catalogYear = $data['catalog_year'] ?? 'post_2024';
-        $isPost2024  = $catalogYear === 'post_2024';
-        $isSales     = in_array('sales', [
+        $catalogYear  = $data['catalog_year'] ?? 'post_2024';
+        $isPost2024   = $catalogYear === 'post_2024';
+        $isSales      = in_array('sales', [
             $data['specialization_1'] ?? '',
             $data['specialization_2'] ?? '',
             $data['specialization_3'] ?? '',
         ]);
-
-        $v = fn(string $key, string $default = 'not_yet') => old($key, $data[$key] ?? $default);
+        $isSingleSpec = empty($data['specialization_2'] ?? '') && empty($data['specialization_3'] ?? '');
+        $showElectives = ! $isPost2024 && $isSingleSpec;
+        $v = fn (string $key, string $default = 'not_yet') => old($key, $data[$key] ?? $default);
     @endphp
 
     <div class="wizard-card">
@@ -237,193 +277,285 @@
         <form method="POST" action="{{ route('onboarding.save', 4) }}">
             @csrf
 
-            {{-- Freshman / Sophomore Core --}}
-            <h3 class="step-heading">Freshman &amp; Sophomore Core</h3>
-
+            {{-- ─── SECTION 1: Business Foundations ─────────────────────────── --}}
+            <h3 class="step-heading">1. Business Foundations</h3>
             <div class="form-grid">
 
                 <div class="form-group">
-                    <label class="field-label" for="core_ent118">ENT 118 — Business Foundations I</label>
+                    <label class="field-label" for="core_ent118">ENT 118 — The Vocation of Business</label>
                     <select id="core_ent118" name="core_ent118">
-                        <option value="not_yet" {{ $v('core_ent118') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="ENT 118A" {{ $v('core_ent118') === 'ENT 118A' ? 'selected' : '' }}>ENT 118A</option>
-                        <option value="ENT 118B" {{ $v('core_ent118') === 'ENT 118B' ? 'selected' : '' }}>ENT 118B</option>
+                        <option value="not_yet"  {{ $v('core_ent118') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="ENT 118A" {{ $v('core_ent118') === 'ENT 118A' ? 'selected' : '' }}>ENT 118A (Fall)</option>
+                        <option value="ENT 118B" {{ $v('core_ent118') === 'ENT 118B' ? 'selected' : '' }}>ENT 118B (Spring)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="field-label" for="core_mgt123">MGT 123 — Business Foundations II</label>
+                    <label class="field-label" for="core_mgt123">MGT 123 — Foundations of Business</label>
                     <select id="core_mgt123" name="core_mgt123">
-                        <option value="not_yet" {{ $v('core_mgt123') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="MGT 123A" {{ $v('core_mgt123') === 'MGT 123A' ? 'selected' : '' }}>MGT 123A</option>
-                        <option value="MGT 123B" {{ $v('core_mgt123') === 'MGT 123B' ? 'selected' : '' }}>MGT 123B</option>
+                        <option value="not_yet"  {{ $v('core_mgt123') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="MGT 123A" {{ $v('core_mgt123') === 'MGT 123A' ? 'selected' : '' }}>MGT 123A (Spring, freshmen)</option>
+                        <option value="MGT 123B" {{ $v('core_mgt123') === 'MGT 123B' ? 'selected' : '' }}>MGT 123B (Fall/Spring, soph+)</option>
                     </select>
                 </div>
 
+            </div>
+
+            {{-- ─── SECTION 2: Economic Thought ──────────────────────────────── --}}
+            <h3 class="step-heading">2. Economic Thought</h3>
+            <div class="form-grid">
+
                 <div class="form-group">
-                    <label class="field-label" for="core_sres101">SRES 101 / Microeconomics</label>
+                    <label class="field-label" for="core_sres101">SRES 101 — Markets and Prosperity I</label>
                     <select id="core_sres101" name="core_sres101">
-                        <option value="not_yet" {{ $v('core_sres101') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="SRES 101" {{ $v('core_sres101') === 'SRES 101' ? 'selected' : '' }}>SRES 101</option>
-                        <option value="ECON 100" {{ $v('core_sres101') === 'ECON 100' ? 'selected' : '' }}>ECON 100</option>
-                        <option value="ECON 102" {{ $v('core_sres101') === 'ECON 102' ? 'selected' : '' }}>ECON 102</option>
+                        <option value="not_yet"        {{ $v('core_sres101') === 'not_yet'        ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="SRES 101"       {{ $v('core_sres101') === 'SRES 101'       ? 'selected' : '' }}>SRES 101</option>
+                        <option value="ECON 100"       {{ $v('core_sres101') === 'ECON 100'       ? 'selected' : '' }}>ECON 100 (equivalent)</option>
+                        <option value="ECON 102"       {{ $v('core_sres101') === 'ECON 102'       ? 'selected' : '' }}>ECON 102 (equivalent)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="field-label" for="core_sres102">SRES 102 / Macroeconomics</label>
+                    <label class="field-label" for="core_sres102">SRES 102 — Markets and Prosperity II</label>
                     <select id="core_sres102" name="core_sres102">
-                        <option value="not_yet" {{ $v('core_sres102') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="SRES 102" {{ $v('core_sres102') === 'SRES 102' ? 'selected' : '' }}>SRES 102</option>
-                        <option value="ECON 200" {{ $v('core_sres102') === 'ECON 200' ? 'selected' : '' }}>ECON 200</option>
-                        <option value="ECON 101" {{ $v('core_sres102') === 'ECON 101' ? 'selected' : '' }}>ECON 101</option>
+                        <option value="not_yet"        {{ $v('core_sres102') === 'not_yet'        ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="SRES 102"       {{ $v('core_sres102') === 'SRES 102'       ? 'selected' : '' }}>SRES 102</option>
+                        <option value="ECON 200"       {{ $v('core_sres102') === 'ECON 200'       ? 'selected' : '' }}>ECON 200 (equivalent)</option>
+                        <option value="ECON 101"       {{ $v('core_sres102') === 'ECON 101'       ? 'selected' : '' }}>ECON 101 (equivalent)</option>
                     </select>
                 </div>
 
+                @if ($isPost2024)
+                    <div class="form-group">
+                        <label class="field-label" for="core_sres290">
+                            SRES 290 — Catholic Social Thought in Business
+                            <span class="catalog-badge badge-post">Post-2024</span>
+                        </label>
+                        <select id="core_sres290" name="core_sres290">
+                            <option value="not_yet"     {{ $v('core_sres290') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                            <option value="in_progress" {{ $v('core_sres290') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="Completed"   {{ $v('core_sres290') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                        </select>
+                    </div>
+                @endif
+
+            </div>
+
+            {{-- ─── SECTION 3: Accounting ─────────────────────────────────────── --}}
+            <h3 class="step-heading">3. Accounting</h3>
+            <p class="section-note">ACCT 205 is a prerequisite for ACCT 206 and FIN 226.</p>
+            <div class="form-grid">
+
                 <div class="form-group">
-                    <label class="field-label" for="core_acct205">ACCT 205 — Financial Accounting</label>
+                    <label class="field-label" for="core_acct205">ACCT 205 — Introductory Accounting</label>
                     <select id="core_acct205" name="core_acct205">
-                        <option value="not_yet" {{ $v('core_acct205') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_acct205') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="not_yet"     {{ $v('core_acct205') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_acct205') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Completed"   {{ $v('core_acct205') === 'Completed'   ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="field-label" for="core_acct206">ACCT 206 — Managerial Accounting</label>
                     <select id="core_acct206" name="core_acct206">
-                        <option value="not_yet" {{ $v('core_acct206') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_acct206') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="not_yet"     {{ $v('core_acct206') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_acct206') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Completed"   {{ $v('core_acct206') === 'Completed'   ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
 
+            </div>
+
+            {{-- ─── SECTION 4: Finance ────────────────────────────────────────── --}}
+            <h3 class="step-heading">4. Finance</h3>
+            <div class="form-group narrow">
+                <label class="field-label" for="core_fin226">FIN 226 — Introduction to Finance</label>
+                <select id="core_fin226" name="core_fin226">
+                    <option value="not_yet"     {{ $v('core_fin226') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                    <option value="in_progress" {{ $v('core_fin226') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="Completed"   {{ $v('core_fin226') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                </select>
+            </div>
+
+            {{-- ─── SECTION 5: Communications ─────────────────────────────────── --}}
+            <h3 class="step-heading">5. Communications</h3>
+            <div class="form-group narrow">
+                <label class="field-label" for="core_mgt250">MGT 250 — Business Communications</label>
+                <select id="core_mgt250" name="core_mgt250">
+                    <option value="not_yet"     {{ $v('core_mgt250') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                    <option value="in_progress" {{ $v('core_mgt250') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="Completed"   {{ $v('core_mgt250') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                </select>
+            </div>
+
+            {{-- ─── SECTION 6: Marketing ──────────────────────────────────────── --}}
+            <h3 class="step-heading">6. Marketing</h3>
+            <div class="form-group narrow">
+                <label class="field-label" for="core_mkt345">MKT 345 — Marketing Management</label>
+                <select id="core_mkt345" name="core_mkt345">
+                    <option value="not_yet"     {{ $v('core_mkt345') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                    <option value="in_progress" {{ $v('core_mkt345') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                    <option value="MKT 345"     {{ $v('core_mkt345') === 'MKT 345'     ? 'selected' : '' }}>MKT 345 (completed)</option>
+                </select>
+            </div>
+
+            {{-- ─── SECTION 7: Mathematics and Statistics ─────────────────────── --}}
+            <h3 class="step-heading">7. Mathematics and Statistics</h3>
+            <p class="section-note">
+                Level 3 placement requires MATH 110. Levels 1 or 2 fulfill the requirement.
+                Finance and Accounting specializations require MATH 111.
+            </p>
+            <div class="form-grid">
+
                 <div class="form-group">
-                    <label class="field-label" for="core_fin226">FIN 226 — Corporate Finance</label>
-                    <select id="core_fin226" name="core_fin226">
-                        <option value="not_yet" {{ $v('core_fin226') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_fin226') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <label class="field-label" for="core_stats">
+                        Statistics for Business
+                        @if (! $isPost2024)
+                            <span class="catalog-badge badge-pre">Pre-2024: ECON 223 or MGT 265</span>
+                        @else
+                            <span class="catalog-badge badge-post">Post-2024: MGT 265</span>
+                        @endif
+                    </label>
+                    <select id="core_stats" name="core_stats">
+                        <option value="not_yet"  {{ $v('core_stats') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="MGT 265"  {{ $v('core_stats') === 'MGT 265'  ? 'selected' : '' }}>MGT 265</option>
+                        @if (! $isPost2024)
+                            <option value="ECON 223" {{ $v('core_stats') === 'ECON 223' ? 'selected' : '' }}>ECON 223</option>
+                        @endif
                     </select>
                 </div>
+
+                @if (! $isPost2024)
+                    <div class="form-group">
+                        <label class="field-label" for="core_mgt365">
+                            MGT 365 — Quantitative Methods in Decision Making
+                            <span class="catalog-badge badge-pre">Pre-2024 only</span>
+                        </label>
+                        <select id="core_mgt365" name="core_mgt365">
+                            <option value="not_yet"     {{ $v('core_mgt365') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                            <option value="in_progress" {{ $v('core_mgt365') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="Completed"   {{ $v('core_mgt365') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                        </select>
+                    </div>
+                @endif
 
                 <div class="form-group">
                     <label class="field-label" for="core_math">Mathematics</label>
                     <select id="core_math" name="core_math">
-                        <option value="not_yet" {{ $v('core_math') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="MATH 110" {{ $v('core_math') === 'MATH 110' ? 'selected' : '' }}>MATH 110 (completed)</option>
-                        <option value="MATH 111" {{ $v('core_math') === 'MATH 111' ? 'selected' : '' }}>MATH 111 (completed)</option>
-                        <option value="MATH 110+111" {{ $v('core_math') === 'MATH 110+111' ? 'selected' : '' }}>MATH 110 + 111 (both)</option>
-                        <option value="EXEMPT Level 1" {{ $v('core_math') === 'EXEMPT Level 1' ? 'selected' : '' }}>EXEMPT — Level 1</option>
-                        <option value="EXEMPT Level 2" {{ $v('core_math') === 'EXEMPT Level 2' ? 'selected' : '' }}>EXEMPT — Level 2</option>
+                        <option value="not_yet"              {{ $v('core_math') === 'not_yet'              ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="MATH 110"             {{ $v('core_math') === 'MATH 110'             ? 'selected' : '' }}>MATH 110 (completed)</option>
+                        <option value="MATH 111"             {{ $v('core_math') === 'MATH 111'             ? 'selected' : '' }}>MATH 111 (completed)</option>
+                        <option value="Level 1 or 2 Exempt" {{ $v('core_math') === 'Level 1 or 2 Exempt' ? 'selected' : '' }}>Level 1 or 2 Exempt</option>
+                    </select>
+                </div>
+
+            </div>
+
+            {{-- ─── SECTION 8: Information Management ────────────────────────── --}}
+            <h3 class="step-heading">8. Information Management Gateway</h3>
+            <p class="section-note">Choose one course not already in your specialization requirements.</p>
+            <div class="form-group narrow">
+                <label class="field-label" for="core_info_gateway">Info Management Course</label>
+                <select id="core_info_gateway" name="core_info_gateway">
+                    <option value="not_yet"  {{ $v('core_info_gateway') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
+                    @foreach(['MGT 240','MGT 331','MGT 351','MGT 361','ACCT 425','ECON 370','EAM 406','ENT 519'] as $c)
+                        <option value="{{ $c }}" {{ $v('core_info_gateway') === $c ? 'selected' : '' }}>{{ $c }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- ─── SECTION 9: Ethics and Law ─────────────────────────────────── --}}
+            <h3 class="step-heading">9. Ethics and Law</h3>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label class="field-label" for="core_ethics">Business Ethics (choose one)</label>
+                    <select id="core_ethics" name="core_ethics">
+                        <option value="not_yet"   {{ $v('core_ethics', 'not_yet') === 'not_yet'   ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="MGT 301"   {{ $v('core_ethics', 'not_yet') === 'MGT 301'   ? 'selected' : '' }}>MGT 301</option>
+                        <option value="ACCT 442"  {{ $v('core_ethics', 'not_yet') === 'ACCT 442'  ? 'selected' : '' }}>ACCT 442</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="field-label" for="core_bus199">BUS 199 — Career Discernment I</label>
+                    <label class="field-label" for="core_law">Business Law (choose one)</label>
+                    <select id="core_law" name="core_law">
+                        <option value="not_yet"   {{ $v('core_law') === 'not_yet'   ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="MGT 321"   {{ $v('core_law') === 'MGT 321'   ? 'selected' : '' }}>MGT 321 (Fall only)</option>
+                        <option value="MGT 322"   {{ $v('core_law') === 'MGT 322'   ? 'selected' : '' }}>MGT 322 (Spring only)</option>
+                        <option value="MGT 371"   {{ $v('core_law') === 'MGT 371'   ? 'selected' : '' }}>MGT 371</option>
+                        <option value="MGT 411"   {{ $v('core_law') === 'MGT 411'   ? 'selected' : '' }}>MGT 411 / SRES 411</option>
+                        <option value="ACCT 480"  {{ $v('core_law') === 'ACCT 480'  ? 'selected' : '' }}>ACCT 480</option>
+                    </select>
+                </div>
+
+            </div>
+
+            {{-- ─── SECTION 10: Business Strategy and Comprehensive Assessment ── --}}
+            <h3 class="step-heading">10. Business Strategy and Comprehensive Assessment</h3>
+            <p class="section-note">MGT 475 and BUS 498 must be taken in the same semester (senior year).</p>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label class="field-label" for="core_mgt475">MGT 475 — Business Strategy</label>
+                    <select id="core_mgt475" name="core_mgt475">
+                        <option value="not_yet"     {{ $v('core_mgt475') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_mgt475') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Completed"   {{ $v('core_mgt475') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="field-label" for="core_bus498">BUS 498 — Comprehensive Assessment (0 credits)</label>
+                    <select id="core_bus498" name="core_bus498">
+                        <option value="not_yet"     {{ $v('core_bus498') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_bus498') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Completed"   {{ $v('core_bus498') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                    </select>
+                </div>
+
+            </div>
+
+            {{-- ─── SECTION 11: Career Discernment ─────────────────────────────── --}}
+            <h3 class="step-heading">11. Career Discernment</h3>
+            <div class="alert-info">
+                <strong>Milestone guide:</strong>
+                BUS 199 by 30 credits (Fall only) &nbsp;&bull;&nbsp;
+                BUS 299A by 60 credits &nbsp;&bull;&nbsp;
+                BUS 399A by 90 credits &nbsp;&bull;&nbsp;
+                BUS 499A during senior year
+            </div>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label class="field-label" for="core_bus199">BUS 199 — Career Discernment I (Fall Only)</label>
                     <select id="core_bus199" name="core_bus199">
-                        <option value="not_yet" {{ $v('core_bus199') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_bus199') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="not_yet"     {{ $v('core_bus199') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_bus199') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="Completed"   {{ $v('core_bus199') === 'Completed'   ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="field-label" for="core_bus299a">BUS 299A — Career Discernment II{{ $isSales ? ' / MKT 299' : '' }}</label>
                     <select id="core_bus299a" name="core_bus299a">
-                        <option value="not_yet" {{ $v('core_bus299a') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="BUS 299A" {{ $v('core_bus299a') === 'BUS 299A' ? 'selected' : '' }}>BUS 299A</option>
+                        <option value="not_yet"     {{ $v('core_bus299a') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_bus299a') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="BUS 299A"    {{ $v('core_bus299a') === 'BUS 299A'    ? 'selected' : '' }}>BUS 299A (completed)</option>
                         @if ($isSales)
-                            <option value="MKT 299" {{ $v('core_bus299a') === 'MKT 299' ? 'selected' : '' }}>MKT 299 (Sales students)</option>
+                            <option value="MKT 299" {{ $v('core_bus299a') === 'MKT 299' ? 'selected' : '' }}>MKT 299 — Sales students (completed)</option>
                         @endif
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="field-label" for="core_mgt250">MGT 250 — Business Communication</label>
-                    <select id="core_mgt250" name="core_mgt250">
-                        <option value="not_yet" {{ $v('core_mgt250') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_mgt250') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                </div>
-
-                @if ($isPost2024)
-                    <div class="form-group">
-                        <label class="field-label" for="core_sres290">SRES 290 — Catholic Social Thought in Business</label>
-                        <select id="core_sres290" name="core_sres290">
-                            <option value="not_yet" {{ $v('core_sres290') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                            <option value="Completed" {{ $v('core_sres290') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                        </select>
-                    </div>
-                @endif
-
-            </div>{{-- end form-grid --}}
-
-            {{-- Junior / Senior Core --}}
-            <h3 class="step-heading">Junior &amp; Senior Core</h3>
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label class="field-label" for="core_stats">Statistics</label>
-                    <select id="core_stats" name="core_stats">
-                        <option value="not_yet" {{ $v('core_stats') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="ECON 223" {{ $v('core_stats') === 'ECON 223' ? 'selected' : '' }}>ECON 223</option>
-                        <option value="MGT 265" {{ $v('core_stats') === 'MGT 265' ? 'selected' : '' }}>MGT 265</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="core_info_gateway">Info Management Gateway</label>
-                    <select id="core_info_gateway" name="core_info_gateway">
-                        <option value="not_yet" {{ $v('core_info_gateway') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach(['MGT 331','MGT 347','MGT 332','DA 124','MGT 240','MGT 351','MGT 361'] as $c)
-                            <option value="{{ $c }}" {{ $v('core_info_gateway') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="core_mkt345">MKT 345 — Marketing Management</label>
-                    <select id="core_mkt345" name="core_mkt345">
-                        <option value="not_yet" {{ $v('core_mkt345') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="MKT 345" {{ $v('core_mkt345') === 'MKT 345' ? 'selected' : '' }}>MKT 345</option>
-                        <option value="BUS 604" {{ $v('core_mkt345') === 'BUS 604' ? 'selected' : '' }}>BUS 604</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="core_mgt301">MGT 301 — Operations Management</label>
-                    <select id="core_mgt301" name="core_mgt301">
-                        <option value="not_yet" {{ $v('core_mgt301') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_mgt301') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="core_law">Law &amp; Ethics Elective</label>
-                    <select id="core_law" name="core_law">
-                        <option value="not_yet" {{ $v('core_law') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach(['BUS 301','BUS 401','MGT 353','POLS 321','MGT 321','MGT 322','MGT 371','MGT 411'] as $c)
-                            <option value="{{ $c }}" {{ $v('core_law') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                @if (!$isPost2024)
-                    <div class="form-group">
-                        <label class="field-label" for="core_mgt365">MGT 365 — Strategic Management (Pre-2024)</label>
-                        <select id="core_mgt365" name="core_mgt365">
-                            <option value="not_yet" {{ $v('core_mgt365') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                            <option value="MGT 365" {{ $v('core_mgt365') === 'MGT 365' ? 'selected' : '' }}>MGT 365</option>
-                            <option value="BUS 603" {{ $v('core_mgt365') === 'BUS 603' ? 'selected' : '' }}>BUS 603</option>
-                        </select>
-                    </div>
-                @endif
-
-                <div class="form-group">
                     <label class="field-label" for="core_bus399a">BUS 399A — Career Discernment III{{ $isSales ? ' / MKT 399' : '' }}</label>
                     <select id="core_bus399a" name="core_bus399a">
-                        <option value="not_yet" {{ $v('core_bus399a') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="BUS 399A" {{ $v('core_bus399a') === 'BUS 399A' ? 'selected' : '' }}>BUS 399A</option>
+                        <option value="not_yet"     {{ $v('core_bus399a') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_bus399a') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="BUS 399A"    {{ $v('core_bus399a') === 'BUS 399A'    ? 'selected' : '' }}>BUS 399A (completed)</option>
                         @if ($isSales)
-                            <option value="MKT 399" {{ $v('core_bus399a') === 'MKT 399' ? 'selected' : '' }}>MKT 399 (Sales students)</option>
+                            <option value="MKT 399" {{ $v('core_bus399a') === 'MKT 399' ? 'selected' : '' }}>MKT 399 — Sales students (completed)</option>
                         @endif
                     </select>
                 </div>
@@ -431,40 +563,60 @@
                 <div class="form-group">
                     <label class="field-label" for="core_bus499a">BUS 499A — Career Discernment IV{{ $isSales ? ' / MKT 499' : '' }}</label>
                     <select id="core_bus499a" name="core_bus499a">
-                        <option value="not_yet" {{ $v('core_bus499a') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="BUS 499A" {{ $v('core_bus499a') === 'BUS 499A' ? 'selected' : '' }}>BUS 499A</option>
+                        <option value="not_yet"     {{ $v('core_bus499a') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $v('core_bus499a') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        <option value="BUS 499A"    {{ $v('core_bus499a') === 'BUS 499A'    ? 'selected' : '' }}>BUS 499A (completed)</option>
                         @if ($isSales)
-                            <option value="MKT 499" {{ $v('core_bus499a') === 'MKT 499' ? 'selected' : '' }}>MKT 499 (Sales students)</option>
+                            <option value="MKT 499" {{ $v('core_bus499a') === 'MKT 499' ? 'selected' : '' }}>MKT 499 — Sales students (completed)</option>
                         @endif
                     </select>
                 </div>
 
-                <div class="form-group">
-                    <label class="field-label" for="core_mgt475">MGT 475 — Business &amp; Society (Capstone)</label>
-                    <select id="core_mgt475" name="core_mgt475">
-                        <option value="not_yet" {{ $v('core_mgt475') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_mgt475') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="core_bus498">BUS 498 — Senior Capstone</label>
-                    <select id="core_bus498" name="core_bus498">
-                        <option value="not_yet" {{ $v('core_bus498') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        <option value="Completed" {{ $v('core_bus498') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    </select>
-                </div>
-
-            </div>{{-- end form-grid --}}
-
-            {{-- Career Discernment reminder --}}
-            <div class="alert-info" style="margin-top: 1.25rem;">
-                <strong>Career Discernment Milestone Guide:</strong>
-                BUS 199 by 30 credits &nbsp;&bull;&nbsp;
-                BUS 299A by 60 credits &nbsp;&bull;&nbsp;
-                BUS 399A by 90 credits &nbsp;&bull;&nbsp;
-                BUS 499A during senior year
             </div>
+
+            {{-- ─── SECTION 12: Business Electives (Pre-2024 single spec only) ── --}}
+            @if ($showElectives)
+                <h3 class="step-heading">12. Business Electives</h3>
+                <p class="section-note">
+                    Two additional business or economics elective courses are required for single-specialization Pre-2024 students.
+                    Enter the course code (e.g. MGT 302). Not required if you have a double specialization.
+                </p>
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label class="field-label" for="core_elective_1">Business Elective 1</label>
+                        <input
+                            type="text"
+                            id="core_elective_1"
+                            name="core_elective_1"
+                            class="text-input{{ $errors->has('core_elective_1') ? ' input-error' : '' }}"
+                            value="{{ old('core_elective_1', $data['core_elective_1'] ?? '') }}"
+                            placeholder="e.g. MGT 302"
+                            autocomplete="off"
+                            data-error-msg="Must be a BUS, MGT, MKT, FIN, ACCT, ECON, ENT, or SRES course."
+                        >
+                        <p class="field-hint">Any BUS, MGT, MKT, FIN, ACCT, ECON, ENT, or SRES course</p>
+                        <p class="field-error" id="err_core_elective_1">@error('core_elective_1'){{ $message }}@enderror</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label" for="core_elective_2">Business Elective 2</label>
+                        <input
+                            type="text"
+                            id="core_elective_2"
+                            name="core_elective_2"
+                            class="text-input{{ $errors->has('core_elective_2') ? ' input-error' : '' }}"
+                            value="{{ old('core_elective_2', $data['core_elective_2'] ?? '') }}"
+                            placeholder="e.g. ECON 301"
+                            autocomplete="off"
+                            data-error-msg="Must be a BUS, MGT, MKT, FIN, ACCT, ECON, ENT, or SRES course."
+                        >
+                        <p class="field-hint">Any BUS, MGT, MKT, FIN, ACCT, ECON, ENT, or SRES course</p>
+                        <p class="field-error" id="err_core_elective_2">@error('core_elective_2'){{ $message }}@enderror</p>
+                    </div>
+
+                </div>
+            @endif
 
             <div class="form-actions">
                 <a href="{{ route('onboarding.step', 3) }}" class="btn-secondary">← Back</a>
@@ -473,6 +625,39 @@
 
         </form>
     </div>
+
+    @if ($showElectives)
+    <script>
+        var ELECTIVE_PREFIXES = ['BUS ', 'MGT ', 'MKT ', 'FIN ', 'ACCT ', 'ECON ', 'ENT ', 'SRES '];
+
+        function validateElectiveInput(inputId, errorId) {
+            var input = document.getElementById(inputId);
+            var errorEl = document.getElementById(errorId);
+            if (!input || !errorEl) { return; }
+            input.addEventListener('input', function () {
+                var val = this.value.trim().toUpperCase();
+                if (val === '') {
+                    errorEl.textContent = '';
+                    this.classList.remove('input-error', 'input-valid');
+                    return;
+                }
+                var valid = ELECTIVE_PREFIXES.some(function (p) { return val.indexOf(p) === 0; });
+                if (valid) {
+                    errorEl.textContent = '';
+                    this.classList.remove('input-error');
+                    this.classList.add('input-valid');
+                } else {
+                    errorEl.textContent = this.dataset.errorMsg;
+                    this.classList.add('input-error');
+                    this.classList.remove('input-valid');
+                }
+            });
+        }
+
+        validateElectiveInput('core_elective_1', 'err_core_elective_1');
+        validateElectiveInput('core_elective_2', 'err_core_elective_2');
+    </script>
+    @endif
 
 </body>
 </html>
