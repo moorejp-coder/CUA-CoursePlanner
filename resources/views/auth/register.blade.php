@@ -27,7 +27,7 @@
         </div>
 
         <p class="text-xs text-gray-400 text-center -mt-1">
-            For Busch School undergraduate students only.
+            A CUA email address (@cua.edu) is required to register.
         </p>
 
         <x-primary-button class="w-full mt-1">

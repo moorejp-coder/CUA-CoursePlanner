@@ -28,7 +28,16 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
+                        $fail('This application is only available to Catholic University of America students and staff.');
+                    }
+                },
+            ],
             'password' => ['required', 'string'],
         ];
     }

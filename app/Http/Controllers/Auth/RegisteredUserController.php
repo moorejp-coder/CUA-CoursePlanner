@@ -32,7 +32,15 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => [
+                'required', 'string', 'lowercase', 'email', 'max:255',
+                'unique:'.User::class,
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
+                        $fail('Registration is restricted to CUA email addresses (@cua.edu).');
+                    }
+                },
+            ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
