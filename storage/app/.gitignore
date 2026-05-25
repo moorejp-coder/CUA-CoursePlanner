@@ -4,3 +4,4 @@
 !.gitignore
 !system_prompt.txt
 !specializations.json
+!requirements.json

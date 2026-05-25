@@ -1,0 +1,86 @@
+{
+    "liberal_arts": [
+        "ENGL 101",
+        "ENGL 102",
+        "PHIL 101",
+        "THEO 101",
+        "THEO 201",
+        "HIST 101 or HIST 102",
+        "MATH 111 or MATH 115",
+        "NSCI (any lab science)",
+        "LANG (foreign language)",
+        "SOSC (social science elective)",
+        "ARTS (fine arts elective)",
+        "PHIL 302",
+        "THEO 302",
+        "ENGL (upper-division literature)",
+        "Free Elective"
+    ],
+    "business_core": [
+        "ACCT 205",
+        "ACCT 206",
+        "ECON 201",
+        "ECON 202",
+        "MGT 201",
+        "MGT 240",
+        "MGT 300",
+        "MGT 302",
+        "MGT 310",
+        "MGT 365",
+        "MGT 401",
+        "MGT 490",
+        "BUS 601",
+        "BUS 602"
+    ],
+    "spec": {
+        "marketing": [
+            "MKT 301",
+            "MKT 310",
+            "MKT 320",
+            "MKT 401",
+            "MKT elective"
+        ],
+        "finance": [
+            "FIN 301",
+            "FIN 310",
+            "FIN 320",
+            "FIN 401",
+            "FIN elective"
+        ],
+        "management": [
+            "MGT 320",
+            "MGT 330",
+            "MGT 340",
+            "MGT 430",
+            "MGT elective"
+        ],
+        "accounting": [
+            "ACCT 301",
+            "ACCT 310",
+            "ACCT 320",
+            "ACCT 401",
+            "ACCT elective"
+        ],
+        "business_econ": [
+            "ECON 301",
+            "ECON 310",
+            "ECON 320",
+            "ECON 401",
+            "ECON elective"
+        ],
+        "entrepreneurship": [
+            "ENT 301",
+            "ENT 310",
+            "ENT 320",
+            "ENT 401",
+            "ENT elective"
+        ],
+        "real_estate": [
+            "RE 301",
+            "RE 310",
+            "RE 320",
+            "RE 401",
+            "RE elective"
+        ]
+    }
+}
