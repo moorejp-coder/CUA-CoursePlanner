@@ -28,6 +28,7 @@ class AcademicProfileController extends Controller
         }
 
         $isPost2024 = $profile->catalog_year === 'post_2024';
+        $isAccounting = $profile->degree === 'bs_accounting';
         $isSingleSpec = empty($profile->specialization_2) && empty($profile->specialization_3);
         $coursesByCode = $courses->keyBy('course_code');
         $coursesByName = $courses->where('requirement_category', 'liberal_arts')->keyBy('course_name');
@@ -77,56 +78,78 @@ class AcademicProfileController extends Controller
             ];
         }
 
-        // ── Specialization blocks ─────────────────────────────────────────────
+        // ── Specialization blocks (BSBA only) ─────────────────────────────────
         $specBlocks = [];
-        $specsJson = json_decode(file_get_contents(storage_path('app/specializations.json')), true);
-        $catalogKey = $isPost2024 ? 'post_2024' : 'pre_2024';
-        $allSpecs = $specsJson[$catalogKey]['specializations'] ?? [];
-        $specKeys = array_filter([
-            $profile->specialization_1,
-            $profile->specialization_2,
-            $profile->specialization_3,
-        ]);
-        $specCourses = $courses->where('requirement_category', 'specialization');
+        $acctRows = [];
+        $acctSummary = ['completed' => 0, 'total' => 0];
 
-        foreach ($specKeys as $specKey) {
-            $specData = $allSpecs[$specKey] ?? null;
-            if (! $specData) {
-                continue;
-            }
-            $required = $specData['required'] ?? [];
-            $electives = $specData['electives'] ?? [];
-            $chooseCount = $specData['choose_count'] ?? 0;
-            $rows = [];
-            foreach ($required as $code) {
-                $course = $specCourses->where('course_code', $code)->first();
-                $rows[] = [
-                    'course_code' => $code,
-                    'type' => 'Required',
+        if ($isAccounting) {
+            $acctSlots = $this->buildAccountingSlots($isPost2024);
+            $acctCourses = $courses->where('requirement_category', 'accounting')->keyBy('course_code');
+            foreach ($acctSlots as $slot) {
+                $course = $acctCourses->get($slot['code']);
+                $acctRows[] = [
+                    'course_code' => $slot['code'],
+                    'course_name' => $slot['name'],
+                    'prereq' => $slot['pre'],
+                    'type' => $slot['type'],
                     'status' => $course?->status ?? 'not_yet',
                     'semester' => $course?->semester_completed ?? null,
                 ];
             }
-            foreach ($electives as $code) {
-                $course = $specCourses->where('course_code', $code)->first();
-                $rows[] = [
-                    'course_code' => $code,
-                    'type' => 'Elective',
-                    'status' => $course?->status ?? 'not_yet',
-                    'semester' => $course?->semester_completed ?? null,
-                ];
-            }
-            $completed = collect($rows)->whereIn('status', ['completed', 'in_progress'])->count();
-            $total = count($required) + $chooseCount;
-            $specBlocks[] = [
-                'name' => $specData['name'],
-                'rows' => $rows,
-                'completed' => collect($rows)->where('status', 'completed')->count(),
-                'in_progress' => collect($rows)->where('status', 'in_progress')->count(),
-                'total_required' => $total,
-                'choose_count' => $chooseCount,
-                'required_count' => count($required),
+            $acctSummary = [
+                'completed' => collect($acctRows)->where('status', 'completed')->count(),
+                'total' => count($acctRows),
             ];
+        } else {
+            $specsJson = json_decode(file_get_contents(storage_path('app/specializations.json')), true);
+            $catalogKey = $isPost2024 ? 'post_2024' : 'pre_2024';
+            $allSpecs = $specsJson[$catalogKey]['specializations'] ?? [];
+            $specKeys = array_filter([
+                $profile->specialization_1,
+                $profile->specialization_2,
+                $profile->specialization_3,
+            ]);
+            $specCourses = $courses->where('requirement_category', 'specialization');
+
+            foreach ($specKeys as $specKey) {
+                $specData = $allSpecs[$specKey] ?? null;
+                if (! $specData) {
+                    continue;
+                }
+                $required = $specData['required'] ?? [];
+                $electives = $specData['electives'] ?? [];
+                $chooseCount = $specData['choose_count'] ?? 0;
+                $rows = [];
+                foreach ($required as $code) {
+                    $course = $specCourses->where('course_code', $code)->first();
+                    $rows[] = [
+                        'course_code' => $code,
+                        'type' => 'Required',
+                        'status' => $course?->status ?? 'not_yet',
+                        'semester' => $course?->semester_completed ?? null,
+                    ];
+                }
+                foreach ($electives as $code) {
+                    $course = $specCourses->where('course_code', $code)->first();
+                    $rows[] = [
+                        'course_code' => $code,
+                        'type' => 'Elective',
+                        'status' => $course?->status ?? 'not_yet',
+                        'semester' => $course?->semester_completed ?? null,
+                    ];
+                }
+                $total = count($required) + $chooseCount;
+                $specBlocks[] = [
+                    'name' => $specData['name'],
+                    'rows' => $rows,
+                    'completed' => collect($rows)->where('status', 'completed')->count(),
+                    'in_progress' => collect($rows)->where('status', 'in_progress')->count(),
+                    'total_required' => $total,
+                    'choose_count' => $chooseCount,
+                    'required_count' => count($required),
+                ];
+            }
         }
 
         // ── Summaries ─────────────────────────────────────────────────────────
@@ -140,14 +163,42 @@ class AcademicProfileController extends Controller
         // ── Transfer and other courses ────────────────────────────────────────
         $transferCourses = $courses->where('requirement_category', 'transfer_credit');
         $otherCourses = $courses->whereNotIn('requirement_category', [
-            'liberal_arts', 'business_core', 'specialization',
+            'liberal_arts', 'business_core', 'specialization', 'accounting',
             'in_progress', 'transfer_credit',
         ]);
 
         return view('profile.academic', compact(
             'profile', 'laRows', 'coreRows', 'specBlocks',
-            'transferCourses', 'otherCourses', 'summaries'
+            'transferCourses', 'otherCourses', 'summaries',
+            'isAccounting', 'acctRows', 'acctSummary'
         ));
+    }
+
+    private function buildAccountingSlots(bool $isPost2024): array
+    {
+        $slots = [
+            ['code' => 'ACCT 310', 'name' => 'Intermediate Accounting I',        'pre' => 'ACCT 206', 'type' => 'Required'],
+            ['code' => 'ACCT 311', 'name' => 'Intermediate Accounting II',       'pre' => 'ACCT 310', 'type' => 'Required'],
+        ];
+
+        if (! $isPost2024) {
+            $slots[] = ['code' => 'ACCT 312', 'name' => 'Intermediate Accounting III', 'pre' => 'ACCT 311', 'type' => 'Required'];
+        }
+
+        return array_merge($slots, [
+            ['code' => 'ACCT 315', 'name' => 'Cost Accounting',                  'pre' => 'ACCT 206',  'type' => 'Required'],
+            ['code' => 'ACCT 412', 'name' => 'Auditing',                         'pre' => 'ACCT 311',  'type' => 'Required'],
+            ['code' => 'ACCT 417', 'name' => 'Government and Non-Profit Acct.',  'pre' => null,        'type' => 'Required'],
+            ['code' => 'ACCT 418', 'name' => 'Advanced Accounting',              'pre' => 'ACCT 311',  'type' => 'Required'],
+            ['code' => 'ACCT 419', 'name' => 'Federal Income Taxation',          'pre' => null,        'type' => 'Required'],
+            ['code' => 'ACCT 422', 'name' => 'Accounting Analytics',             'pre' => 'ACCT 311',  'type' => 'Required'],
+            ['code' => 'ACCT 442', 'name' => 'Accounting Ethics',                'pre' => null,        'type' => 'Required'],
+            ['code' => 'FIN 332',  'name' => 'Corporate Finance',                'pre' => 'FIN 226',   'type' => 'Required'],
+            ['code' => 'FIN 334',  'name' => 'Investments',                      'pre' => 'FIN 332',   'type' => 'Required'],
+            ['code' => 'ACCT 480', 'name' => 'Accounting Elective (ACCT 480)',   'pre' => null,        'type' => 'Elective'],
+            ['code' => 'ACCT 491', 'name' => 'Accounting Elective (ACCT 491)',   'pre' => null,        'type' => 'Elective'],
+            ['code' => 'ECON 370', 'name' => 'Accounting Elective (ECON 370)',   'pre' => null,        'type' => 'Elective'],
+        ]);
     }
 
     private function buildCoreSlots(bool $isPost2024, bool $isSingleSpec): array

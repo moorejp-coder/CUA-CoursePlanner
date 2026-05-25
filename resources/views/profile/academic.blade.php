@@ -309,6 +309,7 @@
         @php
             $laPct   = $summaries['la']['total']   > 0 ? round($summaries['la']['completed']   / $summaries['la']['total']   * 100) : 0;
             $corePct = $summaries['core']['total']  > 0 ? round($summaries['core']['completed']  / $summaries['core']['total']  * 100) : 0;
+            $acctPct = ($isAccounting && $acctSummary['total'] > 0) ? round($acctSummary['completed'] / $acctSummary['total'] * 100) : 0;
         @endphp
         <div class="summary-cards">
             <div class="summary-card">
@@ -325,6 +326,15 @@
                     <div class="progress-fill {{ $corePct === 100 ? 'complete' : '' }}" style="width:{{ $corePct }}%"></div>
                 </div>
             </div>
+            @if($isAccounting)
+            <div class="summary-card">
+                <div class="summary-card-label">Acct. Requirements</div>
+                <div class="summary-card-count">{{ $acctSummary['completed'] }}<span> / {{ $acctSummary['total'] }}</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill {{ $acctPct === 100 ? 'complete' : '' }}" style="width:{{ $acctPct }}%"></div>
+                </div>
+            </div>
+            @else
             @foreach($specBlocks as $block)
             @php $specPct = $block['total_required'] > 0 ? round(min($block['completed'], $block['total_required']) / $block['total_required'] * 100) : 0; @endphp
             <div class="summary-card">
@@ -335,6 +345,7 @@
                 </div>
             </div>
             @endforeach
+            @endif
             @if($transferCourses->count() > 0)
             <div class="summary-card">
                 <div class="summary-card-label">Transfer Credits</div>
@@ -392,7 +403,7 @@
                     $profile->specialization_3,
                 ]);
             @endphp
-            @if(count($specs) > 0)
+            @if(! $isAccounting && count($specs) > 0)
             <div style="padding:0 20px 16px; border-top:1px solid var(--border-light);">
                 <p class="info-label" style="padding-top:14px; margin-bottom:8px;">Specializations</p>
                 <div style="display:flex; flex-wrap:wrap; gap:6px;">
@@ -464,7 +475,52 @@
             </table>
         </div>
 
-        {{-- Specialization blocks --}}
+        {{-- Accounting Requirements (BS Accounting only) --}}
+        @if($isAccounting)
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">Accounting Requirements</span>
+                <span class="completion-label">{{ $acctSummary['completed'] }} of {{ $acctSummary['total'] }} completed</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:130px;">Course Code</th>
+                        <th>Course Name</th>
+                        <th style="width:130px;">Prerequisite</th>
+                        <th style="width:90px;">Type</th>
+                        <th style="width:130px;">Status</th>
+                        <th style="width:120px;">Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($acctRows as $row)
+                    <tr class="{{ $row['status'] === 'not_yet' ? 'row-not-yet' : '' }}">
+                        <td style="font-family:monospace; font-size:13px; font-weight:600; color:{{ $row['status'] !== 'not_yet' ? 'var(--cua-blue)' : '#bbb' }};">
+                            {{ $row['course_code'] }}
+                        </td>
+                        <td>{{ $row['course_name'] }}</td>
+                        <td style="color:var(--text-muted); font-size:12px; font-style:italic;">{{ $row['prereq'] ?? '—' }}</td>
+                        <td>
+                            @if($row['type'] === 'Required')
+                                <span style="font-size:12px; font-weight:600; color:var(--cua-blue);">Required</span>
+                            @else
+                                <span style="font-size:12px; color:var(--text-muted);">Elective</span>
+                            @endif
+                        </td>
+                        <td>{!! $statusBadge($row['status']) !!}</td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $row['semester'] ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            <div class="spec-elective-note">
+                Post-2024 students: choose one elective (ACCT 480, ACCT 491, or ECON 370). Pre-2024 students include ACCT 312.
+            </div>
+        </div>
+
+        {{-- Specialization blocks (BSBA only) --}}
+        @else
         @foreach($specBlocks as $block)
         <div class="section-card">
             <div class="section-header">
@@ -506,6 +562,7 @@
             @endif
         </div>
         @endforeach
+        @endif
 
         {{-- Transfer Credits --}}
         @if($transferCourses->count() > 0)
