@@ -34,15 +34,71 @@ class OnboardingController extends Controller
         }
 
         $data = session('onboarding', []);
+        $isAccounting = ($data['degree'] ?? '') === 'bs_accounting';
+
+        // BS Accounting skips step 2 (Specializations)
+        if ($isAccounting && $step === 2) {
+            return redirect()->route('onboarding.step', 3);
+        }
+
+        // BS Accounting skips step 5 (Spec Courses) — redirect to the accounting step
+        if ($isAccounting && $step === 5) {
+            return redirect()->route('onboarding.step.accounting');
+        }
+
         $specializationsJson = json_decode(file_get_contents(storage_path('app/specializations.json')), true);
+        [$wizardStep, $wizardTotal] = $this->computeWizardProgress($step, $isAccounting);
 
         return view("onboarding.step{$step}", [
             'step' => $step,
             'totalSteps' => self::TOTAL_STEPS,
+            'wizardStep' => $wizardStep,
+            'wizardTotal' => $wizardTotal,
+            'degree' => $data['degree'] ?? 'bsba',
             'data' => $data,
             'specializations' => $specializationsJson,
             'socialScienceAutoFill' => $step === 3 ? $this->computeSocialScienceAutoFill($data) : null,
         ]);
+    }
+
+    public function showAccounting(): View|RedirectResponse
+    {
+        if (Auth::user()->studentProfile) {
+            return redirect()->route('chat');
+        }
+
+        $data = session('onboarding', []);
+
+        if (($data['degree'] ?? '') !== 'bs_accounting') {
+            return redirect()->route('onboarding.step', 5);
+        }
+
+        return view('onboarding.step_accounting', [
+            'step' => 'accounting',
+            'totalSteps' => self::TOTAL_STEPS,
+            'wizardStep' => 4,
+            'wizardTotal' => 5,
+            'degree' => 'bs_accounting',
+            'data' => $data,
+        ]);
+    }
+
+    public function saveAccounting(Request $request): RedirectResponse
+    {
+        if (Auth::user()->studentProfile) {
+            return redirect()->route('chat');
+        }
+
+        $data = session('onboarding', []);
+
+        if (($data['degree'] ?? '') !== 'bs_accounting') {
+            return redirect()->route('onboarding.step', 5);
+        }
+
+        $data = array_merge($data, $this->validateAccounting($request));
+        session(['onboarding' => $data]);
+
+        return redirect()->route('onboarding.step', 6);
     }
 
     public function save(Request $request, int $step): RedirectResponse
@@ -70,6 +126,17 @@ class OnboardingController extends Controller
             session()->forget('onboarding');
 
             return redirect()->route('chat')->with('onboarding_complete', true);
+        }
+
+        $isAccounting = ($data['degree'] ?? '') === 'bs_accounting';
+
+        // BS Accounting skips step 2 (Specializations) and step 5 (Spec Courses)
+        if ($isAccounting && $step === 1) {
+            return redirect()->route('onboarding.step', 3);
+        }
+
+        if ($isAccounting && $step === 4) {
+            return redirect()->route('onboarding.step.accounting');
         }
 
         return redirect()->route('onboarding.step', $step + 1);
@@ -237,6 +304,44 @@ class OnboardingController extends Controller
         $validated['projected_standing'] = $this->calculateStanding((int) $validated['credits_completed']);
 
         return $validated;
+    }
+
+    private function validateAccounting(Request $request): array
+    {
+        $data = ['acct_courses' => []];
+
+        foreach ($request->input('acct_courses', []) as $code => $status) {
+            $safeCode = preg_replace('/[^A-Za-z0-9 ]/', '', $code);
+            if ($safeCode) {
+                $data['acct_courses'][$safeCode] = in_array($status, ['completed', 'in_progress', 'not_yet'])
+                    ? $status
+                    : 'not_yet';
+            }
+        }
+
+        $elective = trim($request->input('acct_elective', 'not_yet'));
+        $data['acct_elective'] = in_array($elective, ['ACCT 480', 'ACCT 491', 'ECON 370', 'not_yet'])
+            ? $elective
+            : 'not_yet';
+
+        return $data;
+    }
+
+    /** Returns [visualStep, visualTotal] for the wizard header. */
+    private function computeWizardProgress(int $step, bool $isAccounting): array
+    {
+        if ($isAccounting) {
+            // BS Accounting: 5 visual steps mapped from real steps 1, 3, 4, accounting(handled separately), 6
+            return [match ($step) {
+                1 => 1,
+                3 => 2,
+                4 => 3,
+                6 => 5,
+                default => 1,
+            }, 5];
+        }
+
+        return [$step, 6];
     }
 
     private function computeSocialScienceAutoFill(array $data): ?array

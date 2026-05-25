@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/onboarding', [OnboardingController::class, 'index'])->name('onboarding');
     Route::get('/onboarding/step/{step}', [OnboardingController::class, 'show'])->name('onboarding.step')->where('step', '[1-6]');
     Route::post('/onboarding/step/{step}', [OnboardingController::class, 'save'])->name('onboarding.save')->where('step', '[1-6]');
+    Route::get('/onboarding/step-accounting', [OnboardingController::class, 'showAccounting'])->name('onboarding.step.accounting');
+    Route::post('/onboarding/step-accounting', [OnboardingController::class, 'saveAccounting'])->name('onboarding.save.accounting');
 });
 
 Route::middleware('auth')->group(function () {

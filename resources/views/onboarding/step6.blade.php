@@ -462,7 +462,7 @@
             </p>
 
             <div class="form-actions">
-                <a href="{{ route('onboarding.step', 5) }}" class="btn-secondary">← Back</a>
+                <a href="{{ $degree === 'bs_accounting' ? route('onboarding.step.accounting') : route('onboarding.step', 5) }}" class="btn-secondary">← Back</a>
                 <button type="submit" class="btn-primary">Complete Setup →</button>
             </div>
 

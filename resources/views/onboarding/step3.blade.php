@@ -641,7 +641,7 @@
             </div>
 
             <div class="form-actions">
-                <a href="{{ route('onboarding.step', 2) }}" class="btn-secondary">← Back</a>
+                <a href="{{ $degree === 'bs_accounting' ? route('onboarding.step', 1) : route('onboarding.step', 2) }}" class="btn-secondary">← Back</a>
                 <button type="submit" class="btn-primary">Next: Business Core →</button>
             </div>
 
