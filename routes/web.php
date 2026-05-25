@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicProfileController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
@@ -37,6 +38,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// ── Admin Routes ──────────────────────────────────────────────────────────────
+Route::middleware(['auth', 'verified', 'dean'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/students', [AdminController::class, 'students'])->name('students');
+    Route::get('/students/export', [AdminController::class, 'exportStudentsCsv'])->name('students.export');
+    Route::get('/students/{user}', [AdminController::class, 'studentProfile'])->name('students.show');
+    Route::get('/requirements', [AdminController::class, 'requirements'])->name('requirements');
+    Route::post('/requirements', [AdminController::class, 'saveRequirements'])->name('requirements.save');
+    Route::get('/system-prompt', [AdminController::class, 'systemPrompt'])->name('system-prompt');
+    Route::post('/system-prompt', [AdminController::class, 'saveSystemPrompt'])->name('system-prompt.save');
+    Route::post('/system-prompt/restore', [AdminController::class, 'restoreSystemPrompt'])->name('system-prompt.restore');
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::post('/users/{user}/role', [AdminController::class, 'updateUserRole'])->name('users.role');
+    Route::get('/stats', [AdminController::class, 'stats'])->name('stats');
 });
 
 require __DIR__.'/auth.php';
