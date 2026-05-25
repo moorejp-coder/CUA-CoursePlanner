@@ -249,6 +249,32 @@
 
         .badge-pre  { background: #fef3c7; color: #92400e; }
         .badge-post { background: #d1fae5; color: #065f46; }
+
+        .transfer-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+        .transfer-table th {
+            font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #666; padding: 0.4rem 0.5rem;
+            border-bottom: 1.5px solid #e0e0e0; text-align: left; background: #fafafa;
+        }
+        .transfer-table td { padding: 0.4rem 0.5rem; vertical-align: top; }
+        .transfer-table input, .transfer-table select {
+            width: 100%; padding: 0.4rem 0.5rem; border: 1.5px solid #ccc; border-radius: 5px;
+            font-size: 0.85rem; font-family: 'Roboto', sans-serif; background: #fff;
+        }
+        .transfer-table input:focus, .transfer-table select:focus {
+            outline: none; border-color: var(--cua-navy);
+        }
+        .btn-remove {
+            background: transparent; border: none; color: #999; cursor: pointer;
+            font-size: 1.1rem; padding: 0.3rem 0.4rem; line-height: 1;
+        }
+        .btn-remove:hover { color: var(--cua-red); }
+        .btn-add-row {
+            background: transparent; border: 1.5px solid var(--cua-navy); color: var(--cua-navy);
+            padding: 0.45rem 1rem; border-radius: 5px; font-size: 0.85rem;
+            font-family: 'Roboto', sans-serif; cursor: pointer; margin-top: 0.6rem;
+        }
+        .btn-add-row:hover { background: #f0f4ff; }
     </style>
 </head>
 <body>
@@ -434,7 +460,8 @@
                         <select id="core_mgt365" name="core_mgt365">
                             <option value="not_yet"     {{ $v('core_mgt365') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
                             <option value="in_progress" {{ $v('core_mgt365') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="Completed"   {{ $v('core_mgt365') === 'Completed'   ? 'selected' : '' }}>Completed</option>
+                            <option value="Completed"   {{ $v('core_mgt365') === 'Completed'   ? 'selected' : '' }}>Completed (MGT 365)</option>
+                            <option value="BUS 603"     {{ $v('core_mgt365') === 'BUS 603'     ? 'selected' : '' }}>BUS 603 (equivalent)</option>
                         </select>
                     </div>
                 @endif
@@ -458,7 +485,7 @@
                 <label class="field-label" for="core_info_gateway">Info Management Course</label>
                 <select id="core_info_gateway" name="core_info_gateway">
                     <option value="not_yet"  {{ $v('core_info_gateway') === 'not_yet'  ? 'selected' : '' }}>Not yet completed</option>
-                    @foreach(['MGT 240','MGT 331','MGT 351','MGT 361','ACCT 425','ECON 370','EAM 406','ENT 519'] as $c)
+                    @foreach(['MGT 240','MGT 331','MGT 351','MGT 361','ACCT 425','ECON 370','EAM 406','ENT 519','BUS 606'] as $c)
                         <option value="{{ $c }}" {{ $v('core_info_gateway') === $c ? 'selected' : '' }}>{{ $c }}</option>
                     @endforeach
                 </select>
@@ -486,6 +513,7 @@
                         <option value="MGT 371"   {{ $v('core_law') === 'MGT 371'   ? 'selected' : '' }}>MGT 371</option>
                         <option value="MGT 411"   {{ $v('core_law') === 'MGT 411'   ? 'selected' : '' }}>MGT 411 / SRES 411</option>
                         <option value="ACCT 480"  {{ $v('core_law') === 'ACCT 480'  ? 'selected' : '' }}>ACCT 480</option>
+                        <option value="BUS 616"   {{ $v('core_law') === 'BUS 616'   ? 'selected' : '' }}>BUS 616</option>
                     </select>
                 </div>
 
@@ -618,6 +646,39 @@
                 </div>
             @endif
 
+            {{-- ─── TRANSFER CREDITS (Optional) ─────────────────────────────── --}}
+            <h3 class="step-heading">Transfer Credits <span style="font-family:'Roboto',sans-serif; font-size:0.8rem; font-weight:400; color:#777;">(optional)</span></h3>
+            <p class="section-note">
+                List any transfer credits you are applying toward your degree. These will appear on your academic profile so the advisor can factor them into your plan.
+            </p>
+
+            <table class="transfer-table" id="transfer-table">
+                <thead>
+                    <tr>
+                        <th style="width:22%">Institution</th>
+                        <th style="width:24%">Original Course Name</th>
+                        <th style="width:20%">CUA Equivalent</th>
+                        <th style="width:10%">Credits</th>
+                        <th style="width:10%">Grade</th>
+                        <th style="width:5%"></th>
+                    </tr>
+                </thead>
+                <tbody id="transfer-rows"></tbody>
+            </table>
+            <button type="button" class="btn-add-row" id="btn-add-transfer" onclick="addTransferRow()">+ Add Transfer Credit</button>
+
+            {{-- Hidden template for cloning --}}
+            <template id="transfer-row-tpl">
+                <tr>
+                    <td><input type="text" name="transfers[__IDX__][institution]" placeholder="e.g. Georgetown Univ." autocomplete="off"></td>
+                    <td><input type="text" name="transfers[__IDX__][orig_name]" placeholder="e.g. Introduction to Finance" autocomplete="off"></td>
+                    <td><input type="text" name="transfers[__IDX__][cua_equiv]" placeholder="e.g. FIN 226" autocomplete="off"></td>
+                    <td><input type="number" name="transfers[__IDX__][credits]" placeholder="3" min="0" max="12" step="0.5"></td>
+                    <td><input type="text" name="transfers[__IDX__][grade]" placeholder="A, B+" maxlength="3" autocomplete="off"></td>
+                    <td><button type="button" class="btn-remove" onclick="removeTransferRow(this)" title="Remove row">×</button></td>
+                </tr>
+            </template>
+
             <div class="form-actions">
                 <a href="{{ route('onboarding.step', 3) }}" class="btn-secondary">← Back</a>
                 <button type="submit" class="btn-primary">Next: Specialization Courses →</button>
@@ -658,6 +719,35 @@
         validateElectiveInput('core_elective_2', 'err_core_elective_2');
     </script>
     @endif
+
+    <script>
+        var transferRowCount = 0;
+        var MAX_TRANSFER_ROWS = 10;
+
+        function addTransferRow() {
+            if (transferRowCount >= MAX_TRANSFER_ROWS) {
+                document.getElementById('btn-add-transfer').disabled = true;
+                return;
+            }
+            var tpl = document.getElementById('transfer-row-tpl');
+            var clone = tpl.content.cloneNode(true);
+            var idx = transferRowCount;
+            clone.querySelectorAll('[name]').forEach(function (el) {
+                el.name = el.name.replace('__IDX__', idx);
+            });
+            document.getElementById('transfer-rows').appendChild(clone);
+            transferRowCount++;
+            if (transferRowCount >= MAX_TRANSFER_ROWS) {
+                document.getElementById('btn-add-transfer').disabled = true;
+            }
+        }
+
+        function removeTransferRow(btn) {
+            btn.closest('tr').remove();
+            transferRowCount = Math.max(0, transferRowCount - 1);
+            document.getElementById('btn-add-transfer').disabled = false;
+        }
+    </script>
 
 </body>
 </html>

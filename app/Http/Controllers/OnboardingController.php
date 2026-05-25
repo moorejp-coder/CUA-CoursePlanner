@@ -196,6 +196,18 @@ class OnboardingController extends Controller
             $data[$field] = $raw;
         }
 
+        $data['transfers'] = [];
+        foreach ($request->input('transfers', []) as $row) {
+            $institution = strip_tags(trim((string) ($row['institution'] ?? '')));
+            $origName = strip_tags(trim((string) ($row['orig_name'] ?? '')));
+            $cuaEquiv = strtoupper(strip_tags(trim((string) ($row['cua_equiv'] ?? ''))));
+            $credits = is_numeric($row['credits'] ?? '') ? (float) $row['credits'] : null;
+            $grade = strip_tags(trim((string) ($row['grade'] ?? '')));
+            if ($institution && $origName) {
+                $data['transfers'][] = compact('institution', 'origName', 'cuaEquiv', 'credits', 'grade');
+            }
+        }
+
         return $data;
     }
 
@@ -402,10 +414,27 @@ class OnboardingController extends Controller
                     'status' => 'in_progress',
                     'grade' => null,
                     'semester_completed' => null,
+                    'notes' => null,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ];
             }
+        }
+
+        // Transfer credits from step 4
+        foreach ($data['transfers'] ?? [] as $transfer) {
+            $courses[] = [
+                'user_id' => $user->id,
+                'course_code' => $transfer['cuaEquiv'] ?: $transfer['origName'],
+                'course_name' => $transfer['origName'],
+                'requirement_category' => 'transfer_credit',
+                'status' => 'completed',
+                'grade' => $transfer['grade'] ?: null,
+                'semester_completed' => null,
+                'notes' => 'Transfer from '.$transfer['institution'].($transfer['credits'] !== null ? ' ('.$transfer['credits'].' credits)' : ''),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
 
         if ($courses) {

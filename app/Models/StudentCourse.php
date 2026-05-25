@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'status',
     'grade',
     'semester_completed',
+    'notes',
 ])]
 class StudentCourse extends Model
 {

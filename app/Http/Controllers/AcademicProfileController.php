@@ -15,16 +15,186 @@ class AcademicProfileController extends Controller
         $profile = $user->studentProfile;
         $courses = $user->studentCourses;
 
-        $coursesByCategory = $courses->groupBy('requirement_category');
-
-        $stats = [];
-        foreach ($coursesByCategory as $category => $categoryCourses) {
-            $completed = $categoryCourses->where('status', 'completed')->count();
-            $total = $categoryCourses->count();
-            $stats[$category] = ['completed' => $completed, 'total' => $total];
+        if (! $profile) {
+            return view('profile.academic', [
+                'profile' => null,
+                'laRows' => [],
+                'coreRows' => [],
+                'specBlocks' => [],
+                'transferCourses' => collect(),
+                'otherCourses' => collect(),
+                'summaries' => [],
+            ]);
         }
 
-        return view('profile.academic', compact('profile', 'courses', 'coursesByCategory', 'stats'));
+        $isPost2024 = $profile->catalog_year === 'post_2024';
+        $isSingleSpec = empty($profile->specialization_2) && empty($profile->specialization_3);
+        $coursesByCode = $courses->keyBy('course_code');
+        $coursesByName = $courses->where('requirement_category', 'liberal_arts')->keyBy('course_name');
+
+        // ── Liberal Arts rows (15 canonical slots) ──────────────────────────
+        $laSlots = [
+            'Classical Philosophy', 'Modern Philosophy',
+            'Theology I', 'Theology II',
+            'Rhetoric & Composition', 'Natural Science',
+            'Literature', 'Fine Arts',
+            'Social Science', 'History/Politics',
+            'Language I', 'Language II',
+            'Philosophy Elective', 'Theology Elective',
+            'Math Thinking',
+        ];
+        $laRows = [];
+        foreach ($laSlots as $slotName) {
+            $course = $coursesByName->get($slotName);
+            $laRows[] = [
+                'slot_name' => $slotName,
+                'course_code' => $course?->course_code ?? '—',
+                'status' => $course?->status ?? 'not_yet',
+                'semester' => $course?->semester_completed ?? null,
+            ];
+        }
+
+        // ── Business Core rows ───────────────────────────────────────────────
+        $coreSlots = $this->buildCoreSlots($isPost2024, $isSingleSpec);
+        $coreRows = [];
+        foreach ($coreSlots as $slot) {
+            $dbCourse = null;
+            if ($slot['code']) {
+                $dbCourse = $coursesByCode->get($slot['code'])
+                    ?? $courses->where('requirement_category', 'business_core')
+                        ->where('course_name', $slot['name'])
+                        ->first();
+            } else {
+                $dbCourse = $courses->where('requirement_category', 'business_core')
+                    ->where('course_name', $slot['name'])
+                    ->first();
+            }
+            $coreRows[] = [
+                'slot_name' => $slot['name'],
+                'course_code' => $dbCourse?->course_code ?? ($slot['code'] ?: '—'),
+                'status' => $dbCourse?->status ?? 'not_yet',
+                'semester' => $dbCourse?->semester_completed ?? null,
+            ];
+        }
+
+        // ── Specialization blocks ─────────────────────────────────────────────
+        $specBlocks = [];
+        $specsJson = json_decode(file_get_contents(storage_path('app/specializations.json')), true);
+        $catalogKey = $isPost2024 ? 'post_2024' : 'pre_2024';
+        $allSpecs = $specsJson[$catalogKey]['specializations'] ?? [];
+        $specKeys = array_filter([
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        ]);
+        $specCourses = $courses->where('requirement_category', 'specialization');
+
+        foreach ($specKeys as $specKey) {
+            $specData = $allSpecs[$specKey] ?? null;
+            if (! $specData) {
+                continue;
+            }
+            $required = $specData['required'] ?? [];
+            $electives = $specData['electives'] ?? [];
+            $chooseCount = $specData['choose_count'] ?? 0;
+            $rows = [];
+            foreach ($required as $code) {
+                $course = $specCourses->where('course_code', $code)->first();
+                $rows[] = [
+                    'course_code' => $code,
+                    'type' => 'Required',
+                    'status' => $course?->status ?? 'not_yet',
+                    'semester' => $course?->semester_completed ?? null,
+                ];
+            }
+            foreach ($electives as $code) {
+                $course = $specCourses->where('course_code', $code)->first();
+                $rows[] = [
+                    'course_code' => $code,
+                    'type' => 'Elective',
+                    'status' => $course?->status ?? 'not_yet',
+                    'semester' => $course?->semester_completed ?? null,
+                ];
+            }
+            $completed = collect($rows)->whereIn('status', ['completed', 'in_progress'])->count();
+            $total = count($required) + $chooseCount;
+            $specBlocks[] = [
+                'name' => $specData['name'],
+                'rows' => $rows,
+                'completed' => collect($rows)->where('status', 'completed')->count(),
+                'in_progress' => collect($rows)->where('status', 'in_progress')->count(),
+                'total_required' => $total,
+                'choose_count' => $chooseCount,
+                'required_count' => count($required),
+            ];
+        }
+
+        // ── Summaries ─────────────────────────────────────────────────────────
+        $laCompleted = collect($laRows)->where('status', 'completed')->count();
+        $coreCompleted = collect($coreRows)->where('status', 'completed')->count();
+        $summaries = [
+            'la' => ['completed' => $laCompleted, 'total' => count($laRows)],
+            'core' => ['completed' => $coreCompleted, 'total' => count($coreRows)],
+        ];
+
+        // ── Transfer and other courses ────────────────────────────────────────
+        $transferCourses = $courses->where('requirement_category', 'transfer_credit');
+        $otherCourses = $courses->whereNotIn('requirement_category', [
+            'liberal_arts', 'business_core', 'specialization',
+            'in_progress', 'transfer_credit',
+        ]);
+
+        return view('profile.academic', compact(
+            'profile', 'laRows', 'coreRows', 'specBlocks',
+            'transferCourses', 'otherCourses', 'summaries'
+        ));
+    }
+
+    private function buildCoreSlots(bool $isPost2024, bool $isSingleSpec): array
+    {
+        $slots = [
+            ['name' => 'ENT 118 — Vocation of Business',       'code' => ''],
+            ['name' => 'MGT 123 — Foundations of Business',    'code' => ''],
+            ['name' => 'SRES 101 — Markets & Prosperity I',     'code' => ''],
+            ['name' => 'SRES 102 — Markets & Prosperity II',    'code' => ''],
+            ['name' => 'Financial Accounting',                  'code' => 'ACCT 205'],
+            ['name' => 'Managerial Accounting',                 'code' => 'ACCT 206'],
+            ['name' => 'Financial Management',                  'code' => 'FIN 226'],
+            ['name' => 'Math Requirement',                      'code' => ''],
+            ['name' => 'Career Discernment I',                  'code' => 'BUS 199'],
+            ['name' => 'Career Discernment II',                 'code' => 'BUS 299A'],
+            ['name' => 'Business Communications',               'code' => 'MGT 250'],
+        ];
+
+        if ($isPost2024) {
+            $slots[] = ['name' => 'SRES 290', 'code' => 'SRES 290'];
+        }
+
+        $slots = array_merge($slots, [
+            ['name' => 'Statistics',                            'code' => ''],
+            ['name' => 'Info Management Gateway',               'code' => ''],
+            ['name' => 'Marketing Management',                  'code' => 'MKT 345'],
+            ['name' => 'Business Ethics',                       'code' => ''],
+            ['name' => 'Business Law',                          'code' => ''],
+        ]);
+
+        if (! $isPost2024) {
+            $slots[] = ['name' => 'Quantitative Methods', 'code' => ''];
+        }
+
+        $slots = array_merge($slots, [
+            ['name' => 'Career Discernment III',                'code' => 'BUS 399A'],
+            ['name' => 'Career Discernment IV',                 'code' => 'BUS 499A'],
+            ['name' => 'Business Strategy',                     'code' => 'MGT 475'],
+            ['name' => 'Comprehensive Assessment',              'code' => 'BUS 498'],
+        ]);
+
+        if (! $isPost2024 && $isSingleSpec) {
+            $slots[] = ['name' => 'Business Elective 1', 'code' => ''];
+            $slots[] = ['name' => 'Business Elective 2', 'code' => ''];
+        }
+
+        return $slots;
     }
 
     public function suggestUpdate(Request $request): JsonResponse

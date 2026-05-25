@@ -40,11 +40,67 @@
             font-weight: 500;
             letter-spacing: 0.03em;
         }
-        .badge-completed  { background: #d1fae5; color: #065f46; }
+        .badge-completed   { background: #d1fae5; color: #065f46; }
         .badge-in-progress { background: #fef3c7; color: #92400e; }
-        .badge-planned    { background: #f3f4f6; color: #374151; }
-        .badge-default    { background: #f3f0ec; color: #6b7280; }
-        .badge-standing   { background: rgba(10,50,85,0.1); color: var(--cua-blue); }
+        .badge-not-yet     { background: #f3f4f6; color: #9ca3af; }
+        .badge-transfer    { background: #dbeafe; color: #1e40af; }
+        .badge-standing    { background: rgba(10,50,85,0.1); color: var(--cua-blue); }
+        .badge-spec        { background: rgba(201,168,76,0.18); color: #6b4d00; border: 1px solid rgba(201,168,76,0.4); }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .summary-card-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .summary-card-count {
+            font-family: 'Oswald', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--cua-blue);
+            line-height: 1.1;
+        }
+
+        .summary-card-count span {
+            font-size: 15px;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .progress-track {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--cua-red);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-fill.complete { background: #10b981; }
 
         .section-card {
             background: #fff;
@@ -100,6 +156,9 @@
         }
         tr:last-child td { border-bottom: none; }
         tr:hover td { background: #faf8f6; }
+
+        .row-not-yet td { background: #fafafa; }
+        .row-not-yet td:first-child { color: #c0b8b0; font-style: italic; }
 
         .info-grid {
             display: grid;
@@ -160,19 +219,16 @@
             cursor: pointer;
             transition: background 0.12s, color 0.12s;
         }
-        .btn-secondary:hover {
-            background: var(--cua-blue);
-            color: #fff;
-        }
+        .btn-secondary:hover { background: var(--cua-blue); color: #fff; }
 
-        .empty-row td {
-            text-align: center;
-            padding: 20px;
+        .spec-elective-note {
+            font-size: 12px;
             color: var(--text-muted);
             font-style: italic;
-            font-size: 13.5px;
+            padding: 8px 20px;
+            border-top: 1px dashed var(--border-light);
+            background: #faf9f7;
         }
-        .empty-row td:hover { background: transparent; }
     </style>
 </head>
 <body>
@@ -204,39 +260,42 @@
 </header>
 
 {{-- Main content --}}
-<div style="max-width:900px; margin:0 auto; padding:2rem 1.5rem 4rem;">
+<div style="max-width:960px; margin:0 auto; padding:2rem 1.5rem 4rem;">
 
     @if(! $profile)
-        {{-- No profile state --}}
         <div class="section-card" style="text-align:center; padding:3rem 2rem;">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.25" style="color:#d4cec8; margin:0 auto 1rem;">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
             </svg>
-            <h2 style="font-family:'Oswald',sans-serif; font-size:22px; font-weight:600; color:var(--cua-blue); margin-bottom:0.5rem;">
-                No Academic Profile Yet
-            </h2>
+            <h2 style="font-family:'Oswald',sans-serif; font-size:22px; font-weight:600; color:var(--cua-blue); margin-bottom:0.5rem;">No Academic Profile Yet</h2>
             <p style="color:var(--text-muted); font-size:15px; margin-bottom:1.5rem; max-width:420px; margin-left:auto; margin-right:auto;">
-                You haven't completed onboarding yet. Complete your academic profile setup to get personalized course planning assistance.
+                Complete your academic profile setup to get personalized course planning assistance.
             </p>
-            <a href="{{ route('onboarding') }}" class="btn-primary">
-                Complete Onboarding
-            </a>
+            <a href="{{ route('onboarding') }}" class="btn-primary">Complete Onboarding</a>
         </div>
     @else
 
-        {{-- Page title row --}}
-        <div class="flex items-center justify-between mb-6">
+    @php
+        $degreeLabel  = $profile->degree === 'bs_accounting' ? 'B.S. Accounting' : 'B.S.B.A.';
+        $catalogLabel = $profile->catalog_year === 'post_2024' ? 'Post-2024 Catalog' : 'Pre-2024 Catalog';
+
+        $statusBadge = function(string $status): string {
+            return match($status) {
+                'completed'   => '<span class="badge badge-completed">Completed</span>',
+                'in_progress' => '<span class="badge badge-in-progress">In Progress</span>',
+                'not_yet'     => '<span class="badge badge-not-yet">Not Yet</span>',
+                default       => '<span class="badge badge-not-yet">Not Yet</span>',
+            };
+        };
+    @endphp
+
+        {{-- Page title --}}
+        <div class="flex items-center justify-between mb-5">
             <div>
                 <h1 style="font-family:'Oswald',sans-serif; font-size:26px; font-weight:700; color:var(--cua-blue); margin:0 0 4px;">
                     {{ $profile->full_name }}
                 </h1>
-                <p style="color:var(--text-muted); font-size:14px;">
-                    @php
-                        $degreeLabel = $profile->degree === 'bs_accounting' ? 'B.S. Accounting' : 'B.S.B.A.';
-                        $catalogLabel = $profile->catalog_year === 'post_2024' ? 'Post-2024 Catalog' : 'Pre-2024 Catalog';
-                    @endphp
-                    {{ $degreeLabel }} &middot; {{ $catalogLabel }}
-                </p>
+                <p style="color:var(--text-muted); font-size:14px;">{{ $degreeLabel }} &middot; {{ $catalogLabel }}</p>
             </div>
             <a href="{{ route('chat') }}?msg=Please+review+and+update+my+academic+profile" class="btn-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -246,7 +305,46 @@
             </a>
         </div>
 
-        {{-- Section 1: Student Information --}}
+        {{-- Completion summary cards --}}
+        @php
+            $laPct   = $summaries['la']['total']   > 0 ? round($summaries['la']['completed']   / $summaries['la']['total']   * 100) : 0;
+            $corePct = $summaries['core']['total']  > 0 ? round($summaries['core']['completed']  / $summaries['core']['total']  * 100) : 0;
+        @endphp
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-card-label">Liberal Arts</div>
+                <div class="summary-card-count">{{ $summaries['la']['completed'] }}<span> / {{ $summaries['la']['total'] }}</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill {{ $laPct === 100 ? 'complete' : '' }}" style="width:{{ $laPct }}%"></div>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-label">Business Core</div>
+                <div class="summary-card-count">{{ $summaries['core']['completed'] }}<span> / {{ $summaries['core']['total'] }}</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill {{ $corePct === 100 ? 'complete' : '' }}" style="width:{{ $corePct }}%"></div>
+                </div>
+            </div>
+            @foreach($specBlocks as $block)
+            @php $specPct = $block['total_required'] > 0 ? round(min($block['completed'], $block['total_required']) / $block['total_required'] * 100) : 0; @endphp
+            <div class="summary-card">
+                <div class="summary-card-label">{{ $block['name'] }}</div>
+                <div class="summary-card-count">{{ $block['completed'] }}<span> / {{ $block['total_required'] }}</span></div>
+                <div class="progress-track">
+                    <div class="progress-fill {{ $specPct === 100 ? 'complete' : '' }}" style="width:{{ $specPct }}%"></div>
+                </div>
+            </div>
+            @endforeach
+            @if($transferCourses->count() > 0)
+            <div class="summary-card">
+                <div class="summary-card-label">Transfer Credits</div>
+                <div class="summary-card-count">{{ $transferCourses->count() }}<span> course{{ $transferCourses->count() !== 1 ? 's' : '' }}</span></div>
+                <div class="progress-track"><div class="progress-fill complete" style="width:100%"></div></div>
+            </div>
+            @endif
+        </div>
+
+        {{-- Student Information --}}
         <div class="section-card">
             <div class="section-header">
                 <span class="section-title">Student Information</span>
@@ -286,18 +384,6 @@
                         @endif
                     </span>
                 </div>
-                @if($profile->math_placement)
-                <div class="info-item">
-                    <span class="info-label">Math Placement</span>
-                    <span class="info-value">{{ $profile->math_placement }}</span>
-                </div>
-                @endif
-                @if($profile->language_placement)
-                <div class="info-item">
-                    <span class="info-label">Language Placement</span>
-                    <span class="info-value">{{ $profile->language_placement }}</span>
-                </div>
-                @endif
             </div>
             @php
                 $specs = array_filter([
@@ -311,130 +397,188 @@
                 <p class="info-label" style="padding-top:14px; margin-bottom:8px;">Specializations</p>
                 <div style="display:flex; flex-wrap:wrap; gap:6px;">
                     @foreach($specs as $spec)
-                        <span class="badge badge-standing" style="font-size:13px; padding:4px 12px;">{{ $spec }}</span>
+                        <span class="badge badge-spec" style="font-size:13px; padding:4px 12px;">{{ ucwords(str_replace('_', ' ', $spec)) }}</span>
                     @endforeach
                 </div>
             </div>
             @endif
         </div>
 
-        {{-- Helper macro for course tables --}}
-        @php
-        $categoryLabel = function(string $cat): string {
-            return match($cat) {
-                'liberal_arts'   => 'Liberal Arts Requirements',
-                'business_core'  => 'Business Core',
-                'specialization' => 'Specialization Courses',
-                'in_progress'    => 'Currently In Progress',
-                default          => ucwords(str_replace('_', ' ', $cat)),
-            };
-        };
-        $statusBadge = function(string $status): string {
-            return match($status) {
-                'completed'   => '<span class="badge badge-completed">Completed</span>',
-                'in_progress' => '<span class="badge badge-in-progress">In Progress</span>',
-                'planned'     => '<span class="badge badge-planned">Planned</span>',
-                default       => '<span class="badge badge-default">'.ucfirst($status).'</span>',
-            };
-        };
-        @endphp
-
-        {{-- Sections 2–5: Course categories --}}
-        @foreach(['liberal_arts', 'business_core', 'specialization', 'in_progress'] as $cat)
-        @php
-            $catCourses = $coursesByCategory[$cat] ?? collect();
-            $catStats   = $stats[$cat] ?? null;
-            $label      = $categoryLabel($cat);
-        @endphp
+        {{-- Liberal Arts --}}
         <div class="section-card">
             <div class="section-header">
-                <span class="section-title">{{ $label }}</span>
-                @if($catStats)
-                    <span class="completion-label">{{ $catStats['completed'] }} of {{ $catStats['total'] }} completed</span>
-                @else
-                    <span class="completion-label">0 of 0 completed</span>
-                @endif
+                <span class="section-title">Liberal Arts Requirements</span>
+                <span class="completion-label">{{ $summaries['la']['completed'] }} of {{ $summaries['la']['total'] }} completed</span>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th style="width:130px;">Course Code</th>
-                        <th>Requirement / Course Name</th>
+                        <th style="width:160px;">Course Code</th>
+                        <th>Requirement</th>
                         <th style="width:140px;">Status</th>
-                        @if($cat !== 'in_progress')
                         <th style="width:130px;">Semester</th>
-                        @endif
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($catCourses as $course)
+                    @foreach($laRows as $row)
+                    <tr class="{{ $row['status'] === 'not_yet' ? 'row-not-yet' : '' }}">
+                        <td style="font-family:monospace; font-size:13px; font-weight:600; color:{{ $row['status'] !== 'not_yet' ? 'var(--cua-blue)' : '#bbb' }};">
+                            {{ $row['course_code'] }}
+                        </td>
+                        <td>{{ $row['slot_name'] }}</td>
+                        <td>{!! $statusBadge($row['status']) !!}</td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $row['semester'] ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Business Core --}}
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">Business Core</span>
+                <span class="completion-label">{{ $summaries['core']['completed'] }} of {{ $summaries['core']['total'] }} completed</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:160px;">Course Code</th>
+                        <th>Requirement</th>
+                        <th style="width:140px;">Status</th>
+                        <th style="width:130px;">Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($coreRows as $row)
+                    <tr class="{{ $row['status'] === 'not_yet' ? 'row-not-yet' : '' }}">
+                        <td style="font-family:monospace; font-size:13px; font-weight:600; color:{{ $row['status'] !== 'not_yet' ? 'var(--cua-blue)' : '#bbb' }};">
+                            {{ $row['course_code'] }}
+                        </td>
+                        <td>{{ $row['slot_name'] }}</td>
+                        <td>{!! $statusBadge($row['status']) !!}</td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $row['semester'] ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        {{-- Specialization blocks --}}
+        @foreach($specBlocks as $block)
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">{{ $block['name'] }} Specialization</span>
+                <span class="completion-label">{{ $block['completed'] }} of {{ $block['total_required'] }} required completed</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:160px;">Course Code</th>
+                        <th>Type</th>
+                        <th style="width:140px;">Status</th>
+                        <th style="width:130px;">Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($block['rows'] as $row)
+                    <tr class="{{ $row['status'] === 'not_yet' ? 'row-not-yet' : '' }}">
+                        <td style="font-family:monospace; font-size:13px; font-weight:600; color:{{ $row['status'] !== 'not_yet' ? 'var(--cua-blue)' : '#bbb' }};">
+                            {{ $row['course_code'] }}
+                        </td>
+                        <td>
+                            @if($row['type'] === 'Required')
+                                <span style="font-size:12px; font-weight:600; color:var(--cua-blue);">Required</span>
+                            @else
+                                <span style="font-size:12px; color:var(--text-muted);">Elective</span>
+                            @endif
+                        </td>
+                        <td>{!! $statusBadge($row['status']) !!}</td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $row['semester'] ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+            @if($block['choose_count'] > 0)
+            <div class="spec-elective-note">
+                Choose {{ $block['choose_count'] }} elective{{ $block['choose_count'] !== 1 ? 's' : '' }} from the list above in addition to required courses.
+            </div>
+            @endif
+        </div>
+        @endforeach
+
+        {{-- Transfer Credits --}}
+        @if($transferCourses->count() > 0)
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">Transfer Credits</span>
+                <span class="completion-label">{{ $transferCourses->count() }} course{{ $transferCourses->count() !== 1 ? 's' : '' }}</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:160px;">CUA Equivalent</th>
+                        <th>Original Course</th>
+                        <th style="width:100px;">Grade</th>
+                        <th>Institution / Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($transferCourses as $course)
+                    <tr>
+                        <td style="font-family:monospace; font-size:13px; font-weight:600; color:var(--cua-blue);">
+                            {{ $course->course_code }}
+                        </td>
+                        <td>{{ $course->course_name }}</td>
+                        <td>
+                            @if($course->grade)
+                                <span class="badge badge-completed">{{ $course->grade }}</span>
+                            @else
+                                <span style="color:var(--text-muted);">—</span>
+                            @endif
+                        </td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $course->notes ?? '—' }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+
+        {{-- Other / bot-updated courses --}}
+        @if($otherCourses->count() > 0)
+        <div class="section-card">
+            <div class="section-header">
+                <span class="section-title">Additional Courses</span>
+                <span class="completion-label">{{ $otherCourses->count() }} course{{ $otherCourses->count() !== 1 ? 's' : '' }}</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:160px;">Course Code</th>
+                        <th>Course Name</th>
+                        <th style="width:140px;">Status</th>
+                        <th style="width:130px;">Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($otherCourses as $course)
                     <tr>
                         <td style="font-family:monospace; font-size:13px; font-weight:600; color:var(--cua-blue);">
                             {{ $course->course_code ?? '—' }}
                         </td>
                         <td>{{ $course->course_name ?? '—' }}</td>
-                        <td>{!! $statusBadge($course->status ?? 'unknown') !!}</td>
-                        @if($cat !== 'in_progress')
-                        <td style="color:var(--text-muted); font-size:13px;">
-                            {{ $course->semester_completed ?? '—' }}
-                        </td>
-                        @endif
+                        <td>{!! $statusBadge($course->status ?? 'not_yet') !!}</td>
+                        <td style="color:var(--text-muted); font-size:13px;">{{ $course->semester_completed ?? '—' }}</td>
                     </tr>
-                    @empty
-                    <tr class="empty-row">
-                        <td colspan="{{ $cat !== 'in_progress' ? 4 : 3 }}">No courses recorded in this category yet.</td>
-                    </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>
-        @endforeach
+        @endif
 
-        {{-- Any other categories not in the fixed list --}}
-        @foreach($coursesByCategory as $cat => $catCourses)
-            @if(! in_array($cat, ['liberal_arts', 'business_core', 'specialization', 'in_progress']))
-            @php
-                $catStats = $stats[$cat] ?? null;
-                $label    = $categoryLabel($cat);
-            @endphp
-            <div class="section-card">
-                <div class="section-header">
-                    <span class="section-title">{{ $label }}</span>
-                    @if($catStats)
-                        <span class="completion-label">{{ $catStats['completed'] }} of {{ $catStats['total'] }} completed</span>
-                    @endif
-                </div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width:130px;">Course Code</th>
-                            <th>Requirement / Course Name</th>
-                            <th style="width:140px;">Status</th>
-                            <th style="width:130px;">Semester</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($catCourses as $course)
-                        <tr>
-                            <td style="font-family:monospace; font-size:13px; font-weight:600; color:var(--cua-blue);">
-                                {{ $course->course_code ?? '—' }}
-                            </td>
-                            <td>{{ $course->course_name ?? '—' }}</td>
-                            <td>{!! $statusBadge($course->status ?? 'unknown') !!}</td>
-                            <td style="color:var(--text-muted); font-size:13px;">
-                                {{ $course->semester_completed ?? '—' }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-            @endif
-        @endforeach
-
-        {{-- Footer note --}}
         <p style="text-align:center; font-size:12px; color:#a89f97; margin-top:2rem; line-height:1.6;">
-            Your profile can only be updated by the academic planning bot.
+            Profile updates are made through the academic planning bot.
             <a href="{{ route('chat') }}?msg=Please+review+and+update+my+academic+profile"
                style="color:var(--cua-blue); text-decoration:underline;">Go to the chat</a>
             to ask your advisor to update your profile.

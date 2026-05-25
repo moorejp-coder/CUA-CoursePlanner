@@ -82,14 +82,14 @@ Up to 2 courses may double-count between liberal arts and major.
 ### Section 7 — Mathematics and Statistics
 - Statistics: MGT 265 (Post-2024) or ECON 223 / MGT 265 (Pre-2024)
 - Mathematics: MATH 110, MATH 111, or Level 1/2 Placement Exempt. Finance and Accounting require MATH 111. Level 3 placement requires MATH 110 first.
-- [Pre-2024 only]: MGT 365 — Quantitative Methods in Decision Making
+- [Pre-2024 only]: MGT 365 — Quantitative Methods in Decision Making (BUS 603 is an accepted equivalent)
 
 ### Section 8 — Information Management Gateway (choose one, must not duplicate specialization)
-MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519
+MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519, BUS 606
 
 ### Section 9 — Ethics and Law
 - Business Ethics (choose one): MGT 301, ACCT 442
-- Business Law (choose one): MGT 321 (Fall only), MGT 322 (Spring only), MGT 371, MGT 411 / SRES 411, ACCT 480
+- Business Law (choose one): MGT 321 (Fall only), MGT 322 (Spring only), MGT 371, MGT 411 / SRES 411, ACCT 480, BUS 616
 
 ### Section 10 — Business Strategy and Comprehensive Assessment (SAME semester, senior year)
 - MGT 475: Business Strategy (prereqs: ACCT 206, FIN 226, MKT 345, MGT 123)
@@ -104,6 +104,9 @@ MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519
 ### Section 12 — Business Electives (Pre-2024 single-specialization students only)
 Two additional BUS/MGT/MKT/FIN/ACCT/ECON/ENT/SRES elective courses required.
 Not required for double-specialization students.
+
+### Transfer Credits
+Students may transfer in courses from other accredited institutions. Transfer courses appear in the student's profile under "Transfer Credits" with the originating institution and the CUA equivalent course they satisfy. When advising, reference these to avoid recommending courses the student has already completed via transfer.
 
 ---
 
