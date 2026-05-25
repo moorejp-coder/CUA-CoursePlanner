@@ -15,6 +15,10 @@ class OnboardingController extends Controller
 
     public function index(): RedirectResponse
     {
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         // If user already has a profile, skip to chat
         if (Auth::user()->studentProfile) {
             return redirect()->route('chat');
@@ -25,6 +29,10 @@ class OnboardingController extends Controller
 
     public function show(int $step): View|RedirectResponse
     {
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         if (Auth::user()->studentProfile) {
             return redirect()->route('chat');
         }

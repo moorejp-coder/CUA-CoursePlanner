@@ -9,13 +9,19 @@ use App\Http\Controllers\UploadController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check()
-        ? redirect()->route('chat')
-        : view('welcome');
+    if (auth()->check()) {
+        return auth()->user()->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('chat');
+    }
+
+    return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return redirect()->route('chat');
+    return auth()->user()->isAdmin()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('chat');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
