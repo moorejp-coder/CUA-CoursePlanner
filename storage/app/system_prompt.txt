@@ -32,24 +32,25 @@ Normal load: 15-17cr | Overelect 18-20cr (needs 3.0 GPA) | Superelect 21+ (needs
 
 ## LIBERAL ARTS (Busch students complete 10 courses, no Focus Area required)
 
-1. Classical Philosophy: PHIL 201, 211*, HSPH 101*
-2. Modern Philosophy: PHIL 202, 212*, HSPH 102*
+1. Classical Philosophy: PHIL 201, PHIL 211*, HSPH 101*
+2. Modern Philosophy: PHIL 202, PHIL 212*, HSPH 102*
 3. Theology I: TRS 201, HSTR 101*
-4. Theology II: TRS 202A, 202B, Any HSTR*
-5. Rhetoric & Composition (C- required): ENG 101
-6. Math: Fulfilled by Busch curriculum
-7. Natural Science: ANTH 105/108/204/206; BIOL 103/109; CHEM 101/110/125-130; PHYS 101/103/122/206; PSY 204; SAS 225
-8. Literature: ENG 212/231/232/235/236/278/300s/400s; FREN/GER/ITAL/SPAN literature courses; CLAS/HUM courses
-9. Fine Arts: ART 201-335; DR 105/106/110/201/202/207/305/403; MUS 110/112/131/134/135/178/276/304; MDIA 201/343; DNCE 101
-10. Social Science: Fulfilled by SRES 101/102 or ECON equivalent
+4. Theology II: TRS 202A, TRS 202B, Any HSTR*
+5. Rhetoric & Composition (C- required): ENG 101; ENG 101H (Honors); ENG 101C (Cornerstone)
+6. Foundations in Natural Science: ANTH 105/108/204/206/352/354; BIOL 103/109; CHEM 10/110/125/126/127/128R/130; PHYS 101/103/122/206/215H; PSY 204; SAS 225; HSEV 101*
+7. Explorations in Literature: ARAB 279; CLAS 105/106/211/212R/244/251/261; ENG 206/212/231/232/235/236/278/305/306/312/341/345/347/351/352/356/364/369/376/378-R/379/461/462; FREN 220/230/242/279; GER 220/225/230/255; GS 220; HUM 101/124; ITAL 212/220/226/232; MDIA 225; SPAN 224/225/240/321; HSHU 203; HSLS 353*
+8. Explorations in Fine Arts: ARPL 211; ART 201/211/212/213/222/251/252/272/302/308/317/318/319/320/335; CLAS 214/221/251/261/317/318/318R; DR 105/106/110/201/202/207/305/403; DNCE 101; ENG 300/302; ENGR 101; HIST 390A; ITAL 219-R; MDIA 201/343; MUS 110/112/131/134/135/178/276/304/327/328/328H; HSLS 352; HSAM 101*
+9. Foundations in Social Science: ANTH 101/110/201/203/211/226/240/260; CEE 201; ECON 101/102/103/104; GS 101; PSY 201/226/261; SOC 101/102/102H/202/206/210/281/330/358/358H; SRES 345; SSS 101/226; HSEV 203; HSSS 101/102/204*
+10. Foundations in Mathematical Thinking: MATH 111/112/114/121/122/168/175/187; HSMS 230/330; HSSS 203; or Math Placement Exempt*
 
 Additional required:
-- Philosophy Elective: Any non-major PHIL course
-- Theology Elective: Any non-major TRS course
-- History/Politics: POL 111/112/211/226; HIST 140-385; CLAS 205-308; WASH 101; EURO 203
+- Philosophy Elective: Any PHIL course (e.g. PHIL 301); Honors students may use HSPH 203 or HSPH 204
+- Theology Elective: Any TRS course; Honors students may use any HSTR course or HSEV 102
+- Foundations in History or Politics: ANTH 215; CLAS 205/206/206R/207/220/226/260/304/308; ECST 315; EURO 203; HIST 140/142/151/202/205/206/206R/208/222/224/226/229/231A/231B/235/246/257/258/301/308B/309/309B/312/315/316/334A/349/351/371D/380D/384A/385; ITAL 221; MDIA 202; POL 111/112/211/226; WASH 101; HSHU 101/102/204; HSLS 205/351/354*
 - Language I (C- to advance): ARAB/CHN/FREN/GER/GR/IRSH/ITAL/LAT/SPAN 103
 - Language II: Same options at 104 level
 
+* Honors Program courses; confirm eligibility with your advisor.
 Up to 2 courses may double-count between liberal arts and major.
 
 ---

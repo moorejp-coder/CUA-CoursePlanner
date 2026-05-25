@@ -103,19 +103,51 @@ class OnboardingController extends Controller
 
     private function validateStep3(Request $request): array
     {
-        // Liberal arts — save all posted values freely
+        $request->validate([
+            'la_phil_elective' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $v = strtoupper(trim((string) $value));
+                    if (! $v) {
+                        return;
+                    }
+                    if (! str_starts_with($v, 'PHIL ') && $v !== 'HSPH 203' && $v !== 'HSPH 204') {
+                        $fail('Philosophy Elective must be a PHIL course (e.g. PHIL 301), HSPH 203, or HSPH 204.');
+                    }
+                },
+            ],
+            'la_theology_elective' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    $v = strtoupper(trim((string) $value));
+                    if (! $v) {
+                        return;
+                    }
+                    if (! str_starts_with($v, 'TRS ') && ! str_starts_with($v, 'HSTR ') && $v !== 'HSEV 102') {
+                        $fail('Theology Elective must be a TRS course, any HSTR course, or HSEV 102.');
+                    }
+                },
+            ],
+        ]);
+
         $fields = [
             'la_classical_philosophy', 'la_modern_philosophy',
             'la_theology_1', 'la_theology_2',
             'la_rhetoric', 'la_natural_science',
             'la_literature', 'la_fine_arts',
-            'la_history_politics', 'la_language_1', 'la_language_2',
+            'la_social_science', 'la_history_politics',
+            'la_language_1', 'la_language_2',
             'la_phil_elective', 'la_theology_elective',
+            'la_math_thinking',
         ];
 
         $data = [];
         foreach ($fields as $field) {
-            $data[$field] = $request->input($field, '');
+            $raw = $request->input($field, '');
+            if (in_array($field, ['la_phil_elective', 'la_theology_elective'])) {
+                $raw = strtoupper(trim($raw));
+            }
+            $data[$field] = $raw;
         }
 
         return $data;
@@ -231,6 +263,8 @@ class OnboardingController extends Controller
             'la_language_2' => ['category' => 'liberal_arts', 'name' => 'Language II'],
             'la_phil_elective' => ['category' => 'liberal_arts', 'name' => 'Philosophy Elective'],
             'la_theology_elective' => ['category' => 'liberal_arts', 'name' => 'Theology Elective'],
+            'la_social_science' => ['category' => 'liberal_arts', 'name' => 'Social Science'],
+            'la_math_thinking' => ['category' => 'liberal_arts', 'name' => 'Math Thinking'],
         ];
 
         foreach ($laMap as $key => $meta) {
