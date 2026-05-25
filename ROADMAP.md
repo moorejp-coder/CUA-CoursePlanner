@@ -134,18 +134,28 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 9 — Database & User Management
-**Delivers:** Proper user accounts and conversation history.
-- User registration with email verification
-- Password reset flow working
-- Conversation history saved per user session
-- Students can view their past conversations
-- Admin can see usage statistics (number of conversations, common questions)
-- User data protected — no PII exposed in responses or logs
+## Milestone 9 — Admin Dashboard & Access Control 🔄 IN PROGRESS
+**Delivers:** Secure admin panel for managing students, content, and access.
+- [x] CUA email restriction — `@cua.edu` enforced at registration and login
+- [x] Role system — `student`, `dean`, `admin` roles on User model
+- [x] `EnsureDean` middleware — blocks non-admin access to `/admin/*`
+- [x] Admin seeder — `moorejp@cua.edu` created as admin on `db:seed`
+- [x] `AdminController` with full implementation of all 7 pages
+- [x] Admin layout — CUA-branded sidebar with navy, gold active indicator, sticky topbar
+- [x] Dashboard — stat cards, recent registrations table, top specializations, quick actions
+- [x] Student list — searchable, paginated, CSV export
+- [x] Student profile view — account + academic profile + full course table
+- [x] Degree requirements editor — grid of editable textareas keyed by dot notation
+- [x] System prompt editor — live char/token counter, version history with restore
+- [x] User management — AJAX role change with CSRF, prevents self-demotion
+- [x] Statistics — degree/spec breakdowns + 6-month bar chart
+- [x] `storage/app/requirements.json` seeded with Busch School curriculum
+- [ ] Deploy admin panel to production EC2
+- [ ] End-to-end test: admin login → student lookup → role change flow
 
 ---
 
-## Milestone 9 — Advanced AI Features
+## Milestone 10 — Advanced AI Features
 **Delivers:** Features that impress judges on the AI innovation rubric.
 - Bot detects catalog year automatically from uploaded APW
 - Bot generates a personalized semester-by-semester 4-year plan

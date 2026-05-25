@@ -35,6 +35,16 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's actu
 - **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
 - **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
 - **Accessibility** — high-contrast text throughout all dark sections; nav logo inverted to white on dark header; all em dashes removed for screen-reader compatibility
+- **CUA Email Restriction** — registration and login are restricted to `@cua.edu` addresses; non-CUA emails are rejected with a clear error message
+- **Role-Based Access Control** — three roles: `student`, `dean`, `admin`; dean/admin accounts unlock the admin panel
+- **Admin Dashboard** — password-protected panel at `/admin` (dean or admin role required) with:
+  - **Dashboard** — stat cards (total students, profiles created, registered today, profile rate), recent registrations table, top specializations, quick action links
+  - **Student List** — searchable, paginated table of all students with degree, specialization, GPA, and credits; one-click CSV export
+  - **Student Profile View** — full account info, academic profile details, and complete course list for any student
+  - **Degree Requirements Editor** — edit the liberal arts core, business core, and all 7 specialization course lists (stored in `requirements.json`)
+  - **System Prompt Editor** — live character/token counter, save with automatic version archiving, restore any of the 10 most recent versions
+  - **User Management** — change any user's role (student/dean/admin) via AJAX dropdown; admins cannot demote themselves
+  - **Usage Statistics** — degree breakdown, specialization breakdown, and 6-month bar chart of new registrations
 
 ---
 
@@ -96,20 +106,32 @@ touch database/database.sqlite
 # 7. Run database migrations
 php artisan migrate
 
-# 8. Install Node dependencies and build frontend assets
+# 8. Seed the admin account
+php artisan db:seed
+
+# 9. Install Node dependencies and build frontend assets
 npm install && npm run build
 
-# 9. Add your Groq API key to .env
+# 10. Add your Groq API key to .env
 #    Open .env and set: GROQ_API_KEY=gsk_your_key_here
 
-# 10. Start the development server
+# 11. Start the development server
 php artisan serve
 
-# 11. Visit the app
+# 12. Visit the app
 open http://127.0.0.1:8000
 ```
 
-Register an account and start chatting. For live asset rebuilding during development, run `npm run dev` in a separate terminal instead of step 8.
+Register an account (requires a `@cua.edu` email) and start chatting. The seeder creates an admin account at `moorejp@cua.edu` — change the password immediately after first login. For live asset rebuilding during development, run `npm run dev` in a separate terminal instead of step 9.
+
+### Admin Panel
+
+Visit `/admin` after logging in with an admin or dean account. The admin panel provides:
+- Student roster with CSV export
+- Degree requirements editor
+- System prompt editor with version history
+- User role management
+- Usage statistics
 
 ---
 
@@ -163,13 +185,17 @@ PDF uploads (Cardinal Station graduation audit reports) work the same way — ju
 CUA-CoursePlanner/
 ├── app/
 │   └── Http/
-│       └── Controllers/
-│           ├── ChatController.php           # GET /chat, POST /api/chat → Groq API
-│           ├── UploadController.php         # POST /api/upload → PDF/CSV extraction
-│           ├── OnboardingController.php     # 6-step academic profile wizard
-│           └── AcademicProfileController.php # Profile page + bot update API
+│       ├── Controllers/
+│       │   ├── AdminController.php          # All /admin/* actions
+│       │   ├── ChatController.php           # GET /chat, POST /api/chat → Groq API
+│       │   ├── UploadController.php         # POST /api/upload → PDF/CSV extraction
+│       │   ├── OnboardingController.php     # 6-step academic profile wizard
+│       │   └── AcademicProfileController.php # Profile page + bot update API
+│       └── Middleware/
+│           └── EnsureDean.php              # Restricts /admin to dean/admin roles
 ├── resources/
 │   └── views/
+│       ├── admin/                      # Admin panel views (layout + 7 pages)
 │       ├── chat.blade.php              # Main chat UI (Alpine.js, Tailwind)
 │       ├── onboarding/                 # 6 wizard step views
 │       └── profile/academic.blade.php  # Read-only academic profile page
@@ -178,7 +204,8 @@ CUA-CoursePlanner/
 ├── storage/
 │   └── app/
 │       ├── system_prompt.txt           # Full Busch School curriculum context
-│       └── specializations.json        # Specialization requirements (pre/post 2024)
+│       ├── specializations.json        # Specialization requirements (pre/post 2024)
+│       └── requirements.json           # Editable degree requirements (admin panel)
 ├── public/
 │   └── build/                          # Vite-compiled CSS and JS (gitignored)
 ├── deploy.sh                           # AWS EC2 deployment script
