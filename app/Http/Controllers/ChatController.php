@@ -13,7 +13,18 @@ class ChatController extends Controller
 {
     public function index(): View
     {
-        return view('chat');
+        $profile = Auth::user()?->studentProfile;
+
+        $showSemesterBanner = false;
+        if ($profile) {
+            $month = now()->month;
+            if ($month === 9 || $month === 1) {
+                $shownAt = $profile->semester_prompt_shown_at;
+                $showSemesterBanner = ! $shownAt || $shownAt->lt(now()->subMonths(4));
+            }
+        }
+
+        return view('chat', compact('showSemesterBanner'));
     }
 
     public function message(Request $request): JsonResponse

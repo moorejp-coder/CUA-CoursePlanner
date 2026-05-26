@@ -738,24 +738,7 @@ function chatApp() {
                 this.$nextTick(() => this.send());
             }
 
-            this.checkSemesterPrompt();
-        },
-
-        checkSemesterPrompt() {
-            const month = new Date().getMonth() + 1; // 1-12
-            if (month !== 9 && month !== 1) return;
-
-            const shownAt = @json(auth()->user()?->studentProfile?->semester_prompt_shown_at);
-            if (!shownAt) {
-                this.semesterBanner = true;
-                return;
-            }
-            const shownDate = new Date(shownAt);
-            const fourMonthsAgo = new Date();
-            fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
-            if (shownDate < fourMonthsAgo) {
-                this.semesterBanner = true;
-            }
+            this.semesterBanner = @json($showSemesterBanner);
         },
 
         sendSemesterPrompt() {
