@@ -561,10 +561,29 @@
                                         border-radius:16px;
                                         padding:15px 20px;
                                         box-shadow:0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.06);">
-                                <template x-if="msg.html">
-                                    <div class="html-msg" x-html="msg.content"></div>
+                                {{-- Forms list: hardcoded Blade HTML, never user-generated content --}}
+                                <template x-if="msg.type === 'forms-list'">
+                                    <div class="html-msg">
+                                        <p>Here are the most common Busch School forms and requests. Click any item to open the form directly:</p>
+                                        <ul>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd_IFxpMN3DHd2sMTxxlBo5rWtKciue-zsSieDG7yLQfbi45Q/viewform" target="_blank" rel="noopener noreferrer">Internship for Credit Application</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeKVk2VXIJ6K4jQQEYEpElk1TJE2JmtDDPwpdVytCx78DlSPA/viewform" target="_blank" rel="noopener noreferrer">Late Registration / Special Academic Requests</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfQEBsGO1QhNz8OnLyi4b9KBnkHC2Qd3BuO3ChcLWZW_NqThQ/viewform" target="_blank" rel="noopener noreferrer">Class Registration Help</a></li>
+                                            <li><a href="https://business.catholic.edu/_media/busch-incomplete-request-form-dec2023.pdf" target="_blank" rel="noopener noreferrer">Request for Incomplete</a></li>
+                                            <li><a href="https://enrollment-services.catholic.edu/forms/registration-status-change-form.pdf" target="_blank" rel="noopener noreferrer">Pass/Fail Registration Change</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfp12NrXfiqwtqO7j5vjpEZa9yJav_fChqBQ5Th-2rgtpNdbQ/viewform" target="_blank" rel="noopener noreferrer">Declare / Change Specialization</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfSqf3vwGbOxgrYr1GOw2UG984c4vFbshK16_vjnaJLza3IPA/viewform" target="_blank" rel="noopener noreferrer">Add / Remove a Minor</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc0hLnRtHFFh9U1U5LIC1RuGXiPdsU5J70iVfrt0_38kQHuPQ/viewform" target="_blank" rel="noopener noreferrer">Class Substitution Request</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd7rYkqMw0cpLKuTid62XmO_1Z7xC-wtM7vpxnql0DD6A0_Sw/viewform" target="_blank" rel="noopener noreferrer">Expected Graduation Term Change</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSdRzq3MtT-CVee6N42IFIGBzkdG4IKxm6eSyiEHMEa-OLT1xQ/viewform" target="_blank" rel="noopener noreferrer">Career Discernment Exemption (Transfer Students)</a></li>
+                                            <li><a href="https://docs.google.com/forms/d/e/1FAIpQLScNx2uBAqVdcg8invm7rsXt2uzU2TxIV9vOu2Bk67_dhc33Cw/viewform" target="_blank" rel="noopener noreferrer">Special Permission to Over-Elect</a></li>
+                                            <li><a href="https://enrollment-services.catholic.edu/forms/double-major-application.pdf" target="_blank" rel="noopener noreferrer">Double Major Application</a></li>
+                                        </ul>
+                                        <p>For anything not listed here, email <a href="mailto:busch-academic-services@cua.edu">busch-academic-services@cua.edu</a></p>
+                                    </div>
                                 </template>
-                                <template x-if="!msg.html">
+                                {{-- All other AI responses are plain text — never rendered as HTML --}}
+                                <template x-if="msg.type !== 'forms-list'">
                                     <p style="font-family:'Crimson Text',Georgia,serif; font-size:1.075rem;
                                               line-height:1.85; color:#1f2937; white-space:pre-wrap;
                                               font-feature-settings:'kern' 1,'liga' 1;"
@@ -925,22 +944,7 @@ function chatApp() {
         quickSend(prompt) {
             if (prompt === 'Forms & requests') {
                 this.messages.push({ role: 'user', content: prompt });
-                this.messages.push({ role: 'assistant', html: true, content: `<p>Here are the most common Busch School forms and requests. Click any item to open the form directly:</p>
-<ul>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd_IFxpMN3DHd2sMTxxlBo5rWtKciue-zsSieDG7yLQfbi45Q/viewform" target="_blank">Internship for Credit Application</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSeKVk2VXIJ6K4jQQEYEpElk1TJE2JmtDDPwpdVytCx78DlSPA/viewform" target="_blank">Late Registration / Special Academic Requests</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfQEBsGO1QhNz8OnLyi4b9KBnkHC2Qd3BuO3ChcLWZW_NqThQ/viewform" target="_blank">Class Registration Help</a></li>
-  <li><a href="https://business.catholic.edu/_media/busch-incomplete-request-form-dec2023.pdf" target="_blank">Request for Incomplete</a></li>
-  <li><a href="https://enrollment-services.catholic.edu/forms/registration-status-change-form.pdf" target="_blank">Pass/Fail Registration Change</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfp12NrXfiqwtqO7j5vjpEZa9yJav_fChqBQ5Th-2rgtpNdbQ/viewform" target="_blank">Declare / Change Specialization</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSfSqf3vwGbOxgrYr1GOw2UG984c4vFbshK16_vjnaJLza3IPA/viewform" target="_blank">Add / Remove a Minor</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSc0hLnRtHFFh9U1U5LIC1RuGXiPdsU5J70iVfrt0_38kQHuPQ/viewform" target="_blank">Class Substitution Request</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSd7rYkqMw0cpLKuTid62XmO_1Z7xC-wtM7vpxnql0DD6A0_Sw/viewform" target="_blank">Expected Graduation Term Change</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSdRzq3MtT-CVee6N42IFIGBzkdG4IKxm6eSyiEHMEa-OLT1xQ/viewform" target="_blank">Career Discernment Exemption (Transfer Students)</a></li>
-  <li><a href="https://docs.google.com/forms/d/e/1FAIpQLScNx2uBAqVdcg8invm7rsXt2uzU2TxIV9vOu2Bk67_dhc33Cw/viewform" target="_blank">Special Permission to Over-Elect</a></li>
-  <li><a href="https://enrollment-services.catholic.edu/forms/double-major-application.pdf" target="_blank">Double Major Application</a></li>
-</ul>
-<p>For anything not listed here, email <a href="mailto:busch-academic-services@cua.edu">busch-academic-services@cua.edu</a></p>` });
+                this.messages.push({ role: 'assistant', type: 'forms-list', content: '' });
                 this.scrollToBottom();
                 return;
             }
