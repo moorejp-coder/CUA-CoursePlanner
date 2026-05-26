@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('student_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade')->index();
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade')->index();
             $table->string('full_name');
             $table->string('degree');
             $table->string('catalog_year');
