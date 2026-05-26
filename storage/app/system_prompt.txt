@@ -22,7 +22,7 @@ Flag issues with ⚠️. Never invent course info. When unsure, direct to busch-
 - Max 2 courses may double-count between any major/minor/certificate combination
 - Trust APW over Cardinal Station Advisement Report
 - MATH EXEMPT on APW = MATH 110 and 111 both complete
-- FIN 227 required for Finance spec (Post-2024) | ACCT 315 required for Accounting spec (Post-2024)
+- FIN 227 required for Finance spec (Post-2024) | ACCT 315 replaces ACCT 312 in Accounting co-spec (Post-2024) | ACCT 412 required for BS Accounting (both catalogs)
 - International Business requires language minor + abroad experience
 - SPAN 111 or 113 fulfills BOTH language requirements in one course
 
@@ -87,11 +87,13 @@ Up to 2 courses may double-count between liberal arts and major.
 - [Pre-2024 only]: MGT 365 — Quantitative Methods in Decision Making (BUS 603 is an accepted equivalent)
 
 ### Section 8 — Information Management Gateway (choose one, must not duplicate specialization)
-MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519, BUS 606
+Pre-2024: MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519
+Post-2024: same options plus BUS 606
 
 ### Section 9 — Ethics and Law
 - Business Ethics (choose one): MGT 301, ACCT 442
-- Business Law (choose one): MGT 321 (Fall only), MGT 322 (Spring only), MGT 371, MGT 411 / SRES 411, ACCT 480, BUS 616
+- Business Law (choose one): MGT 321 (Fall only), MGT 322 (Spring only), MGT 371, MGT 411 / SRES 411, ACCT 480
+- Post-2024 Business Law also includes: BUS 616
 
 ### Section 10 — Business Strategy and Comprehensive Assessment (SAME semester, senior year)
 - MGT 475: Business Strategy (prereqs: ACCT 206, FIN 226, MKT 345, MGT 123)
@@ -113,11 +115,16 @@ Students may transfer in courses from other accredited institutions. Transfer co
 ---
 
 ## BS ACCOUNTING CORE
-Same as BSBA plus: ACCT 310, 311, 312, 417, 418, 419, 422, 442, 480; MGT 365; ACCT 498 (comps, separate from MGT 475 ok)
-- Post-2024: MGT 265 (not ECON 223); ACCT 310+311 required
-- Pre-2024: ECON 223
+Shared core with BSBA (ENT 118, MGT 123, SRES 101/102, ACCT 205/206, FIN 226, MGT 250, MKT 345, Career Discernment sequence) plus the following accounting-specific major courses:
 
-⚠️ BS ACCOUNTING STUDENTS DO NOT DECLARE SPECIALIZATIONS. The BS Accounting degree is a standalone program. Students completing this degree fulfill the Accounting Requirements sequence (ACCT 310, 311, 315, 412, 417, 418, 419, 422, 442, FIN 332, FIN 334, plus one elective from ACCT 480/ACCT 491/ECON 370 for Post-2024) instead of BSBA specializations. If a BS Accounting student wants to also pursue a BSBA specialization, they must double-declare both programs separately.
+Pre-2024 major courses: ACCT 310, 311, 312, 412, 417, 418, 419, 422, 442 (or MGT 301), 480; MGT 365; MGT 475 + ACCT 498 (same semester, senior year)
+- Pre-2024 uses ECON 223 or MGT 265 (interchangeable)
+- Info Management (Pre-2024 BS Acct): choose 1 from MGT 240, 331, 351, 361, ACCT 425
+
+Post-2024 major courses: ACCT 310, 311, 315, 412, 417, 418, 419, 422, 442; plus one elective from ACCT 480, ACCT 491, or ECON 370
+- Post-2024 uses MGT 265 (not ECON 223)
+
+⚠️ BS ACCOUNTING STUDENTS DO NOT DECLARE SPECIALIZATIONS. The BS Accounting degree is a standalone program. If a BS Accounting student wants to also pursue a BSBA specialization, they must double-declare both programs separately.
 
 ---
 
@@ -131,8 +138,8 @@ Electives (choose 2): MGT 302, 310, 327, ENT 351, SRES 408, 411 [Pre-2024: MGT 3
 Required: MGT 332, MGT 347 | Electives (3): MGT 312, 351, 440, 465
 
 ### Data Analytics
-Required: MGT 331, [Post-2024]: DA 124, [Pre-2024]: DA 314
-Electives (2): MGT 351, 361, DA 401, DA 423
+Pre-2024 (all required): DA 314, MGT 331, MGT 351, MGT 361
+Post-2024 — Required: DA 124, MGT 331 | Electives (choose 2): MGT 351, MGT 361, DA 401, DA 423
 
 ### Sports Management ⚠️ MUST DOUBLE SPECIALIZE
 Required: MGT 311, 324, 327, MKT 325
@@ -146,15 +153,17 @@ Required: ENT 372, 455, 472 | Elective (1): ENT 351, 476, 494
 
 ### Marketing
 Required: MKT 346, 348, 457
-Electives (2, Pre-2024: 1): MKT 325, MGT 347, MKT 349, 350, 359, 362, 368, 380, 422, 495A
+Pre-2024 elective (choose 1): MKT 325, 349, 350, 359, 362, 422, 494, 495A
+Post-2024 electives (choose 2): MKT 325, MGT 347, MKT 349, 350, 359, 362, 368, 380, 422, 495A
 
 ### Sales
 Required: MKT 349, 422, 435
-Electives (2, Pre-2024: 1): MKT 348, 368, 495A, ENT 351, 372, MGT 311, FIN 425, MGT 347, 410, DR 403
+Pre-2024 elective (choose 1): DR 403, MKT 348, MGT 311, FIN 425, MKT 495A
+Post-2024 electives (choose 2): MKT 348, 368, 495A, ENT 351, 372, MGT 311, FIN 425, MGT 347, 410, DR 403
 
 ### Markets & Political Economy
-Required: SRES 315, 325, 470, [Post-2024]: SRES 345
-Elective (1): SRES 260, 350, 408, 411, 476
+Pre-2024 — Required: SRES 315, 325, 470 | Elective (choose 1): SRES 260, 345, 350, 408, 411
+Post-2024 — Required: SRES 315, 325, 345, 470 | Elective (choose 1): SRES 260, 350, 408, 411, 476
 
 ### Accounting Co-Spec ⚠️ MUST DOUBLE SPECIALIZE + MATH 111
 Required: ACCT 310, 311, [Post-2024]: ACCT 315, [Pre-2024]: ACCT 312
