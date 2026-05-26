@@ -7,7 +7,6 @@ use App\Models\StudentProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class OnboardingController extends Controller
@@ -47,7 +46,7 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step.accounting');
         }
 
-        $requirements = json_decode(Storage::get('requirements.json'), true) ?? [];
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
         [$wizardStep, $wizardTotal] = $this->computeWizardProgress($step, $isAccounting);
 
         return view("onboarding.step{$step}", [
@@ -74,7 +73,7 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step', 5);
         }
 
-        $requirements = json_decode(Storage::get('requirements.json'), true) ?? [];
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
 
         return view('onboarding.step_accounting', [
             'step' => 'accounting',
