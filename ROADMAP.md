@@ -58,7 +58,7 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 5 — Security & Code Quality 🔄 IN PROGRESS
+## Milestone 5 — Security & Code Quality ✅ COMPLETE
 **Delivers:** A submission that scores well on the code quality rubric.
 - [x] Rate limiting on /api/chat (20/min) and /api/upload (10/min)
 - [x] Rate limiting on login and register (5/min — brute-force protection)
@@ -69,11 +69,20 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 - [x] File upload validation: MIME type server-side, 5MB max, double-extension rejection, filename sanitization
 - [x] SecurityHeaders middleware: CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy
 - [x] Session cookies: secure=true, httpOnly=true, sameSite=strict
-- [x] Strong password requirements: 8+ chars, mixed case, number
+- [x] HIBP breach check on all password set/change flows (Password::uncompromised())
+- [x] Account enumeration fix in password reset (always same flash message)
+- [x] Password reset token expiry reduced to 30 minutes; eager token validation before form render
+- [x] Session invalidation after password reset and password change
+- [x] ValidateSessionBinding middleware: UA change invalidates session, IP change is logged
+- [x] Logout everywhere: deletes all DB session rows, rotates remember_token
+- [x] DetectAttackPatterns middleware: SQL injection, XSS, null byte, oversized payload blocking
+- [x] Honeypot trap on all auth forms
+- [x] Dead admin/role code removed (AdminController, EnsureDean, 8 admin views, User::role)
+- [x] Seeder credentials moved to env vars
 - [x] No PII (student names) in log output
 - [x] Code formatted with Laravel Pint
 - [x] README security section documents all protections
-- [ ] Full test suite for security-critical paths
+- [x] Full test suite for security-critical paths (44 tests, all passing)
 
 ---
 
