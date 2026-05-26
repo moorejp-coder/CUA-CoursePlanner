@@ -378,6 +378,7 @@
 
         <form method="POST" action="{{ route('onboarding.save', 6) }}">
             @csrf
+            <x-honeypot />
 
             {{-- Credits & GPA --}}
             <h3 class="step-heading">Academic Standing</h3>

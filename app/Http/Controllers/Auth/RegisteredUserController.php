@@ -36,8 +36,9 @@ class RegisteredUserController extends Controller
                 'required', 'string', 'lowercase', 'email', 'max:255',
                 'unique:'.User::class,
                 function (string $attribute, mixed $value, \Closure $fail): void {
-                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
-                        $fail('Registration is restricted to CUA email addresses (@cua.edu).');
+                    $domain = '@'.config('app.allowed_email_domain');
+                    if (! str_ends_with(strtolower((string) $value), $domain)) {
+                        $fail('Registration is restricted to CUA email addresses (@'.config('app.allowed_email_domain').').');
                     }
                 },
             ],

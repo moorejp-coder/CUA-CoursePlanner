@@ -32,13 +32,15 @@ class LoginRequest extends FormRequest
                 'required',
                 'string',
                 'email',
+                'max:255',
                 function (string $attribute, mixed $value, \Closure $fail): void {
-                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
+                    $domain = '@'.config('app.allowed_email_domain');
+                    if (! str_ends_with(strtolower((string) $value), $domain)) {
                         $fail('This application is only available to Catholic University of America students and staff.');
                     }
                 },
             ],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'max:72'],
         ];
     }
 

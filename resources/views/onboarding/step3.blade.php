@@ -425,6 +425,7 @@
 
         <form method="POST" action="{{ route('onboarding.save', 3) }}">
             @csrf
+            <x-honeypot />
 
             {{-- Core Liberal Arts --}}
             <h3 class="step-heading">Core Liberal Arts Requirements</h3>

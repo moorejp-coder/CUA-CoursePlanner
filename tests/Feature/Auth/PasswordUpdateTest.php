@@ -2,8 +2,11 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 test('password can be updated', function () {
+    Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('', 200)]);
+
     $user = User::factory()->create();
 
     $response = $this
@@ -11,18 +14,20 @@ test('password can be updated', function () {
         ->from('/profile')
         ->put('/password', [
             'current_password' => 'Password1',
-            'password' => 'NewPassword1',
-            'password_confirmation' => 'NewPassword1',
+            'password' => 'correct-horse-battery-staple',
+            'password_confirmation' => 'correct-horse-battery-staple',
         ]);
 
     $response
         ->assertSessionHasNoErrors()
         ->assertRedirect('/profile');
 
-    $this->assertTrue(Hash::check('NewPassword1', $user->refresh()->password));
+    $this->assertTrue(Hash::check('correct-horse-battery-staple', $user->refresh()->password));
 });
 
 test('correct password must be provided to update password', function () {
+    Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('', 200)]);
+
     $user = User::factory()->create();
 
     $response = $this
@@ -30,8 +35,8 @@ test('correct password must be provided to update password', function () {
         ->from('/profile')
         ->put('/password', [
             'current_password' => 'wrong-password',
-            'password' => 'NewPassword1',
-            'password_confirmation' => 'NewPassword1',
+            'password' => 'correct-horse-battery-staple',
+            'password_confirmation' => 'correct-horse-battery-staple',
         ]);
 
     $response

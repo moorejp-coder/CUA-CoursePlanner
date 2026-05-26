@@ -303,6 +303,7 @@
 
         <form method="POST" action="{{ route('onboarding.save', 4) }}">
             @csrf
+            <x-honeypot />
 
             {{-- ─── SECTION 1: Business Foundations ─────────────────────────── --}}
             <h3 class="step-heading">1. Business Foundations</h3>

@@ -32,15 +32,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Onboarding wizard
     Route::get('/onboarding', [OnboardingController::class, 'index'])->name('onboarding');
     Route::get('/onboarding/step/{step}', [OnboardingController::class, 'show'])->name('onboarding.step')->where('step', '[1-6]');
-    Route::post('/onboarding/step/{step}', [OnboardingController::class, 'save'])->name('onboarding.save')->where('step', '[1-6]');
+    Route::post('/onboarding/step/{step}', [OnboardingController::class, 'save'])->name('onboarding.save')->where('step', '[1-6]')->middleware('throttle:form-submissions');
     Route::get('/onboarding/step-accounting', [OnboardingController::class, 'showAccounting'])->name('onboarding.step.accounting');
-    Route::post('/onboarding/step-accounting', [OnboardingController::class, 'saveAccounting'])->name('onboarding.save.accounting');
+    Route::post('/onboarding/step-accounting', [OnboardingController::class, 'saveAccounting'])->name('onboarding.save.accounting')->middleware('throttle:form-submissions');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update')->middleware('throttle:form-submissions');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy')->middleware('throttle:form-submissions');
 });
 
 // ── Admin Routes (disabled — see FUTUREUPDATES.md) ───────────────────────────

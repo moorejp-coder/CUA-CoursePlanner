@@ -237,6 +237,7 @@
 
         <form method="POST" action="{{ route('onboarding.save', 1) }}">
             @csrf
+            <x-honeypot />
 
             <h3 class="step-heading">Basic Information</h3>
 

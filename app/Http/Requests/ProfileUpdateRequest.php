@@ -26,8 +26,9 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
                 function (string $attribute, mixed $value, \Closure $fail): void {
-                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
-                        $fail('Email must be a CUA address (@cua.edu).');
+                    $domain = '@'.config('app.allowed_email_domain');
+                    if (! str_ends_with(strtolower((string) $value), $domain)) {
+                        $fail('Email must be a CUA address (@'.config('app.allowed_email_domain').').');
                     }
                 },
             ],

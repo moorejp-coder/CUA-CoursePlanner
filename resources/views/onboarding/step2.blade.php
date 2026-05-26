@@ -336,6 +336,7 @@
 
         <form id="spec-form" method="POST" action="{{ route('onboarding.save', 2) }}">
             @csrf
+            <x-honeypot />
 
             <input type="hidden" name="specialization_1" x-ref="spec1">
             <input type="hidden" name="specialization_2" x-ref="spec2">

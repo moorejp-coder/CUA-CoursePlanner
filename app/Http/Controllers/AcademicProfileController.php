@@ -252,7 +252,7 @@ class AcademicProfileController extends Controller
     {
         $validated = $request->validate([
             'course_code' => ['required', 'string', 'max:20'],
-            'status' => ['required', 'in:completed,in_progress,planned,not_needed'],
+            'status' => ['required', 'in:completed,in_progress,not_yet'],
             'grade' => ['nullable', 'string', 'max:5'],
             'semester' => ['nullable', 'string', 'max:20'],
         ]);

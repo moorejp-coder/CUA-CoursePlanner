@@ -7,6 +7,7 @@
 
     <form method="POST" action="{{ route('password.email') }}" class="flex flex-col gap-4">
         @csrf
+        <x-honeypot />
 
         <div>
             <x-input-label for="email" :value="__('Email Address')" />

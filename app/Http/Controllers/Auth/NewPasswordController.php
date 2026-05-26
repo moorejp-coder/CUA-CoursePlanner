@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -19,8 +20,19 @@ class NewPasswordController extends Controller
     /**
      * Display the password reset view.
      */
-    public function create(Request $request): View
+    public function create(Request $request): View|RedirectResponse
     {
+        // The reset URL always contains ?email= so we can validate the token
+        // upfront instead of letting the user fill the form only to fail on submit.
+        if ($email = $request->query('email')) {
+            $user = User::whereEmail($email)->first();
+
+            if (! $user || ! Password::broker()->tokenExists($user, $request->route('token'))) {
+                return redirect()->route('password.request')
+                    ->with('status', 'This password reset link has expired or is invalid. Please request a new one.');
+            }
+        }
+
         return view('auth.reset-password', ['request' => $request]);
     }
 
@@ -47,6 +59,10 @@ class NewPasswordController extends Controller
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
                 ])->save();
+
+                // Drop all active sessions for this user so an attacker with an
+                // existing session is immediately kicked out after a password reset.
+                DB::table('sessions')->where('user_id', $user->id)->delete();
 
                 event(new PasswordReset($user));
             }

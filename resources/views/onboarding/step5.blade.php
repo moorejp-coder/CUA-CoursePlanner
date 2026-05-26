@@ -276,6 +276,7 @@
 
         <form method="POST" action="{{ route('onboarding.save', 5) }}">
             @csrf
+            <x-honeypot />
 
             @foreach ($selectedSpecs as $specKey)
                 @php

@@ -247,6 +247,7 @@
 
         <form method="POST" action="{{ route('onboarding.save.accounting') }}">
             @csrf
+            <x-honeypot />
 
             <h3 class="step-heading">{{ $isPost2024 ? 'Post-2024' : 'Pre-2024' }} BS Accounting Requirements</h3>
 

@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Http;
+
 test('registration screen can be rendered', function () {
     $response = $this->get('/register');
 
@@ -7,11 +9,13 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    Http::fake(['https://api.pwnedpasswords.com/*' => Http::response('', 200)]);
+
     $response = $this->post('/register', [
         'name' => 'Test User',
         'email' => 'testuser@cua.edu',
-        'password' => 'Password1',
-        'password_confirmation' => 'Password1',
+        'password' => 'correct-horse-battery-staple',
+        'password_confirmation' => 'correct-horse-battery-staple',
     ]);
 
     $this->assertAuthenticated();

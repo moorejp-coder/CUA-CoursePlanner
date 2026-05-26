@@ -195,6 +195,8 @@ class OnboardingController extends Controller
         $rules = [
             'la_phil_elective' => [
                 'nullable',
+                'string',
+                'max:30',
                 function ($attribute, $value, $fail) {
                     $v = strtoupper(trim((string) $value));
                     if (! $v) {
@@ -207,6 +209,8 @@ class OnboardingController extends Controller
             ],
             'la_theology_elective' => [
                 'nullable',
+                'string',
+                'max:30',
                 function ($attribute, $value, $fail) {
                     $v = strtoupper(trim((string) $value));
                     if (! $v) {
@@ -248,6 +252,8 @@ class OnboardingController extends Controller
 
         $electiveRule = fn (string $label) => [
             'nullable',
+            'string',
+            'max:20',
             function ($attribute, $value, $fail) use ($label, $prefixes) {
                 $v = strtoupper(trim((string) $value));
                 if (! $v) {
@@ -287,7 +293,15 @@ class OnboardingController extends Controller
             $institution = mb_substr(strip_tags(trim((string) ($row['institution'] ?? ''))), 0, 255);
             $origName = mb_substr(strip_tags(trim((string) ($row['orig_name'] ?? ''))), 0, 255);
             $cuaEquiv = mb_substr(strtoupper(strip_tags(trim((string) ($row['cua_equiv'] ?? '')))), 0, 20);
-            $credits = is_numeric($row['credits'] ?? '') ? (float) $row['credits'] : null;
+            $creditsRaw = $row['credits'] ?? '';
+            if (is_numeric($creditsRaw)) {
+                $credits = (float) $creditsRaw;
+                if ($credits < 0 || $credits > 50) {
+                    $credits = null;
+                }
+            } else {
+                $credits = null;
+            }
             $grade = mb_substr(strip_tags(trim((string) ($row['grade'] ?? ''))), 0, 5);
             if ($institution && $origName) {
                 $data['transfers'][] = compact('institution', 'origName', 'cuaEquiv', 'credits', 'grade');
@@ -301,8 +315,11 @@ class OnboardingController extends Controller
     {
         // Specialization courses — save dynamically keyed entries
         $data = [];
-        foreach ($request->input('spec_courses', []) as $code => $status) {
-            $safeCode = preg_replace('/[^A-Za-z0-9_ ]/', '', $code);
+        foreach (array_slice($request->input('spec_courses', []), 0, 50) as $code => $status) {
+            $safeCode = mb_substr(preg_replace('/[^A-Za-z0-9_ ]/', '', (string) $code), 0, 20);
+            if (! $safeCode) {
+                continue;
+            }
             $data["spec_course_{$safeCode}"] = in_array($status, ['completed', 'in_progress', 'not_yet']) ? $status : 'not_yet';
         }
 
@@ -334,8 +351,8 @@ class OnboardingController extends Controller
     {
         $data = ['acct_courses' => []];
 
-        foreach ($request->input('acct_courses', []) as $code => $status) {
-            $safeCode = preg_replace('/[^A-Za-z0-9 ]/', '', $code);
+        foreach (array_slice($request->input('acct_courses', []), 0, 20) as $code => $status) {
+            $safeCode = mb_substr(preg_replace('/[^A-Za-z0-9 ]/', '', (string) $code), 0, 20);
             if ($safeCode) {
                 $data['acct_courses'][$safeCode] = in_array($status, ['completed', 'in_progress', 'not_yet'])
                     ? $status

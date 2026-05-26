@@ -1,6 +1,7 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}" class="flex flex-col gap-4">
         @csrf
+        <x-honeypot />
 
         <div>
             <x-input-label for="name" :value="__('Full Name')" />
