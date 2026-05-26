@@ -25,6 +25,11 @@ class ProfileUpdateRequest extends FormRequest
                 'email',
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! str_ends_with(strtolower((string) $value), '@cua.edu')) {
+                        $fail('Email must be a CUA address (@cua.edu).');
+                    }
+                },
             ],
         ];
     }

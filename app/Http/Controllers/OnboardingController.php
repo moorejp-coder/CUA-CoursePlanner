@@ -7,11 +7,23 @@ use App\Models\StudentProfile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class OnboardingController extends Controller
 {
     private const TOTAL_STEPS = 6;
+
+    private const ADMIT_TERMS = [
+        'Fall 2020', 'Spring 2021', 'Fall 2021', 'Spring 2022', 'Fall 2022',
+        'Spring 2023', 'Fall 2023', 'Spring 2024', 'Fall 2024', 'Spring 2025',
+        'Fall 2025', 'Spring 2026',
+    ];
+
+    private const GRADUATION_TERMS = [
+        'Spring 2025', 'Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2027',
+        'Fall 2027', 'Spring 2028', 'Fall 2028', 'Spring 2029', 'Fall 2029', 'Spring 2030',
+    ];
 
     public function index(): RedirectResponse
     {
@@ -149,9 +161,9 @@ class OnboardingController extends Controller
     {
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
-            'admit_term' => ['required', 'string'],
+            'admit_term' => ['required', 'string', Rule::in(self::ADMIT_TERMS)],
             'degree' => ['required', 'in:bsba,bs_accounting'],
-            'expected_graduation' => ['required', 'string'],
+            'expected_graduation' => ['required', 'string', Rule::in(self::GRADUATION_TERMS)],
         ]);
 
         // Auto-determine catalog year from admit term
@@ -163,10 +175,14 @@ class OnboardingController extends Controller
 
     private function validateStep2(Request $request, array $existingData): array
     {
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+        $catalogYear = $existingData['catalog_year'] ?? 'post_2024';
+        $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
+
         $validated = $request->validate([
-            'specialization_1' => ['required', 'string'],
-            'specialization_2' => ['nullable', 'string'],
-            'specialization_3' => ['nullable', 'string'],
+            'specialization_1' => ['required', 'string', Rule::in($validSpecs)],
+            'specialization_2' => ['nullable', 'string', Rule::in(array_merge(['', 'null'], $validSpecs))],
+            'specialization_3' => ['nullable', 'string', Rule::in(array_merge(['', 'null'], $validSpecs))],
         ]);
 
         return $validated;
@@ -174,7 +190,9 @@ class OnboardingController extends Controller
 
     private function validateStep3(Request $request): array
     {
-        $request->validate([
+        $allowedSelects = $this->allowedLaSelects();
+
+        $rules = [
             'la_phil_elective' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
@@ -199,26 +217,21 @@ class OnboardingController extends Controller
                     }
                 },
             ],
-        ]);
-
-        $fields = [
-            'la_classical_philosophy', 'la_modern_philosophy',
-            'la_theology_1', 'la_theology_2',
-            'la_rhetoric', 'la_natural_science',
-            'la_literature', 'la_fine_arts',
-            'la_social_science', 'la_history_politics',
-            'la_language_1', 'la_language_2',
-            'la_phil_elective', 'la_theology_elective',
-            'la_math_thinking',
         ];
 
+        foreach ($allowedSelects as $field => $allowed) {
+            $rules[$field] = ['nullable', Rule::in($allowed)];
+        }
+
+        $request->validate($rules);
+
         $data = [];
-        foreach ($fields as $field) {
-            $raw = $request->input($field, '');
-            if (in_array($field, ['la_phil_elective', 'la_theology_elective'])) {
-                $raw = strtoupper(trim($raw));
-            }
-            $data[$field] = $raw;
+        foreach (array_keys($allowedSelects) as $field) {
+            $data[$field] = $request->input($field, '');
+        }
+
+        foreach (['la_phil_elective', 'la_theology_elective'] as $field) {
+            $data[$field] = strtoupper(trim($request->input($field, '')));
         }
 
         $data['la_social_science_autofilled'] = $request->boolean('la_social_science_autofilled');
@@ -228,6 +241,9 @@ class OnboardingController extends Controller
 
     private function validateStep4(Request $request): array
     {
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+        $allowedCore = $this->allowedCoreSelects($requirements);
+
         $prefixes = ['BUS ', 'MGT ', 'MKT ', 'FIN ', 'ACCT ', 'ECON ', 'ENT ', 'SRES '];
 
         $electiveRule = fn (string $label) => [
@@ -246,36 +262,33 @@ class OnboardingController extends Controller
             },
         ];
 
-        $request->validate([
-            'core_elective_1' => $electiveRule('Business Elective 1'),
-            'core_elective_2' => $electiveRule('Business Elective 2'),
-        ]);
-
-        $fields = [
-            'core_ent118', 'core_mgt123', 'core_sres101', 'core_sres102',
-            'core_acct205', 'core_acct206', 'core_fin226', 'core_math',
-            'core_bus199', 'core_bus299a', 'core_mgt250', 'core_sres290',
-            'core_stats', 'core_info_gateway', 'core_mkt345', 'core_ethics',
-            'core_law', 'core_mgt365', 'core_bus399a', 'core_bus499a',
-            'core_mgt475', 'core_bus498', 'core_elective_1', 'core_elective_2',
-        ];
-
-        $data = [];
-        foreach ($fields as $field) {
-            $raw = $request->input($field, '');
-            if (in_array($field, ['core_elective_1', 'core_elective_2'])) {
-                $raw = strtoupper(trim($raw));
-            }
-            $data[$field] = $raw;
+        $coreRules = [];
+        foreach ($allowedCore as $field => $allowed) {
+            $coreRules[$field] = ['nullable', Rule::in($allowed)];
         }
 
+        $request->validate(array_merge($coreRules, [
+            'core_elective_1' => $electiveRule('Business Elective 1'),
+            'core_elective_2' => $electiveRule('Business Elective 2'),
+        ]));
+
+        $data = [];
+        foreach (array_keys($allowedCore) as $field) {
+            $data[$field] = $request->input($field, '');
+        }
+
+        foreach (['core_elective_1', 'core_elective_2'] as $field) {
+            $data[$field] = strtoupper(trim($request->input($field, '')));
+        }
+
+        // Transfer credits — cap at 15 rows, enforce field length limits
         $data['transfers'] = [];
-        foreach ($request->input('transfers', []) as $row) {
-            $institution = strip_tags(trim((string) ($row['institution'] ?? '')));
-            $origName = strip_tags(trim((string) ($row['orig_name'] ?? '')));
-            $cuaEquiv = strtoupper(strip_tags(trim((string) ($row['cua_equiv'] ?? ''))));
+        foreach (array_slice($request->input('transfers', []), 0, 15) as $row) {
+            $institution = mb_substr(strip_tags(trim((string) ($row['institution'] ?? ''))), 0, 255);
+            $origName = mb_substr(strip_tags(trim((string) ($row['orig_name'] ?? ''))), 0, 255);
+            $cuaEquiv = mb_substr(strtoupper(strip_tags(trim((string) ($row['cua_equiv'] ?? '')))), 0, 20);
             $credits = is_numeric($row['credits'] ?? '') ? (float) $row['credits'] : null;
-            $grade = strip_tags(trim((string) ($row['grade'] ?? '')));
+            $grade = mb_substr(strip_tags(trim((string) ($row['grade'] ?? ''))), 0, 5);
             if ($institution && $origName) {
                 $data['transfers'][] = compact('institution', 'origName', 'cuaEquiv', 'credits', 'grade');
             }
@@ -303,7 +316,15 @@ class OnboardingController extends Controller
             'gpa' => ['nullable', 'numeric', 'min:0', 'max:4.00'],
         ]);
 
-        $validated['in_progress_courses'] = $request->input('in_progress_courses', []);
+        // Cap at 20 courses, truncate each code to 20 chars, strip tags
+        $validated['in_progress_courses'] = array_values(array_filter(
+            array_map(
+                fn ($c) => mb_substr(strtoupper(strip_tags(trim((string) $c))), 0, 20),
+                array_slice($request->input('in_progress_courses', []), 0, 20)
+            ),
+            fn ($c) => $c !== ''
+        ));
+
         $validated['projected_standing'] = $this->calculateStanding((int) $validated['credits_completed']);
 
         return $validated;
@@ -400,6 +421,141 @@ class OnboardingController extends Controller
             $credits >= 30 => 'Sophomore',
             default => 'Freshman',
         };
+    }
+
+    /** Allowed values for every LA select dropdown, mirroring the view's <option> lists. */
+    private function allowedLaSelects(): array
+    {
+        return [
+            'la_classical_philosophy' => ['not_yet', 'PHIL 201', 'PHIL 211', 'HSPH 101'],
+            'la_modern_philosophy' => ['not_yet', 'PHIL 202', 'PHIL 212', 'HSPH 102'],
+            'la_theology_1' => ['not_yet', 'TRS 201', 'HSTR 101'],
+            'la_theology_2' => ['not_yet', 'TRS 202A', 'TRS 202B', 'HSTR (any)'],
+            'la_rhetoric' => ['not_yet', 'ENG 101', 'ENG 101H', 'ENG 101C'],
+            'la_natural_science' => array_merge(['not_yet'], [
+                'ANTH 105', 'ANTH 108', 'ANTH 204', 'ANTH 206', 'ANTH 352', 'ANTH 354',
+                'BIOL 103', 'BIOL 109', 'CHEM 10', 'CHEM 110', 'CHEM 125', 'CHEM 126',
+                'CHEM 127', 'CHEM 128R', 'CHEM 130', 'PHYS 101', 'PHYS 103', 'PHYS 122',
+                'PHYS 206', 'PHYS 215H', 'PSY 204', 'SAS 225', 'HSEV 101',
+            ]),
+            'la_literature' => array_merge(['not_yet'], [
+                'ARAB 279', 'CLAS 105', 'CLAS 106', 'CLAS 211', 'CLAS 212R',
+                'CLAS 244', 'CLAS 251', 'CLAS 261',
+                'ENG 206', 'ENG 212', 'ENG 231', 'ENG 232', 'ENG 235', 'ENG 236',
+                'ENG 278', 'ENG 305', 'ENG 306', 'ENG 312', 'ENG 341', 'ENG 345',
+                'ENG 347', 'ENG 351', 'ENG 352', 'ENG 356', 'ENG 364', 'ENG 369',
+                'ENG 376', 'ENG 378-R', 'ENG 379', 'ENG 461', 'ENG 462',
+                'FREN 220', 'FREN 230', 'FREN 242', 'FREN 279',
+                'GER 220', 'GER 225', 'GER 230', 'GER 255',
+                'GS 220', 'HUM 101', 'HUM 124',
+                'ITAL 212', 'ITAL 220', 'ITAL 226', 'ITAL 232',
+                'MDIA 225', 'SPAN 224', 'SPAN 225', 'SPAN 240', 'SPAN 321',
+                'HSHU 203', 'HSLS 353',
+            ]),
+            'la_fine_arts' => array_merge(['not_yet'], [
+                'ARPL 211',
+                'ART 201', 'ART 211', 'ART 212', 'ART 213', 'ART 222',
+                'ART 251', 'ART 252', 'ART 272', 'ART 302', 'ART 308',
+                'ART 317', 'ART 318', 'ART 319', 'ART 320', 'ART 335',
+                'CLAS 214', 'CLAS 221', 'CLAS 251', 'CLAS 261',
+                'CLAS 317', 'CLAS 318', 'CLAS 318R',
+                'DR 105', 'DR 106', 'DR 110', 'DR 201', 'DR 202',
+                'DR 207', 'DR 305', 'DR 403', 'DNCE 101',
+                'ENG 300', 'ENG 302', 'ENGR 101', 'HIST 390A', 'ITAL 219-R',
+                'MDIA 201', 'MDIA 343',
+                'MUS 110', 'MUS 112', 'MUS 131', 'MUS 134', 'MUS 135',
+                'MUS 178', 'MUS 276', 'MUS 304', 'MUS 327', 'MUS 328', 'MUS 328H',
+                'HSLS 352', 'HSAM 101',
+            ]),
+            'la_social_science' => array_merge(['not_yet'], [
+                'ANTH 101', 'ANTH 110', 'ANTH 201', 'ANTH 203', 'ANTH 211',
+                'ANTH 226', 'ANTH 240', 'ANTH 260', 'CEE 201',
+                'ECON 100', 'ECON 101', 'ECON 102', 'ECON 103', 'ECON 104', 'ECON 200',
+                'GS 101', 'PSY 201', 'PSY 226', 'PSY 261',
+                'SOC 101', 'SOC 102', 'SOC 102H', 'SOC 202', 'SOC 206',
+                'SOC 210', 'SOC 281', 'SOC 330', 'SOC 358', 'SOC 358H',
+                'SRES 101', 'SRES 102', 'SRES 345', 'SSS 101', 'SSS 226',
+                'HSEV 203', 'HSSS 101', 'HSSS 102', 'HSSS 204',
+            ]),
+            'la_history_politics' => array_merge(['not_yet'], [
+                'ANTH 215',
+                'CLAS 205', 'CLAS 206', 'CLAS 206R', 'CLAS 207', 'CLAS 220',
+                'CLAS 226', 'CLAS 260', 'CLAS 304', 'CLAS 308', 'ECST 315',
+                'EURO 203',
+                'HIST 140', 'HIST 142', 'HIST 151', 'HIST 202', 'HIST 205',
+                'HIST 206', 'HIST 206R', 'HIST 208', 'HIST 222', 'HIST 224',
+                'HIST 226', 'HIST 229', 'HIST 231A', 'HIST 231B', 'HIST 235',
+                'HIST 246', 'HIST 257', 'HIST 258', 'HIST 301', 'HIST 308B',
+                'HIST 309', 'HIST 309B', 'HIST 312', 'HIST 315', 'HIST 316',
+                'HIST 334A', 'HIST 349', 'HIST 351', 'HIST 371D', 'HIST 380D',
+                'HIST 384A', 'HIST 385', 'ITAL 221', 'MDIA 202',
+                'POL 111', 'POL 112', 'POL 211', 'POL 226', 'WASH 101',
+                'HSHU 101', 'HSHU 102', 'HSHU 204',
+                'HSLS 205', 'HSLS 351', 'HSLS 354',
+            ]),
+            'la_language_1' => array_merge(['not_yet'], [
+                'ARAB 103', 'CHN 103', 'FREN 103', 'GER 103', 'GR 103',
+                'IRSH 103', 'ITAL 103', 'LAT 103', 'SPAN 103', 'SPAN 111', 'SPAN 113',
+            ]),
+            'la_language_2' => array_merge(['not_yet'], [
+                'ARAB 104', 'CHN 104', 'FREN 104', 'GER 104', 'GR 104',
+                'IRSH 104', 'ITAL 104', 'LAT 104', 'SPAN 104',
+            ]),
+            'la_math_thinking' => array_merge(['not_yet'], [
+                'MATH 111', 'MATH 112', 'MATH 114', 'MATH 121', 'MATH 122',
+                'MATH 168', 'MATH 175', 'MATH 187',
+                'HSMS 230', 'HSMS 330', 'HSSS 203', 'math_exempt',
+            ]),
+        ];
+    }
+
+    /** Allowed values for every Business Core select, including options from requirements.json. */
+    private function allowedCoreSelects(array $requirements): array
+    {
+        $infoGateway = array_unique(array_merge(
+            $requirements['post_2024']['business_core_options']['info_gateway'] ?? [],
+            $requirements['pre_2024']['business_core_options']['info_gateway'] ?? [],
+        ));
+
+        $ethics = array_unique(array_merge(
+            $requirements['post_2024']['business_core_options']['ethics'] ?? [],
+            $requirements['pre_2024']['business_core_options']['ethics'] ?? [],
+        ));
+
+        $lawCodes = [];
+        foreach (['post_2024', 'pre_2024'] as $cy) {
+            foreach ($requirements[$cy]['business_core_options']['law'] ?? [] as $opt) {
+                $lawCodes[] = is_array($opt) ? $opt['code'] : $opt;
+            }
+        }
+        $lawCodes = array_unique($lawCodes);
+
+        $status3 = ['not_yet', 'in_progress', 'Completed'];
+
+        return [
+            'core_ent118' => ['not_yet', 'ENT 118A', 'ENT 118B'],
+            'core_mgt123' => ['not_yet', 'MGT 123A', 'MGT 123B'],
+            'core_sres101' => ['not_yet', 'SRES 101', 'ECON 100', 'ECON 102'],
+            'core_sres102' => ['not_yet', 'SRES 102', 'ECON 200', 'ECON 101'],
+            'core_sres290' => $status3,
+            'core_acct205' => $status3,
+            'core_acct206' => $status3,
+            'core_fin226' => $status3,
+            'core_mgt250' => $status3,
+            'core_mgt365' => array_merge($status3, ['BUS 603']),
+            'core_mgt475' => $status3,
+            'core_bus498' => $status3,
+            'core_bus199' => $status3,
+            'core_bus299a' => array_merge($status3, ['BUS 299A', 'MKT 299']),
+            'core_bus399a' => array_merge($status3, ['BUS 399A', 'MKT 399']),
+            'core_bus499a' => array_merge($status3, ['BUS 499A', 'MKT 499']),
+            'core_mkt345' => ['not_yet', 'in_progress', 'MKT 345'],
+            'core_stats' => ['not_yet', 'MGT 265', 'ECON 223'],
+            'core_math' => ['not_yet', 'MATH 110', 'MATH 111', 'Level 1 or 2 Exempt'],
+            'core_info_gateway' => array_merge(['not_yet'], $infoGateway),
+            'core_ethics' => array_merge(['not_yet'], $ethics),
+            'core_law' => array_merge(['not_yet'], $lawCodes),
+        ];
     }
 
     private function saveProfile(array $data): void
