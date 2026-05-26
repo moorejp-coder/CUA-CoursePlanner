@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AcademicProfileController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\OnboardingController;
 use App\Http\Controllers\ProfileController;
@@ -10,18 +9,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return auth()->user()->isAdmin()
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('chat');
+        return redirect()->route('chat');
     }
 
     return view('welcome');
 });
 
 Route::get('/dashboard', function () {
-    return auth()->user()->isAdmin()
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('chat');
+    return redirect()->route('chat');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
