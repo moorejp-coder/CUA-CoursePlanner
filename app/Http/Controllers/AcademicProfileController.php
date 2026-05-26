@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Concerns\AuthorizesAccess;
 use App\Models\StudentCourse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -9,6 +10,8 @@ use Illuminate\View\View;
 
 class AcademicProfileController extends Controller
 {
+    use AuthorizesAccess;
+
     public function show(Request $request): View
     {
         $user = $request->user()->load(['studentProfile', 'studentCourses']);
@@ -250,6 +253,8 @@ class AcademicProfileController extends Controller
 
     public function suggestUpdate(Request $request): JsonResponse
     {
+        $this->authorizeAccess($request, fn ($user) => $user->studentProfile !== null);
+
         $validated = $request->validate([
             'course_code' => ['required', 'string', 'max:20'],
             'status' => ['required', 'in:completed,in_progress,not_yet'],
@@ -285,6 +290,8 @@ class AcademicProfileController extends Controller
 
     public function dismissSemesterPrompt(Request $request): JsonResponse
     {
+        $this->authorizeAccess($request, fn ($user) => $user->studentProfile !== null);
+
         $profile = $request->user()->studentProfile;
 
         if ($profile) {
