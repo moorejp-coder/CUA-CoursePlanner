@@ -12,15 +12,46 @@ class SecurityHeaders
     {
         $response = $next($request);
 
-        $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        // Prevent the app from being embedded in any frame or iframe.
+        $response->headers->set('X-Frame-Options', 'DENY');
+
+        // Prevent browsers from MIME-sniffing a response away from the declared Content-Type.
         $response->headers->set('X-Content-Type-Options', 'nosniff');
-        $response->headers->set('X-XSS-Protection', '1; mode=block');
+
+        // Only send the origin (no path/query) for cross-origin requests; full URL for same-origin.
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
-        $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
+        // Disable every browser feature this app does not use.
+        $response->headers->set(
+            'Permissions-Policy',
+            'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), '.
+            'display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), '.
+            'geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), '.
+            'payment=(), picture-in-picture=(), publickey-credentials-get=(), '.
+            'screen-wake-lock=(), usb=(), web-share=(), xr-spatial-tracking=()'
+        );
+
+        // Restrict where scripts, styles, fonts, images, and connections can come from.
+        // - unsafe-inline / unsafe-eval are required by Alpine.js and Vite's dev HMR overlay.
+        // - fonts.googleapis.com / fonts.gstatic.com are needed for the Google Fonts CDN.
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'"
+            "default-src 'self'; ".
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval'; ".
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; ".
+            "font-src 'self' https://fonts.gstatic.com; ".
+            "img-src 'self' data:; ".
+            "connect-src 'self'; ".
+            "frame-ancestors 'none'; ".
+            "base-uri 'self'; ".
+            "form-action 'self'"
         );
+
+        // HSTS: instruct browsers to always use HTTPS for the next year.
+        // Omitted on local/testing so plain-HTTP dev sessions are not poisoned.
+        if (! app()->environment('local', 'testing')) {
+            $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+        }
 
         return $response;
     }

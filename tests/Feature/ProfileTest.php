@@ -61,10 +61,10 @@ test('user can delete their account', function () {
 
     $response
         ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
+        ->assertRedirect(route('account.deleted', ['courses' => 0, 'profile' => 0]));
 
     $this->assertGuest();
-    $this->assertNull($user->fresh());
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
 });
 
 test('correct password must be provided to delete account', function () {

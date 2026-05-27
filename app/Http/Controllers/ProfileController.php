@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Services\AccountDeletionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +39,9 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Permanently delete the user's account and all associated data.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request, AccountDeletionService $deletion): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
@@ -48,13 +49,20 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
-
-        $user->delete();
-
+        // Log out first — guard::logout() cycles the remember token via $user->save().
+        // If we logged out AFTER deleting the user, that save() would re-insert the
+        // deleted row (Eloquent treats a model with exists=false as a new record).
+        Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        // Run the full deletion pipeline: email → rate-limiter → sessions →
+        // password-reset tokens → storage files → user row (cascades to profile + courses).
+        $manifest = $deletion->delete($user);
+
+        return Redirect::route('account.deleted', [
+            'courses' => $manifest['records']['courses'],
+            'profile' => $manifest['records']['academic_profile'],
+        ]);
     }
 }

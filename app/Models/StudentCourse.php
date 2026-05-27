@@ -20,6 +20,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Hidden(['id', 'user_id', 'created_at', 'updated_at'])]
 class StudentCourse extends Model
 {
+    protected function casts(): array
+    {
+        return [
+            // AES-256-CBC via APP_KEY — FERPA-protected academic records
+            'grade' => 'encrypted',
+            'notes' => 'encrypted',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -44,6 +46,18 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+    /**
+     * Unlock a locked account via the signed email link.
+     */
+    public function unlock(User $user): RedirectResponse
+    {
+        $user->update(['login_locked_at' => null]);
+        RateLimiter::clear('login_acct|'.$user->email);
+
+        return redirect()->route('login')
+            ->with('status', 'Your account has been unlocked. You may now log in.');
     }
 
     /**

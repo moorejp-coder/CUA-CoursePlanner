@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Middleware\DetectAttackPatterns;
+use App\Http\Middleware\ForceHttps;
 use App\Http\Middleware\Honeypot;
+use App\Http\Middleware\SanitizeIntendedRedirect;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\ValidateSessionBinding;
 use Illuminate\Auth\AuthenticationException;
@@ -21,11 +23,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->trustHosts();
+        $middleware->trustProxies(at: '*');
+        $middleware->append(ForceHttps::class);
         $middleware->append(SecurityHeaders::class);
         $middleware->web(append: [
             ValidateSessionBinding::class,
             DetectAttackPatterns::class,
             Honeypot::class,
+            SanitizeIntendedRedirect::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

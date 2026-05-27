@@ -37,7 +37,11 @@ class StudentProfile extends Model
     protected function casts(): array
     {
         return [
-            'gpa' => 'decimal:2',
+            // AES-256-CBC via APP_KEY — fields that are FERPA-protected or personal
+            'full_name' => 'encrypted',
+            'gpa' => 'encrypted',
+            'math_placement' => 'encrypted',
+            'language_placement' => 'encrypted',
             'semester_prompt_shown_at' => 'datetime',
             'last_updated_at' => 'datetime',
             'credits_completed' => 'integer',

@@ -15,6 +15,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public confirmation page shown after successful account deletion.
+// No auth required — the user is logged out by the time they land here.
+Route::get('/account-deleted', function () {
+    return view('auth.account-deleted', [
+        'courses' => (int) request()->query('courses', 0),
+        'profile' => (int) request()->query('profile', 0),
+    ]);
+})->name('account.deleted');
+
 Route::get('/dashboard', function () {
     return redirect()->route('chat');
 })->middleware(['auth', 'verified'])->name('dashboard');

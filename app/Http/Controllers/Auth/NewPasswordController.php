@@ -58,6 +58,7 @@ class NewPasswordController extends Controller
                 $user->forceFill([
                     'password' => Hash::make($request->password),
                     'remember_token' => Str::random(60),
+                    'login_locked_at' => null,
                 ])->save();
 
                 // Drop all active sessions for this user so an attacker with an
