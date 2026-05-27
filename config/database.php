@@ -38,9 +38,13 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
+            // WAL mode: allows concurrent reads during writes; survives crashes without
+            // corruption (unlike the default DELETE journal which corrupts on mid-write crash).
+            'journal_mode' => 'WAL',
+            // Wait up to 5 s before throwing "database is locked" on write contention.
+            'busy_timeout' => 5000,
+            // NORMAL is safe with WAL and faster than FULL (the non-WAL default).
+            'synchronous' => 'NORMAL',
             'transaction_mode' => 'DEFERRED',
         ],
 
