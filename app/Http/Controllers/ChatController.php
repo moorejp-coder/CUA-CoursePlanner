@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -54,6 +55,7 @@ class ChatController extends Controller
         try {
             $response = Http::withToken(config('services.groq.key'))
                 ->timeout(30)
+                ->retry(2, 500, fn ($e) => $e instanceof ConnectionException)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => config('services.groq.model'),
                     'messages' => $messages,

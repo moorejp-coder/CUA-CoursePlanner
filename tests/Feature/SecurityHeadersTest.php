@@ -33,8 +33,9 @@ test('Content-Security-Policy is present and includes critical directives', func
         ->toContain("frame-ancestors 'none'")
         ->toContain("form-action 'self'")
         ->toContain("base-uri 'self'")
-        ->toContain('https://fonts.googleapis.com')
-        ->toContain('https://fonts.gstatic.com');
+        // Fonts are self-hosted — no external CDN allowances in CSP
+        ->not->toContain('fonts.googleapis.com')
+        ->not->toContain('fonts.gstatic.com');
 });
 
 test('Strict-Transport-Security is not set in the testing environment', function () {
