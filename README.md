@@ -10,8 +10,8 @@ The Busch School Course Planning Bot is a conversational AI advisor that helps u
 
 - Which degree requirements they have completed, are in progress, or still need
 - Course sequencing, prerequisites, and scheduling recommendations
-- All 12 BSBA specializations and the BS Accounting program
-- Business and non-business minors
+- All BSBA specializations, BS Accounting program, and BA in Business (Double Major)
+- Business minors
 - How to register for internships, directed studies, and co-ops
 - Where to find and submit Busch School administrative forms
 
