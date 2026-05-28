@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PrerequisiteService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -106,8 +107,11 @@ class ChatController extends Controller
             return "\n\nSTUDENT PROFILE: Not yet set up. If the student asks about their personal course plan, encourage them to complete their academic profile setup at /onboarding first.";
         }
 
-        $completed = $user->studentCourses->where('status', 'completed')->pluck('course_code')->join(', ');
-        $inProgress = $user->studentCourses->where('status', 'in_progress')->pluck('course_code')->join(', ');
+        $completedCourses = $user->studentCourses->where('status', 'completed');
+        $inProgressCourses = $user->studentCourses->where('status', 'in_progress');
+
+        $completedCodes = $completedCourses->pluck('course_code')->values()->all();
+        $inProgressCodes = $inProgressCourses->pluck('course_code')->values()->all();
 
         $specs = array_filter([
             $profile->specialization_1,
@@ -116,14 +120,19 @@ class ChatController extends Controller
         ]);
 
         $catalogLabel = $profile->catalog_year === 'post_2024' ? 'Post-2024' : 'Pre-2024';
-        $degreeLabel = $profile->degree === 'bs_accounting' ? 'B.S. Accounting' : 'B.S.B.A.';
+        $degreeLabel = match ($profile->degree) {
+            'bs_accounting' => 'B.S. Accounting',
+            'double_major' => 'BA in Business (Double Major)',
+            'business_minor' => 'Business Minor',
+            default => 'B.S.B.A.',
+        };
         $specList = implode(', ', $specs) ?: 'None selected';
 
         $lines = [
             "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | GPA: ".($profile->gpa ?? 'N/A')." | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
             "Specializations: {$specList}",
-            'COMPLETED: '.($completed ?: 'None'),
-            'IN PROGRESS: '.($inProgress ?: 'None'),
+            'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
+            'IN PROGRESS: '.(implode(', ', $inProgressCodes) ?: 'None'),
         ];
 
         if ($profile->degree === 'bs_accounting') {
@@ -138,6 +147,23 @@ class ChatController extends Controller
                 return "{$c->course_code}({$status})";
             })->join(' ');
             $lines[] = 'ACCT REQUIREMENTS: '.($acctParts ?: 'Not yet entered');
+        }
+
+        // Prerequisite conflict detection + next-eligible analysis
+        $prereqService = new PrerequisiteService;
+        $prereqSummary = $prereqService->buildContextSummary(
+            $completedCodes,
+            $inProgressCodes,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->degree,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        );
+
+        if ($prereqSummary) {
+            $lines[] = $prereqSummary;
         }
 
         return "\n\n".implode("\n", $lines);
