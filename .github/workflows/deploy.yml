@@ -1,0 +1,52 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: SSH deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            set -e
+            cd /var/www/html
+
+            echo "--- Fixing storage ownership for git ---"
+            sudo chown -R $USER:$USER storage 2>/dev/null || true
+
+            echo "--- Pulling latest code ---"
+            git pull origin main
+
+            echo "--- Installing PHP dependencies ---"
+            composer install --no-dev --optimize-autoloader
+
+            echo "--- Building frontend assets ---"
+            npm ci
+            npm run build
+
+            echo "--- Running database migrations ---"
+            php artisan migrate --force
+
+            echo "--- Clearing and rebuilding Laravel caches ---"
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+
+            echo "--- Restoring storage ownership to web server ---"
+            sudo chown -R www-data:www-data storage 2>/dev/null || true
+
+            echo "--- Restarting web server ---"
+            sudo systemctl restart nginx || true
+            sudo systemctl restart php8.5-fpm || sudo systemctl restart php-fpm || true
+
+            echo "--- Deploy complete ---"
