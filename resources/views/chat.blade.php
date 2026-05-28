@@ -635,7 +635,6 @@
                         <textarea
                             x-model="input"
                             @keydown.enter.exact.prevent="send()"
-                            @keydown.enter.shift.exact="/* allow newline */"
                             x-ref="input"
                             :disabled="loading"
                             placeholder="Ask about your degree, courses, specializations, or graduation requirements…"

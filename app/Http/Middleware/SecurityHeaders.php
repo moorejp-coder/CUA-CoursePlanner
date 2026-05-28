@@ -24,8 +24,8 @@ class SecurityHeaders
         // Disable every browser feature this app does not use.
         $response->headers->set(
             'Permissions-Policy',
-            'accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), '.
-            'display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(), '.
+            'accelerometer=(), autoplay=(), camera=(), '.
+            'display-capture=(), encrypted-media=(), fullscreen=(), '.
             'geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), '.
             'payment=(), picture-in-picture=(), publickey-credentials-get=(), '.
             'screen-wake-lock=(), usb=(), web-share=(), xr-spatial-tracking=()'
