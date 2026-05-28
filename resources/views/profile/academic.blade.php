@@ -244,6 +244,12 @@
             </div>
         </a>
         <div class="flex items-center gap-2">
+            <a href="{{ route('profile.academic.edit') }}"
+               class="text-[13px] px-3 py-1.5 rounded text-white transition-colors"
+               onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+               onmouseout="this.style.background='transparent'">
+                Edit Profile
+            </a>
             <a href="{{ route('chat') }}" class="btn-secondary" style="border-color:rgba(255,255,255,0.6); color:#fff;"
                onmouseover="this.style.background='rgba(255,255,255,0.12)';"
                onmouseout="this.style.background='transparent';">

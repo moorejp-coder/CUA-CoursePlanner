@@ -5,12 +5,111 @@ namespace App\Http\Controllers;
 use App\Http\Concerns\AuthorizesAccess;
 use App\Models\StudentCourse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class AcademicProfileController extends Controller
 {
     use AuthorizesAccess;
+
+    private const ADMIT_TERMS = [
+        'Fall 2020', 'Spring 2021', 'Fall 2021', 'Spring 2022', 'Fall 2022',
+        'Spring 2023', 'Fall 2023', 'Spring 2024', 'Fall 2024', 'Spring 2025',
+        'Fall 2025', 'Spring 2026',
+    ];
+
+    private const GRADUATION_TERMS = [
+        'Spring 2025', 'Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2027',
+        'Fall 2027', 'Spring 2028', 'Fall 2028', 'Spring 2029', 'Fall 2029', 'Spring 2030',
+    ];
+
+    public function editAcademic(Request $request): View|RedirectResponse
+    {
+        $user = $request->user()->load('studentProfile');
+        $profile = $user->studentProfile;
+
+        if (! $profile) {
+            return Redirect::route('onboarding');
+        }
+
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+
+        $specsPost = [];
+        foreach ($requirements['post_2024']['specializations'] ?? [] as $key => $spec) {
+            $specsPost[$key] = trim(preg_split('/\s{2,}/', $spec['label'] ?? $key)[0] ?? $key);
+        }
+
+        $specsPre = [];
+        foreach ($requirements['pre_2024']['specializations'] ?? [] as $key => $spec) {
+            $specsPre[$key] = trim(preg_split('/\s{2,}/', $spec['label'] ?? $key)[0] ?? $key);
+        }
+
+        return view('profile.academic-edit', [
+            'profile' => $profile,
+            'specsPost' => $specsPost,
+            'specsPre' => $specsPre,
+            'admitTerms' => self::ADMIT_TERMS,
+            'graduationTerms' => self::GRADUATION_TERMS,
+        ]);
+    }
+
+    public function updateAcademic(Request $request): RedirectResponse
+    {
+        $user = $request->user()->load('studentProfile');
+        $profile = $user->studentProfile;
+
+        if (! $profile) {
+            return Redirect::route('onboarding');
+        }
+
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+        $catalogYear = $request->input('catalog_year', $profile->catalog_year);
+        $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
+        $degree = $request->input('degree', $profile->degree);
+
+        $validated = $request->validate([
+            'degree' => ['required', Rule::in(['bsba', 'bs_accounting', 'ba_double_major', 'business_minor'])],
+            'catalog_year' => ['required', Rule::in(['pre_2024', 'post_2024'])],
+            'admit_term' => ['required', Rule::in(self::ADMIT_TERMS)],
+            'expected_graduation' => ['required', Rule::in(self::GRADUATION_TERMS)],
+            'credits_completed' => ['required', 'integer', 'min:0', 'max:250'],
+            'specialization_1' => [
+                Rule::requiredIf($degree === 'bsba'),
+                'nullable', 'string', Rule::in(array_merge([''], $validSpecs)),
+            ],
+            'specialization_2' => ['nullable', 'string', Rule::in(array_merge([''], $validSpecs))],
+            'specialization_3' => ['nullable', 'string', Rule::in(array_merge([''], $validSpecs))],
+        ]);
+
+        // BS Accounting has no specializations
+        if ($validated['degree'] === 'bs_accounting') {
+            $validated['specialization_1'] = null;
+            $validated['specialization_2'] = null;
+            $validated['specialization_3'] = null;
+        } else {
+            $validated['specialization_1'] = $validated['specialization_1'] ?: null;
+            $validated['specialization_2'] = $validated['specialization_2'] ?: null;
+            $validated['specialization_3'] = $validated['specialization_3'] ?: null;
+        }
+
+        // Derive standing from credits
+        $credits = (int) $validated['credits_completed'];
+        $validated['projected_standing'] = match (true) {
+            $credits >= 90 => 'senior',
+            $credits >= 60 => 'junior',
+            $credits >= 30 => 'sophomore',
+            default => 'freshman',
+        };
+
+        $profile->fill($validated);
+        $profile->last_updated_at = now();
+        $profile->save();
+
+        return Redirect::route('profile.academic.edit')->with('success', 'Your academic profile has been updated.');
+    }
 
     public function show(Request $request): View
     {

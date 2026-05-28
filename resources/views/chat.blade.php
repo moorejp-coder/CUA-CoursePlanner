@@ -444,6 +444,15 @@
                     <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </a>
+            <a href="{{ route('profile.academic.edit') }}" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 14px 9px 16px;font-size:13px;font-family:'Roboto',sans-serif;color:#4b5563;border-left:3px solid transparent;text-decoration:none;transition:background 0.12s,border-color 0.12s,color 0.12s;" onmouseover="this.style.background='#0a3255';this.style.borderLeftColor='#0a3255';this.style.color='#fff';" onmouseout="this.style.background='transparent';this.style.borderLeftColor='transparent';this.style.color='#4b5563';">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" style="color:#b8b3ad;flex-shrink:0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/>
+                </svg>
+                <span>Edit Profile</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16" style="color:#d4cec8;margin-left:auto;">
+                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </a>
         </nav>
 
         {{-- Sidebar footer --}}

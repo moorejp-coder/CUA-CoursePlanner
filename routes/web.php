@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/api/chat', [ChatController::class, 'message'])->middleware('throttle:20,1')->name('chat.message');
     // Academic profile
     Route::get('/profile/academic', [AcademicProfileController::class, 'show'])->name('profile.academic');
+    Route::get('/profile/academic/edit', [AcademicProfileController::class, 'editAcademic'])->name('profile.academic.edit');
+    Route::post('/profile/academic/edit', [AcademicProfileController::class, 'updateAcademic'])->name('profile.academic.update')->middleware('throttle:form-submissions');
     Route::post('/api/profile/suggest-update', [AcademicProfileController::class, 'suggestUpdate'])->middleware('throttle:30,1')->name('profile.suggest-update');
     Route::post('/api/profile/field-update', [AcademicProfileController::class, 'updateField'])->middleware('throttle:30,1')->name('profile.field-update');
     Route::post('/api/profile/dismiss-prompt', [AcademicProfileController::class, 'dismissSemesterPrompt'])->middleware('throttle:10,1')->name('profile.dismiss-prompt');
