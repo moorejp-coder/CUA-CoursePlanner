@@ -153,14 +153,14 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Milestone 8 — Advanced AI Features
+## Milestone 8 — Advanced AI Features ✅ COMPLETE
 **Delivers:** Features that impress judges on the AI innovation rubric.
-- Bot generates a personalized semester-by-semester 4-year plan
-- Bot flags prerequisite conflicts automatically
-- Bot calculates exact credits remaining to graduation
-- Bot identifies the fastest path to graduation
-- Bot suggests which electives complement a student's specialization
-- Bot answers questions about double majors and business minors for non-business students
+- [x] Bot generates a personalized semester-by-semester 4-year plan (PlannerService + system prompt)
+- [x] Bot flags prerequisite conflicts automatically (PrerequisiteService — conflicts, now-eligible, still-blocked)
+- [x] Bot calculates exact credits remaining to graduation (course-count-based, not flat estimate)
+- [x] Bot identifies the fastest path to graduation (critical chains, semester locks, min semesters)
+- [x] Bot suggests which electives complement a student's specialization (eligible now vs. prereqs not met)
+- [x] Bot answers questions about double majors and business minors (all 4 degree types in onboarding + context)
 
 ---
 
