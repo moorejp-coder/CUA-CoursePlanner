@@ -674,7 +674,7 @@ function chatApp() {
     return {
         messages: [{
             role: 'assistant',
-            content: "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.",
+            content: @json($welcomeMessage),
         }],
         input: '',
         loading: false,

@@ -164,8 +164,8 @@
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">
-                    <span class="text-[#C9A84C] text-2xl font-bold block">120</span>
-                    Credits Tracked
+                    <span class="text-[#C9A84C] text-2xl font-bold block">112</span>
+                    Courses Mapped
                 </div>
                 <div class="hidden sm:block w-px h-8 bg-white/10"></div>
                 <div class="text-white/75 text-xs uppercase tracking-widest" style="font-family: 'Oswald', sans-serif;">

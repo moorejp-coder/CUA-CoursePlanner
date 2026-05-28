@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\StudentProfile;
 use App\Services\PlannerService;
 use App\Services\PrerequisiteService;
 use Illuminate\Http\Client\ConnectionException;
@@ -27,7 +28,57 @@ class ChatController extends Controller
             }
         }
 
-        return view('chat', compact('showSemesterBanner'));
+        $welcomeMessage = $this->buildWelcomeMessage($profile);
+
+        return view('chat', compact('showSemesterBanner', 'welcomeMessage'));
+    }
+
+    private function buildWelcomeMessage(?StudentProfile $profile): string
+    {
+        if (! $profile) {
+            return "Hello! I'm the Busch School Course Planning Bot.\n\nI can help you with degree requirements, course sequencing, specializations, minors, prerequisites, and graduation planning for your B.S.B.A. or B.S. in Accounting.\n\nTo get started, tell me your degree program, catalog year, and where you are in your studies, or choose a topic from the sidebar.";
+        }
+
+        $degreeLabels = [
+            'bsba' => 'B.S.B.A.',
+            'bs_accounting' => 'B.S. in Accounting',
+            'ba_double_major' => 'B.A. in Business (Double Major)',
+            'minor' => 'Business Minor',
+        ];
+
+        $firstName = explode(' ', trim($profile->full_name ?? ''))[0] ?: 'there';
+        $degree = $degreeLabels[$profile->degree] ?? strtoupper((string) $profile->degree);
+        $standing = ucfirst((string) ($profile->projected_standing ?? 'student'));
+        $credits = (int) $profile->credits_completed;
+        $graduation = $profile->expected_graduation;
+
+        $specs = array_filter([
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        ]);
+
+        $specLabels = [];
+        if ($specs) {
+            $requirements = json_decode(file_get_contents(storage_path('app/requirements.json')), true);
+            $specData = $requirements[$profile->catalog_year]['specializations'] ?? [];
+            foreach ($specs as $specKey) {
+                $raw = $specData[$specKey]['label'] ?? ucwords(str_replace('_', ' ', $specKey));
+                $specLabels[] = trim(preg_split('/\s{2,}/', $raw)[0] ?? $raw);
+            }
+        }
+
+        $profileLine = "I can see your academic profile — you're a {$standing} {$degree} student";
+        if ($specLabels) {
+            $profileLine .= ' specializing in '.implode(' and ', $specLabels);
+        }
+        $profileLine .= " with {$credits} credits completed";
+        if ($graduation) {
+            $profileLine .= ", on track to graduate in {$graduation}";
+        }
+        $profileLine .= '.';
+
+        return "Welcome back, {$firstName}! {$profileLine}\n\nI'm ready to help with your 4-year plan, prerequisite status, elective options, and graduation planning. What would you like to explore?";
     }
 
     public function message(Request $request): JsonResponse

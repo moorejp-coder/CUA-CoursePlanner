@@ -82,6 +82,22 @@ The app is deployed on AWS EC2. The custom domain `buschcourseplanner.dev` has b
 
 ---
 
+## Screenshots
+
+### Landing Page
+![Landing page — hero section with CUA branding, cardinal red CTA, and social proof strip](screenshots/landing.png)
+
+### Onboarding Wizard
+![6-step onboarding wizard — step 3 liberal arts searchable dropdowns](screenshots/onboarding.png)
+
+### AI Chat Interface
+![Chat interface — personalized welcome message with profile context and Milestone 8 quick-start buttons](screenshots/chat.png)
+
+### Academic Profile Page
+![Academic profile page — progress bars, all 15 LA slots, specialization blocks, and transfer credits](screenshots/profile.png)
+
+---
+
 ## How to Run Locally
 
 ### Prerequisites
