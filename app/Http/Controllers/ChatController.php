@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PlannerService;
 use App\Services\PrerequisiteService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
@@ -148,6 +149,20 @@ class ChatController extends Controller
             })->join(' ');
             $lines[] = 'ACCT REQUIREMENTS: '.($acctParts ?: 'Not yet entered');
         }
+
+        // Remaining degree requirements for 4-year plan generation
+        $plannerService = new PlannerService;
+        $remainingContext = $plannerService->buildRemainingContext(
+            $profile->degree,
+            $profile->catalog_year,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+            $user->studentCourses,
+        );
+        $lines[] = $remainingContext;
 
         // Prerequisite conflict detection + next-eligible analysis
         $prereqService = new PrerequisiteService;
