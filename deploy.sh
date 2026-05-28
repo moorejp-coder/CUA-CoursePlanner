@@ -24,9 +24,6 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   echo "--- Pulling latest code ---"
   git pull origin main
 
-  echo "--- Restoring storage ownership to web server ---"
-  sudo chown -R www-data:www-data "$DEPLOY_PATH/storage" 2>/dev/null || true
-
   echo "--- Installing PHP dependencies ---"
   composer install --no-dev --optimize-autoloader
 
@@ -47,6 +44,9 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   php artisan config:cache
   php artisan route:cache
   php artisan view:cache
+
+  echo "--- Restoring storage ownership to web server ---"
+  sudo chown -R www-data:www-data "$DEPLOY_PATH/storage" 2>/dev/null || true
 
   echo "--- Restarting web server ---"
   sudo systemctl restart nginx || sudo systemctl restart apache2 || true
