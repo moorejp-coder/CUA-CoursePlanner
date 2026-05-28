@@ -31,7 +31,7 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's save
 - **Academic Profile Page** — view at `/profile/academic` shows every required LA slot (15) and core slot including "not yet" rows, per-specialization blocks with elective lists, completion summary cards with progress bars, and transfer credit records
 - **Bot-Driven Profile Updates** — bot can suggest marking a course as completed via a `[PROFILE_UPDATE]` tag; student sees a confirmation banner and clicks Accept to update their record
 - **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
-- **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), Google Fonts (Oswald, Roboto, Crimson Text), and matching layout patterns
+- **Consistent Design System** — all pages use official CUA brand colors (`#0a3255`, `#b21f2c`, `#C9A84C`), self-hosted fonts (Oswald, Roboto, Crimson Text — no Google CDN), and matching layout patterns
 - **Accessibility** — high-contrast text throughout all dark sections; nav logo inverted to white on dark header
 - **CUA Email Restriction** — registration and login are restricted to `@cua.edu` addresses; non-CUA emails are rejected with a clear error message
 - **Role-Based Access Control** — three roles: `student`, `dean`, `admin`; role infrastructure in place for future use
@@ -120,7 +120,12 @@ Register an account with a `@cua.edu` email, complete the onboarding wizard, and
 Copy `.env.example` to `.env` and set the following:
 
 ```env
-GROQ_API_KEY=gsk_your_key_here  # required — get one free at console.groq.com
+GROQ_API_KEY=gsk_your_key_here   # required — get one free at console.groq.com
+
+# Required only if you run `php artisan db:seed`
+ADMIN_SEED_EMAIL=you@cua.edu
+ADMIN_SEED_NAME=Admin
+ADMIN_SEED_PASSWORD=YourStrongPassword123!
 ```
 
 All other variables in `.env.example` can be left at their defaults for local development. **Never commit `.env` to version control.**
@@ -133,15 +138,23 @@ The following protections are implemented:
 
 | Layer | Protection |
 |-------|-----------|
-| HTTP headers | X-Frame-Options, X-Content-Type-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy, Content-Security-Policy |
-| Session cookies | HTTPS-only (`secure: true`), HttpOnly, SameSite=Strict |
+| HTTPS / HSTS | HSTS enforced in production (`max-age=31536000; includeSubDomains`); session cookies auto-HTTPS |
+| HTTP headers | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (all unused browser APIs disabled), `Content-Security-Policy` (self-only; no external CDN allowances) |
+| Session cookies | HTTPS-only (`secure: auto`), `HttpOnly`, `SameSite=Strict` |
 | API rate limiting | 20 req/min on `/api/chat`, 10 req/min on `/api/upload` |
-| Auth rate limiting | 5 req/min on login and register (brute-force protection) |
-| Input validation | Messages stripped of HTML tags, max 2,000 characters |
+| Auth rate limiting | 5 req/min on login and register (IP + user-ID keyed; brute-force protection) |
+| Input validation | Messages stripped of HTML tags, max 2,000 chars; API response field allowlists enforced |
 | File uploads | 5MB max, MIME type validated server-side, double extensions rejected, filename sanitized |
-| Passwords | Min 8 chars, mixed case, at least one number (enforced at registration) |
-| Secrets | `GROQ_API_KEY` and `APP_KEY` in `.env` only, never in code or logs |
+| Passwords | Min 8 chars, mixed case, at least one number; HIBP breach check (k-anonymity) on all set/change flows |
+| Secrets | `GROQ_API_KEY` and `APP_KEY` in `.env` only — never in code, logs, or API responses |
 | CSRF | Laravel CSRF tokens on all POST/PATCH/DELETE routes |
+| GDPR / account deletion | Full data wipe (user row, academic profile, courses, sessions, remember tokens) on account deletion |
+| Font privacy | Fonts self-hosted in `/public/fonts` — no Google Fonts CDN; student IPs never sent to Google |
+| Dependency security | `composer audit` clean — all known CVEs patched (11 Symfony vulnerabilities patched May 2026) |
+| Attack pattern detection | `DetectAttackPatterns` middleware blocks SQL injection, XSS probes, null bytes, and oversized payloads |
+| UUID primary keys | User IDs are UUIDs — sequential ID enumeration is not possible |
+| XSS (chat output) | Alpine.js `x-html` removed from chat UI; bot output rendered as plain text, not HTML |
+| Seeder security | Admin seed credentials read from env vars at `db:seed` time; no hardcoded fallbacks in source code |
 
 ---
 
@@ -156,7 +169,9 @@ CUA-CoursePlanner/
 │       │   ├── OnboardingController.php     # 6-step academic profile wizard
 │       │   └── AcademicProfileController.php # Profile page + bot update API
 │       └── Middleware/
-│           └── EnsureDean.php              # Role-based access guard (future use)
+│           ├── SecurityHeaders.php          # CSP, X-Frame-Options, HSTS, etc.
+│           ├── DetectAttackPatterns.php     # SQLi/XSS/null-byte blocking
+│           └── ValidateSessionBinding.php  # UA/IP change → session invalidation
 ├── resources/
 │   └── views/
 │       ├── chat.blade.php              # Main chat UI (Alpine.js, Tailwind)
@@ -169,7 +184,11 @@ CUA-CoursePlanner/
 │       ├── system_prompt.txt           # Full Busch School curriculum context
 │       └── requirements.json           # Degree requirements data (per catalog year)
 ├── public/
-│   └── build/                          # Vite-compiled CSS and JS (gitignored)
+│   ├── build/                          # Vite-compiled CSS and JS (gitignored)
+│   └── fonts/                          # Self-hosted woff2 files (Oswald, Roboto, Crimson Text)
+├── tests/
+│   └── Feature/
+│       └── SecurityHeadersTest.php     # Asserts all HTTP security headers are correct
 ├── deploy.sh                           # AWS EC2 deployment script
 ├── ROADMAP.md                          # Milestone plan and open issues
 ├── FUTUREUPDATES.md                    # Deferred features and re-enable instructions

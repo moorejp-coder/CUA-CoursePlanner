@@ -124,6 +124,35 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
+## Milestone 7.5 — Production Security Sprint ✅ COMPLETE (May 2026)
+**Delivers:** Defense-in-depth hardening across every layer before live judging.
+
+- [x] HTTPS enforcement + HSTS header (`max-age=31536000; includeSubDomains`) on production
+- [x] Session cookie `secure` flag set to `auto` (HTTPS-only in production, HTTP-safe locally)
+- [x] `DetectAttackPatterns` middleware — blocks SQL injection, XSS probes, null bytes, oversized payloads
+- [x] `ValidateSessionBinding` middleware — UA change invalidates session; IP change logged
+- [x] GDPR account deletion — full data wipe (user, profile, courses, sessions, remember tokens)
+- [x] HIBP breach check (`Password::uncompromised()`) on all password set/change flows (k-anonymity)
+- [x] UUID primary keys on `users` — eliminates sequential ID enumeration
+- [x] Alpine.js `x-html` removed from chat UI — bot output is plain text, not rendered HTML
+- [x] Global error handler — sanitized JSON error responses; custom error pages; no stack traces to client
+- [x] API response field allowlists — model serialization locked down; no accidental field exposure
+- [x] `AuthorizesAccess` trait — reusable 401/403 enforcement across controllers
+- [x] Self-hosted fonts (Oswald, Roboto, Crimson Text via `@fontsource`) — Google Fonts CDN removed; student IPs no longer sent to Google
+- [x] CSP tightened — `font-src 'self'` and `style-src 'self'` only; no external CDN allowances
+- [x] `X-XSS-Protection` header removed — retired IE-era header that re-enables certain XSS vectors; CSP covers it instead
+- [x] Groq API retry — 2 retries on transient `ConnectionException` (500ms delay)
+- [x] SQLite WAL mode + `busy_timeout=5000` — concurrent reads, crash-safe writes
+- [x] Heroku Postgres migration path documented in `.env.example` (SQLite is ephemeral on Heroku dynos)
+- [x] `AdminUserSeeder` hardened — throws if `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` env vars are unset; no hardcoded fallbacks in source
+- [x] `MAIL_FROM_ADDRESS` default changed from `hello@example.com` to `noreply@buschcourseplanner.dev`
+- [x] `.env.example` production defaults: `LOG_STACK=daily`, `LOG_LEVEL=error`, `APP_DEBUG=false`, `APP_URL` set to real domain
+- [x] 11 Symfony CVEs patched (`symfony/http-foundation`, `symfony/http-kernel`, `symfony/security-*`, `symfony/polyfill-intl-idn`, etc.) — all patch-level, no breaking changes
+- [x] `SecurityHeadersTest` expanded — asserts Google CDN domains are absent from CSP
+- [x] All 44+ tests passing after sprint
+
+---
+
 ## Milestone 8 — Advanced AI Features
 **Delivers:** Features that impress judges on the AI innovation rubric.
 - Bot generates a personalized semester-by-semester 4-year plan
