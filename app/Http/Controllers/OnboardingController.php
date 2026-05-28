@@ -234,6 +234,18 @@ class OnboardingController extends Controller
             return $validated;
         }
 
+        if (($existingData['degree'] ?? '') === 'business_minor') {
+            $validMinors = array_keys($requirements['business_minors'] ?? []);
+
+            $validated = $request->validate([
+                'business_minor' => ['required', 'string', Rule::in($validMinors)],
+            ]);
+
+            $validated['specialization_1'] = $validated['business_minor'];
+
+            return $validated;
+        }
+
         $catalogYear = $existingData['catalog_year'] ?? 'post_2024';
         $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
 
@@ -371,6 +383,12 @@ class OnboardingController extends Controller
 
     private function validateStep5(Request $request): array
     {
+        $existingData = session('onboarding', []);
+
+        if (($existingData['degree'] ?? '') === 'business_minor') {
+            return $this->validateStep5Minor($request, $existingData);
+        }
+
         // Specialization courses — save dynamically keyed entries
         $data = [];
         foreach (array_slice($request->input('spec_courses', []), 0, 50) as $code => $status) {
@@ -379,6 +397,66 @@ class OnboardingController extends Controller
                 continue;
             }
             $data["spec_course_{$safeCode}"] = in_array($status, ['completed', 'in_progress', 'not_yet']) ? $status : 'not_yet';
+        }
+
+        return $data;
+    }
+
+    private function validateStep5Minor(Request $request, array $existingData): array
+    {
+        $data = [];
+        $validStatuses = ['completed', 'in_progress', 'not_yet'];
+
+        $normalizeStatus = static fn (mixed $s): string => in_array($s, $validStatuses) ? (string) $s : 'not_yet';
+
+        $storeCode = function (mixed $rawCode, string $status) use (&$data, $normalizeStatus): void {
+            $code = mb_substr(preg_replace('/[^A-Za-z0-9 ]/', '', strtoupper(trim((string) $rawCode))), 0, 20);
+            if (! $code) {
+                return;
+            }
+            $safeCode = str_replace(' ', '_', $code);
+            $data["spec_course_{$safeCode}"] = $normalizeStatus($status);
+        };
+
+        // Required courses: minor_req[{key}][code] + minor_req[{key}][status]
+        foreach (array_slice($request->input('minor_req', []), 0, 30) as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $code = $entry['code'] ?? '';
+            $status = $entry['status'] ?? 'not_yet';
+            if ($code) {
+                $storeCode($code, $status);
+            }
+        }
+
+        // Double-count courses (finance_economics only): minor_dc[{key}][code] + minor_dc[{key}][status]
+        foreach (array_slice($request->input('minor_dc', []), 0, 10) as $entry) {
+            if (! is_array($entry)) {
+                continue;
+            }
+            $code = $entry['code'] ?? '';
+            $status = $entry['status'] ?? 'not_yet';
+            if ($code) {
+                $storeCode($code, $status);
+            }
+        }
+
+        // Elective groups: minor_elec[{gIdx}][{slot}][code] + minor_elec[{gIdx}][{slot}][status]
+        foreach (array_slice($request->input('minor_elec', []), 0, 10) as $group) {
+            if (! is_array($group)) {
+                continue;
+            }
+            foreach (array_slice($group, 0, 10) as $entry) {
+                if (! is_array($entry)) {
+                    continue;
+                }
+                $code = $entry['code'] ?? '';
+                $status = $entry['status'] ?? 'not_yet';
+                if ($code) {
+                    $storeCode($code, $status);
+                }
+            }
         }
 
         return $data;

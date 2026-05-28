@@ -242,85 +242,213 @@
     @include('onboarding.partials.header', ['step' => $step, 'totalSteps' => $totalSteps])
 
     @php
-        $catalogYear = $data['catalog_year'] ?? 'post_2024';
-        $allSpecs    = $requirements[$catalogYear]['specializations'] ?? [];
-
-        $selectedSpecs = array_values(array_filter([
-            $data['specialization_1'] ?? null,
-            $data['specialization_2'] ?? null,
-            $data['specialization_3'] ?? null,
-        ]));
-
-        /**
-         * Helper: get the stored key for a course code.
-         * Keys are stored as "spec_course_{courseCode}" where courseCode retains
-         * spaces but non-alphanumeric-space chars are stripped.
-         */
-        $specCourseVal = fn(string $courseCode) =>
-            old("spec_courses[{$courseCode}]", $data["spec_course_{$courseCode}"] ?? 'not_yet');
+        $isMinor = ($degree ?? '') === 'business_minor';
     @endphp
 
-    <div class="wizard-card">
+    @if ($isMinor)
+        {{-- ── Business Minor: Course Tracking ─────────────────────── --}}
+        @php
+            $selectedMinorKey = $data['business_minor'] ?? '';
+            $minorData = $requirements['business_minors'][$selectedMinorKey] ?? null;
 
-        @if ($errors->any())
-            <div class="alert-warning">{{ $errors->first() }}</div>
-        @endif
+            $savedCode = function (string $key) use ($data): string {
+                foreach ($data as $dk => $dv) {
+                    if (str_starts_with($dk, 'spec_course_')) {
+                        $code = str_replace('_', ' ', str_replace('spec_course_', '', $dk));
+                        if (str_replace(' ', '_', $code) === $key) {
+                            return $code;
+                        }
+                    }
+                }
+                return '';
+            };
 
-        @if (empty($selectedSpecs))
-            <div class="empty-state">
-                No specializations selected. <a href="{{ route('onboarding.step', 2) }}">Go back to Step 2</a> to choose your specialization(s).
-            </div>
-        @endif
+            $savedStatus = function (string $courseCode) use ($data): string {
+                $sk = str_replace(' ', '_', preg_replace('/[^A-Za-z0-9 ]/', '', $courseCode));
+                return $data["spec_course_{$sk}"] ?? 'not_yet';
+            };
+        @endphp
 
-        <form method="POST" action="{{ route('onboarding.save', 5) }}">
-            @csrf
-            <x-honeypot />
+        <div class="wizard-card">
 
-            @foreach ($selectedSpecs as $specKey)
-                @php
-                    $spec = $allSpecs[$specKey] ?? null;
-                @endphp
+            @if ($errors->any())
+                <div class="alert-warning">{{ $errors->first() }}</div>
+            @endif
 
-                @if (!$spec)
-                    @continue
+            @if (!$minorData)
+                <div class="empty-state">
+                    Minor not found. <a href="{{ route('onboarding.step', 2) }}">Go back</a> to choose your minor.
+                </div>
+            @else
+                <h3 class="spec-section-title" style="font-family:'Oswald',sans-serif;font-size:1.25rem;font-weight:700;color:var(--cua-navy);margin:0 0 0.3rem;">
+                    {{ $minorData['label'] }}
+                </h3>
+                @if (!empty($minorData['note']))
+                    <div class="alert-info" style="margin-bottom:1rem;">{{ $minorData['note'] }}</div>
                 @endif
 
-                <div class="spec-section">
-                    <h3 class="spec-section-title">{{ $spec['name'] }}</h3>
+                <form method="POST" action="{{ route('onboarding.save', 5) }}">
+                    @csrf
+                    <x-honeypot />
 
-                    @if (!empty($spec['must_double_specialize']))
-                        <div class="alert-warning">This specialization requires a second specialization.</div>
-                    @endif
-
-                    @if (!empty($spec['prerequisites']))
-                        <div class="alert-info">Note: {{ implode(', ', (array) $spec['prerequisites']) }} required for this specialization.</div>
-                    @endif
-
-                    @if (!empty($spec['notes']))
-                        <div class="alert-info">{{ $spec['notes'] }}</div>
-                    @endif
-
-                    {{-- Required Courses --}}
-                    @if (!empty($spec['required']))
-                        <p class="sub-heading">Required Courses</p>
-                        @foreach ($spec['required'] as $courseCode)
-                            <div class="course-row">
-                                <span class="course-code">{{ $courseCode }}</span>
-                                <select name="spec_courses[{{ $courseCode }}]">
-                                    <option value="not_yet"     {{ $specCourseVal($courseCode) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
-                                    <option value="in_progress" {{ $specCourseVal($courseCode) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                    <option value="completed"   {{ $specCourseVal($courseCode) === 'completed'   ? 'selected' : '' }}>Completed</option>
+                    {{-- Double-count courses (Economics Finance minor only) --}}
+                    @if (!empty($minorData['double_count']))
+                        <p class="sub-heading">Double-Count Courses (from your Economics major)</p>
+                        @foreach ($minorData['double_count'] as $req)
+                            @php $opts = $req['options']; $isSingle = count($opts) === 1; @endphp
+                            <div class="course-row" style="flex-wrap:wrap; gap:0.5rem;">
+                                <span class="course-code" style="flex:1; min-width:200px;">{{ $req['label'] }}</span>
+                                @if (!$isSingle)
+                                    <select name="minor_dc[{{ $req['key'] }}][code]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                        <option value="">— select —</option>
+                                        @foreach ($opts as $opt)
+                                            <option value="{{ $opt }}" {{ old("minor_dc.{$req['key']}.code", '') === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="hidden" name="minor_dc[{{ $req['key'] }}][code]" value="{{ $opts[0] }}">
+                                @endif
+                                <select name="minor_dc[{{ $req['key'] }}][status]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                    <option value="not_yet"     {{ old("minor_dc.{$req['key']}.status", $savedStatus($opts[0])) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                                    <option value="in_progress" {{ old("minor_dc.{$req['key']}.status", $savedStatus($opts[0])) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="completed"   {{ old("minor_dc.{$req['key']}.status", $savedStatus($opts[0])) === 'completed'   ? 'selected' : '' }}>Completed</option>
                                 </select>
                             </div>
                         @endforeach
                     @endif
 
-                    {{-- Elective Groups (international_business pre_2024 pattern) --}}
-                    @if (!empty($spec['elective_groups']))
-                        @foreach ($spec['elective_groups'] as $group)
-                            <p class="sub-heading">Electives</p>
-                            <p class="elective-group-label">{{ $group['description'] }} (choose {{ $group['choose_count'] }})</p>
-                            @foreach ($group['courses'] as $courseCode)
+                    {{-- Required courses --}}
+                    @if (!empty($minorData['required']))
+                        <p class="sub-heading">Required Courses</p>
+                        @foreach ($minorData['required'] as $req)
+                            @php $opts = $req['options']; $isSingle = count($opts) === 1; @endphp
+                            <div class="course-row" style="flex-wrap:wrap; gap:0.5rem;">
+                                <span class="course-code" style="flex:1; min-width:200px;">{{ $req['label'] }}</span>
+                                @if (!$isSingle)
+                                    <select name="minor_req[{{ $req['key'] }}][code]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                        <option value="">— select —</option>
+                                        @foreach ($opts as $opt)
+                                            <option value="{{ $opt }}" {{ old("minor_req.{$req['key']}.code", '') === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="hidden" name="minor_req[{{ $req['key'] }}][code]" value="{{ $opts[0] }}">
+                                @endif
+                                <select name="minor_req[{{ $req['key'] }}][status]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                    <option value="not_yet"     {{ old("minor_req.{$req['key']}.status", $savedStatus($opts[0])) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                                    <option value="in_progress" {{ old("minor_req.{$req['key']}.status", $savedStatus($opts[0])) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="completed"   {{ old("minor_req.{$req['key']}.status", $savedStatus($opts[0])) === 'completed'   ? 'selected' : '' }}>Completed</option>
+                                </select>
+                            </div>
+                        @endforeach
+                    @endif
+
+                    {{-- Elective groups --}}
+                    @foreach ($minorData['electives'] ?? [] as $gIdx => $group)
+                        @php
+                            $choose = $group['choose'];
+                            $saved = [];
+                            foreach ($group['options'] as $opt) {
+                                $st = $savedStatus($opt);
+                                if ($st !== 'not_yet') { $saved[] = ['code' => $opt, 'status' => $st]; }
+                            }
+                            while (count($saved) < $choose) { $saved[] = ['code' => '', 'status' => 'not_yet']; }
+                        @endphp
+                        <p class="sub-heading">{{ $group['label'] }}</p>
+                        @for ($slot = 0; $slot < $choose; $slot++)
+                            @php
+                                $savedSlot = $saved[$slot] ?? ['code' => '', 'status' => 'not_yet'];
+                                $preCode = old("minor_elec.{$gIdx}.{$slot}.code", $savedSlot['code']);
+                                $preSt   = old("minor_elec.{$gIdx}.{$slot}.status", $savedSlot['status']);
+                            @endphp
+                            <div class="course-row" style="flex-wrap:wrap; gap:0.5rem;">
+                                <span class="course-code" style="flex:1; min-width:120px; font-weight:400; color:#666;">
+                                    Elective {{ $slot + 1 }}
+                                </span>
+                                <select name="minor_elec[{{ $gIdx }}][{{ $slot }}][code]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                    <option value="">— not selected —</option>
+                                    @foreach ($group['options'] as $opt)
+                                        <option value="{{ $opt }}" {{ $preCode === $opt ? 'selected' : '' }}>{{ $opt }}</option>
+                                    @endforeach
+                                </select>
+                                <select name="minor_elec[{{ $gIdx }}][{{ $slot }}][status]" style="width:160px;padding:0.4rem 0.7rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                    <option value="not_yet"     {{ $preSt === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                                    <option value="in_progress" {{ $preSt === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="completed"   {{ $preSt === 'completed'   ? 'selected' : '' }}>Completed</option>
+                                </select>
+                            </div>
+                        @endfor
+                    @endforeach
+
+                    <div class="form-actions">
+                        <a href="{{ route('onboarding.step', 2) }}" class="btn-secondary">← Back</a>
+                        <button type="submit" class="btn-primary">Next: Credits & GPA →</button>
+                    </div>
+
+                </form>
+            @endif
+        </div>
+
+    @else
+        {{-- ── BSBA: Specialization Courses ─────────────────────────── --}}
+        @php
+            $catalogYear = $data['catalog_year'] ?? 'post_2024';
+            $allSpecs    = $requirements[$catalogYear]['specializations'] ?? [];
+
+            $selectedSpecs = array_values(array_filter([
+                $data['specialization_1'] ?? null,
+                $data['specialization_2'] ?? null,
+                $data['specialization_3'] ?? null,
+            ]));
+
+            $specCourseVal = fn(string $courseCode) =>
+                old("spec_courses[{$courseCode}]", $data["spec_course_{$courseCode}"] ?? 'not_yet');
+        @endphp
+
+        <div class="wizard-card">
+
+            @if ($errors->any())
+                <div class="alert-warning">{{ $errors->first() }}</div>
+            @endif
+
+            @if (empty($selectedSpecs))
+                <div class="empty-state">
+                    No specializations selected. <a href="{{ route('onboarding.step', 2) }}">Go back to Step 2</a> to choose your specialization(s).
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('onboarding.save', 5) }}">
+                @csrf
+                <x-honeypot />
+
+                @foreach ($selectedSpecs as $specKey)
+                    @php
+                        $spec = $allSpecs[$specKey] ?? null;
+                    @endphp
+
+                    @if (!$spec)
+                        @continue
+                    @endif
+
+                    <div class="spec-section">
+                        <h3 class="spec-section-title">{{ $spec['name'] }}</h3>
+
+                        @if (!empty($spec['must_double_specialize']))
+                            <div class="alert-warning">This specialization requires a second specialization.</div>
+                        @endif
+
+                        @if (!empty($spec['prerequisites']))
+                            <div class="alert-info">Note: {{ implode(', ', (array) $spec['prerequisites']) }} required for this specialization.</div>
+                        @endif
+
+                        @if (!empty($spec['notes']))
+                            <div class="alert-info">{{ $spec['notes'] }}</div>
+                        @endif
+
+                        {{-- Required Courses --}}
+                        @if (!empty($spec['required']))
+                            <p class="sub-heading">Required Courses</p>
+                            @foreach ($spec['required'] as $courseCode)
                                 <div class="course-row">
                                     <span class="course-code">{{ $courseCode }}</span>
                                     <select name="spec_courses[{{ $courseCode }}]">
@@ -330,32 +458,49 @@
                                     </select>
                                 </div>
                             @endforeach
-                        @endforeach
-                    @elseif (!empty($spec['electives']) && $spec['choose_count'] > 0)
-                        {{-- Standard electives --}}
-                        <p class="sub-heading">Electives (choose {{ $spec['choose_count'] }})</p>
-                        @foreach ($spec['electives'] as $courseCode)
-                            <div class="course-row">
-                                <span class="course-code">{{ $courseCode }}</span>
-                                <select name="spec_courses[{{ $courseCode }}]">
-                                    <option value="not_yet"     {{ $specCourseVal($courseCode) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
-                                    <option value="in_progress" {{ $specCourseVal($courseCode) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                    <option value="completed"   {{ $specCourseVal($courseCode) === 'completed'   ? 'selected' : '' }}>Completed</option>
-                                </select>
-                            </div>
-                        @endforeach
-                    @endif
+                        @endif
 
+                        {{-- Elective Groups (international_business pre_2024 pattern) --}}
+                        @if (!empty($spec['elective_groups']))
+                            @foreach ($spec['elective_groups'] as $group)
+                                <p class="sub-heading">Electives</p>
+                                <p class="elective-group-label">{{ $group['description'] }} (choose {{ $group['choose_count'] }})</p>
+                                @foreach ($group['courses'] as $courseCode)
+                                    <div class="course-row">
+                                        <span class="course-code">{{ $courseCode }}</span>
+                                        <select name="spec_courses[{{ $courseCode }}]">
+                                            <option value="not_yet"     {{ $specCourseVal($courseCode) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                                            <option value="in_progress" {{ $specCourseVal($courseCode) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                            <option value="completed"   {{ $specCourseVal($courseCode) === 'completed'   ? 'selected' : '' }}>Completed</option>
+                                        </select>
+                                    </div>
+                                @endforeach
+                            @endforeach
+                        @elseif (!empty($spec['electives']) && $spec['choose_count'] > 0)
+                            <p class="sub-heading">Electives (choose {{ $spec['choose_count'] }})</p>
+                            @foreach ($spec['electives'] as $courseCode)
+                                <div class="course-row">
+                                    <span class="course-code">{{ $courseCode }}</span>
+                                    <select name="spec_courses[{{ $courseCode }}]">
+                                        <option value="not_yet"     {{ $specCourseVal($courseCode) === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
+                                        <option value="in_progress" {{ $specCourseVal($courseCode) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                        <option value="completed"   {{ $specCourseVal($courseCode) === 'completed'   ? 'selected' : '' }}>Completed</option>
+                                    </select>
+                                </div>
+                            @endforeach
+                        @endif
+
+                    </div>
+                @endforeach
+
+                <div class="form-actions">
+                    <a href="{{ route('onboarding.step', 4) }}" class="btn-secondary">← Back</a>
+                    <button type="submit" class="btn-primary">Next: Current Status →</button>
                 </div>
-            @endforeach
 
-            <div class="form-actions">
-                <a href="{{ route('onboarding.step', 4) }}" class="btn-secondary">← Back</a>
-                <button type="submit" class="btn-primary">Next: Current Status →</button>
-            </div>
-
-        </form>
-    </div>
+            </form>
+        </div>
+    @endif
 
 </body>
 </html>

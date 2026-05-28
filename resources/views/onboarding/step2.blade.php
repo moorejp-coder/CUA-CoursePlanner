@@ -370,8 +370,69 @@
             </form>
         </div>
 
+    @elseif ($isMinor)
+        {{-- ── Business Minor: Minor Selection ─────────────────────── --}}
+        @php
+            $minors = $requirements['business_minors'] ?? [];
+            $selectedMinorKey = old('business_minor', $data['business_minor'] ?? '');
+        @endphp
+        <div class="wizard-card">
+            @if ($errors->any())
+                <div class="alert-warning">{{ $errors->first() }}</div>
+            @endif
+
+            <h3 class="step-heading">Choose Your Business Minor</h3>
+            <p class="step-subtext">
+                Select the minor you are pursuing. This will set up the correct course requirements for your profile.
+            </p>
+
+            <form method="POST" action="{{ route('onboarding.save', 2) }}">
+                @csrf
+                <x-honeypot />
+
+                <div class="spec-grid">
+                    @foreach($minors as $mKey => $minor)
+                        <label
+                            class="spec-card"
+                            style="cursor:pointer;"
+                            :class="''"
+                        >
+                            <input
+                                type="radio"
+                                name="business_minor"
+                                value="{{ $mKey }}"
+                                {{ $selectedMinorKey === $mKey ? 'checked' : '' }}
+                                style="accent-color: var(--cua-red); width:1rem; height:1rem; flex-shrink:0; margin-top:0.15rem;"
+                                onchange="this.closest('.spec-grid').querySelectorAll('.spec-card').forEach(c=>c.classList.remove('selected')); this.closest('.spec-card').classList.add('selected');"
+                            >
+                            <div class="spec-card-text">
+                                <strong>{{ $minor['label'] }}</strong>
+                            </div>
+                        </label>
+                    @endforeach
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
+                    <button type="submit" class="btn-primary"
+                            onclick="if(!document.querySelector('input[name=business_minor]:checked')){alert('Please select a minor.');return false;}">
+                        Next: Minor Courses →
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <script>
+            // Pre-select the saved minor card on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                const checked = document.querySelector('input[name=business_minor]:checked');
+                if (checked) checked.closest('.spec-card').classList.add('selected');
+            });
+        </script>
+
     @else
-        {{-- ── BSBA / Business Minor: Specialization Selection ──────── --}}
+        {{-- ── BSBA: Specialization Selection ───────────────────────── --}}
         <div class="wizard-card"
              x-data="{
                 selected: {{ $preSelectedJson }},
@@ -412,19 +473,14 @@
             @endif
 
             <h3 class="step-heading">
-                @if($isMinor) Choose Your Minor Concentration @else Choose Your Specialization(s) @endif
+                Choose Your Specialization(s)
                 <span class="counter-badge" x-text="selected.length + ' / 3'"></span>
             </h3>
             <p class="step-subtext">
-                @if($isMinor)
-                    Select the specialization area for your Business Minor.
-                @else
-                    Select 1–3 specializations. Some require a second specialization (noted below).
-                    You are on the <strong>{{ $catalogYear === 'post_2024' ? 'Post-2024' : 'Pre-2024' }}</strong> catalog.
-                @endif
+                Select 1–3 specializations. Some require a second specialization (noted below).
+                You are on the <strong>{{ $catalogYear === 'post_2024' ? 'Post-2024' : 'Pre-2024' }}</strong> catalog.
             </p>
 
-            {{-- Warnings --}}
             <div x-show="hasDouble() && selected.length < 2" x-transition class="alert-warning">
                 Sports Management / Entrepreneurship require a second specialization.
             </div>
@@ -468,9 +524,7 @@
 
                 <div class="form-actions">
                     <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
-                    <button type="button" class="btn-primary" @click="submitForm()">
-                        @if($isMinor) Next: Specialization Courses → @else Next: Liberal Arts → @endif
-                    </button>
+                    <button type="button" class="btn-primary" @click="submitForm()">Next: Liberal Arts →</button>
                 </div>
 
             </form>

@@ -967,6 +967,164 @@
             ]
         }
     },
+    "business_minors": {
+        "accounting": {
+            "label": "Non-Business Minor in Accounting",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "ACCT_206", "label": "ACCT 206 — Managerial Accounting", "options": ["ACCT 206"] },
+                { "key": "ACCT_310", "label": "ACCT 310 — Intermediate Accounting I", "options": ["ACCT 310"] },
+                { "key": "ACCT_311", "label": "ACCT 311 — Intermediate Accounting II", "options": ["ACCT 311"] }
+            ],
+            "electives": [
+                { "choose": 1, "label": "Choose One Accounting Elective", "options": ["ACCT 412", "ACCT 417", "ACCT 418"] }
+            ]
+        },
+        "management": {
+            "label": "Non-Business Minor in Management",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "ENT_118", "label": "ENT 118 — Vocation of Business", "options": ["ENT 118"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "mgt_123", "label": "MGT 123A or MGT 123B — Foundations of Business", "options": ["MGT 123A", "MGT 123B"] },
+                { "key": "MGT_310", "label": "MGT 310 — Management Theory", "options": ["MGT 310"] }
+            ],
+            "electives": [
+                { "choose": 1, "label": "Choose One Management Elective", "options": ["MGT 240", "MGT 301", "MGT 311", "MGT 312", "MGT 324", "MGT 365", "MGT 372", "MGT 375", "MGT 390", "MGT 432", "MGT 475", "MGT 491"] }
+            ]
+        },
+        "marketing_management": {
+            "label": "Non-Business Minor in Marketing Management",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "mgt_123", "label": "MGT 123A or MGT 123B — Foundations of Business", "options": ["MGT 123A", "MGT 123B"] },
+                { "key": "MKT_345", "label": "MKT 345 — Marketing Management", "options": ["MKT 345"] },
+                { "key": "MKT_348", "label": "MKT 348 — Consumer Behavior", "options": ["MKT 348"] }
+            ],
+            "electives": [
+                { "choose": 1, "label": "Choose One Marketing Elective", "options": ["MKT 346", "MKT 349", "MKT 350", "MKT 362", "MKT 457", "MKT 491", "MKT 495A"] }
+            ]
+        },
+        "finance_non_business": {
+            "label": "Non-Business Minor in Finance",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "ECON_223", "label": "ECON 223 — Statistics for Business", "options": ["ECON 223"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "FIN_226", "label": "FIN 226 — Introduction to Finance", "options": ["FIN 226"] },
+                { "key": "FIN_332", "label": "FIN 332 — Corporate Finance", "options": ["FIN 332"] },
+                { "key": "FIN_334", "label": "FIN 334 — Investments", "options": ["FIN 334"] }
+            ],
+            "electives": []
+        },
+        "finance_economics": {
+            "label": "Minor in Finance (Economics Majors)",
+            "note": "Two classes from the double-count list below apply from your Economics major. Mark them as completed or in progress as applicable.",
+            "double_count": [
+                { "key": "ECON_100", "label": "ECON 100 (double-count eligible)", "options": ["ECON 100"] },
+                { "key": "econ_101_or_103", "label": "ECON 101 or ECON 103 (double-count eligible)", "options": ["ECON 101", "ECON 103"] },
+                { "key": "econ_102_or_104", "label": "ECON 102 or ECON 104 (double-count eligible)", "options": ["ECON 102", "ECON 104"] },
+                { "key": "ECON_223", "label": "ECON 223 (double-count eligible)", "options": ["ECON 223"] },
+                { "key": "ACCT_305", "label": "ACCT 305 (double-count eligible)", "options": ["ACCT 305"] },
+                { "key": "FIN_226_dc", "label": "FIN 226 (double-count eligible)", "options": ["FIN 226"] }
+            ],
+            "required": [
+                { "key": "FIN_332", "label": "FIN 332 — Corporate Finance", "options": ["FIN 332"] },
+                { "key": "FIN_334", "label": "FIN 334 — Investments", "options": ["FIN 334"] },
+                { "key": "FIN_436", "label": "FIN 436 — Advanced Corporate Finance", "options": ["FIN 436"] }
+            ],
+            "electives": [
+                { "choose": 1, "label": "Choose One Finance Elective", "options": ["ECON 309", "ECON 338", "FIN 313", "FIN 337", "FIN 342", "FIN 389", "MGT 389", "FIN 391", "FIN 491"] }
+            ]
+        },
+        "performing_arts_management": {
+            "label": "Non-Business Minor in Performing Arts Management",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "MGT_123B", "label": "MGT 123B — Foundations of Business", "options": ["MGT 123B"] },
+                { "key": "MKT_345", "label": "MKT 345 — Marketing Management", "options": ["MKT 345"] },
+                { "key": "mus_or_dr", "label": "MUS 575 or DR 306", "options": ["MUS 575", "DR 306"] }
+            ],
+            "electives": [
+                { "choose": 1, "label": "Arts Internship (choose one)", "options": ["DR 495", "MUS 495B", "MGT 495A"] },
+                { "choose": 1, "label": "Choose One Arts Elective", "options": ["MUS 110", "MUS 111", "MUS 112", "MUS 276", "MUS 433", "MUS 501A", "MUS 506", "MUS 533", "DR 105", "DR 205", "DR 403", "DR 410", "DR 426"] }
+            ]
+        },
+        "sports_management": {
+            "label": "Non-Business Minor in Sports Management",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 100 or SRES 101", "options": ["ECON 100", "SRES 101"] },
+                { "key": "mgt_123", "label": "MGT 123A or MGT 123B — Foundations of Business", "options": ["MGT 123A", "MGT 123B"] },
+                { "key": "MGT_324", "label": "MGT 324 — Sports Business", "options": ["MGT 324"] },
+                { "key": "MKT_325", "label": "MKT 325 — Sports Marketing", "options": ["MKT 325"] }
+            ],
+            "electives": [
+                { "choose": 2, "label": "Choose Two Electives", "options": ["MGT 311", "MGT 327", "MGT 495B", "ECON 327", "PSY 243", "SOC 345"] }
+            ]
+        },
+        "international_business_marketing": {
+            "label": "Non-Business Minor in International Business (Marketing Emphasis)",
+            "required": [
+                { "key": "econ_or_sres_101", "label": "ECON 101 or SRES 101", "options": ["ECON 101", "SRES 101"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "mgt_123", "label": "MGT 123A or MGT 123B — Foundations of Business", "options": ["MGT 123A", "MGT 123B"] },
+                { "key": "MGT_390", "label": "MGT 390 — International Business", "options": ["MGT 390"] },
+                { "key": "MKT_345", "label": "MKT 345 — Marketing Management", "options": ["MKT 345"] },
+                { "key": "MKT_362", "label": "MKT 362 — International Marketing", "options": ["MKT 362"] }
+            ],
+            "electives": []
+        },
+        "international_business_finance": {
+            "label": "Non-Business Minor in International Business (Finance Emphasis)",
+            "required": [
+                { "key": "ECON_101", "label": "ECON 101 — Principles of Microeconomics", "options": ["ECON 101"] },
+                { "key": "ECON_223", "label": "ECON 223 — Statistics for Business", "options": ["ECON 223"] },
+                { "key": "ACCT_205", "label": "ACCT 205 — Financial Accounting", "options": ["ACCT 205"] },
+                { "key": "mgt_123", "label": "MGT 123A or MGT 123B — Foundations of Business", "options": ["MGT 123A", "MGT 123B"] },
+                { "key": "MGT_390", "label": "MGT 390 — International Business", "options": ["MGT 390"] },
+                { "key": "FIN_226", "label": "FIN 226 — Introduction to Finance", "options": ["FIN 226"] },
+                { "key": "fin_or_mgt_389", "label": "FIN 389 or MGT 389 — International Finance", "options": ["FIN 389", "MGT 389"] }
+            ],
+            "electives": []
+        },
+        "markets_and_political_economy": {
+            "label": "Non-Business Minor in Markets and Political Economy",
+            "required": [
+                { "key": "SRES_101", "label": "SRES 101 — Markets and Prosperity I", "options": ["SRES 101"] },
+                { "key": "SRES_102", "label": "SRES 102 — Markets and Prosperity II", "options": ["SRES 102"] },
+                { "key": "SRES_315", "label": "SRES 315", "options": ["SRES 315"] }
+            ],
+            "electives": [
+                { "choose": 3, "label": "Choose Three Electives (at least one must be a 300/400-level SRES course)", "options": ["SRES 260", "SRES 345", "SRES 350", "SRES 408", "SRES 470", "SRES 476", "POL 111", "POL 212", "POL 220", "POL 312", "POL 403", "POL 404", "SOC 101", "SOC 206", "SOC 230", "SOC 270", "SOC 281", "PHIL 333A"] }
+            ]
+        },
+        "entrepreneurship": {
+            "label": "Non-Business Minor in Entrepreneurship",
+            "required": [
+                { "key": "ENT_118", "label": "ENT 118 — Vocation of Business", "options": ["ENT 118"] },
+                { "key": "ENT_372", "label": "ENT 372 — New Venture Creation", "options": ["ENT 372"] },
+                { "key": "ENT_455", "label": "ENT 455 — Venture Launch", "options": ["ENT 455"] },
+                { "key": "ENT_472", "label": "ENT 472 — Entrepreneurship Practicum", "options": ["ENT 472"] }
+            ],
+            "electives": [
+                { "choose": 2, "label": "Choose Two Electives", "options": ["ENT 351", "ENT 451", "ENT 476", "ENT 494", "MGT 123B", "MKT 348", "MKT 422", "ENT 420", "ENG 420", "ENT 421", "ENG 421"] }
+            ]
+        },
+        "sales": {
+            "label": "Non-Business Minor in Sales",
+            "required": [
+                { "key": "MKT_349", "label": "MKT 349 — Personal Selling", "options": ["MKT 349"] },
+                { "key": "MKT_345", "label": "MKT 345 — Marketing Management", "options": ["MKT 345"] },
+                { "key": "MKT_422", "label": "MKT 422 — Sales Management", "options": ["MKT 422"] }
+            ],
+            "electives": [
+                { "choose": 3, "label": "Choose Three Electives", "options": ["DR 403", "MGT 250", "MKT 348", "MGT 301", "MGT 311", "MKT 495A"] }
+            ]
+        }
+    },
     "double_major": {
         "business_core": [
             "ENT 118A or ENT 118B — Vocation of Business",
