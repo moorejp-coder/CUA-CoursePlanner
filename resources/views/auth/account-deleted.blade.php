@@ -26,7 +26,7 @@
             box-shadow: 0 2px 12px rgba(0,0,0,.22);
         }
         .site-header img { height: 36px; width: auto; }
-        .gold-bar { height: 2px; background: linear-gradient(to right,#b18f50 0%,rgba(177,143,80,.2) 60%,transparent 100%); flex-shrink:0; }
+        .gold-bar { height: 2px; background: linear-gradient(to right,#C9A84C 0%,rgba(201,168,76,.2) 60%,transparent 100%); flex-shrink:0; }
 
         main {
             flex: 1;

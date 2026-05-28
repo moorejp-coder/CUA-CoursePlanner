@@ -13,7 +13,7 @@
     <style>
         :root {
             --cua-red:   #B41100;
-            --cua-navy:  #003366;
+            --cua-navy:  #0a3255;
             --cua-gold:  #C9A84C;
             --cua-dark:  #0a3255;
         }

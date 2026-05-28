@@ -16,7 +16,7 @@
             --cua-blue-mid:  #1a4a6e;
             --cua-red:       #b21f2c;
             --cua-red-dark:  #8c1420;
-            --cua-gold:      #b18f50;
+            --cua-gold:      #C9A84C;
             --sandstone:     #f7f3ed;
             --limestone:     #efebe9;
             --border:        #e2ddd8;
@@ -257,7 +257,7 @@
         }
         .profile-update-banner .pub-text { flex: 1; min-width: 200px; }
         .pub-accept {
-            background: #003366;
+            background: #0a3255;
             color: #fff;
             border: none;
             padding: 6px 16px;
@@ -310,7 +310,7 @@
             position: fixed;
             bottom: 24px;
             right: 24px;
-            background: #003366;
+            background: #0a3255;
             color: #fff;
             padding: 10px 20px;
             border-radius: 8px;

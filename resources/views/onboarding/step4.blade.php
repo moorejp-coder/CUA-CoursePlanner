@@ -13,7 +13,7 @@
     <style>
         :root {
             --cua-red:   #B41100;
-            --cua-navy:  #003366;
+            --cua-navy:  #0a3255;
             --cua-gold:  #C9A84C;
             --cua-dark:  #0a3255;
         }
@@ -245,8 +245,8 @@
             vertical-align: middle;
         }
 
-        .badge-pre  { background: #fef3c7; color: #92400e; }
-        .badge-post { background: #d1fae5; color: #065f46; }
+        .badge-pre  { background: rgba(201,168,76,0.18); color: #7a5200; }
+        .badge-post { background: rgba(10,50,85,0.1);   color: #0a3255; }
 
         .transfer-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
         .transfer-table th {

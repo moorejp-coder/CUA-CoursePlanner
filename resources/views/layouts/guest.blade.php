@@ -16,7 +16,7 @@
     <body class="antialiased" style="font-family: 'Roboto', sans-serif;">
         <div
             class="min-h-screen flex items-center justify-center p-4 sm:p-6"
-            style="background-color: #003366; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 12px);">
+            style="background-color: #0a3255; background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 12px);">
 
             <div class="w-full max-w-md">
                 <!-- Card -->

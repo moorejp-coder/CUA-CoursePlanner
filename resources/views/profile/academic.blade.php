@@ -98,7 +98,7 @@
             transition: width 0.4s ease;
         }
 
-        .progress-fill.complete { background: #10b981; }
+        .progress-fill.complete { background: #0a3255; }
 
         .section-card {
             background: #fff;
