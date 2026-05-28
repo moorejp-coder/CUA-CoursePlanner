@@ -577,10 +577,10 @@
                 {{-- Foundations in Natural Science (searchable combobox) --}}
                 <div class="form-group"
                      x-data="{
-                         opts: @json($natSciOpts),
+                         opts: {{ json_encode($natSciOpts) }},
                          sel: null, q: '', open: false, ai: -1,
                          init() {
-                             const v = @json(old('la_natural_science', $data['la_natural_science'] ?? 'not_yet'));
+                             const v = {{ json_encode(old('la_natural_science', $data['la_natural_science'] ?? 'not_yet')) }};
                              this.sel = this.opts.find(o => o.value === v) || this.opts[0];
                          },
                          get fi() {
@@ -629,10 +629,10 @@
                 {{-- Explorations in Literature (searchable combobox) --}}
                 <div class="form-group"
                      x-data="{
-                         opts: @json($litOpts),
+                         opts: {{ json_encode($litOpts) }},
                          sel: null, q: '', open: false, ai: -1,
                          init() {
-                             const v = @json(old('la_literature', $data['la_literature'] ?? 'not_yet'));
+                             const v = {{ json_encode(old('la_literature', $data['la_literature'] ?? 'not_yet')) }};
                              this.sel = this.opts.find(o => o.value === v) || this.opts[0];
                          },
                          get fi() {
@@ -681,10 +681,10 @@
                 {{-- Explorations in Fine Arts (searchable combobox) --}}
                 <div class="form-group"
                      x-data="{
-                         opts: @json($fineArtsOpts),
+                         opts: {{ json_encode($fineArtsOpts) }},
                          sel: null, q: '', open: false, ai: -1,
                          init() {
-                             const v = @json(old('la_fine_arts', $data['la_fine_arts'] ?? 'not_yet'));
+                             const v = {{ json_encode(old('la_fine_arts', $data['la_fine_arts'] ?? 'not_yet')) }};
                              this.sel = this.opts.find(o => o.value === v) || this.opts[0];
                          },
                          get fi() {
@@ -733,12 +733,12 @@
                 {{-- Foundations in Social Science (combobox + auto-fill from SRES/ECON) --}}
                 <div class="form-group"
                      x-data="{
-                         opts: @json($socialSciOpts),
+                         opts: {{ json_encode($socialSciOpts) }},
                          sel: null, q: '', open: false, ai: -1,
                          autofilled: {{ $showSsAutoFill ? 'true' : 'false' }},
-                         autoFillValue: @json($ssValue ?? ''),
+                         autoFillValue: {{ json_encode($ssValue ?? '') }},
                          init() {
-                             const v = @json($currentSS);
+                             const v = {{ json_encode($currentSS) }};
                              this.sel = this.opts.find(o => o.value === v) || this.opts[0];
                          },
                          get fi() {
@@ -797,10 +797,10 @@
                 {{-- Foundations in History or Politics (searchable combobox) --}}
                 <div class="form-group"
                      x-data="{
-                         opts: @json($histPolOpts),
+                         opts: {{ json_encode($histPolOpts) }},
                          sel: null, q: '', open: false, ai: -1,
                          init() {
-                             const v = @json(old('la_history_politics', $data['la_history_politics'] ?? 'not_yet'));
+                             const v = {{ json_encode(old('la_history_politics', $data['la_history_politics'] ?? 'not_yet')) }};
                              this.sel = this.opts.find(o => o.value === v) || this.opts[0];
                          },
                          get fi() {
