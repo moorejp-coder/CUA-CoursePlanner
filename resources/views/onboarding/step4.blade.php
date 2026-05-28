@@ -728,7 +728,7 @@
                     <a href="{{ route('onboarding.step', 3) }}" class="btn-secondary">← Back</a>
                 @endif
                 <button type="submit" class="btn-primary">
-                    @if($isDoubleMajor) Next: Credits & GPA →
+                    @if($isDoubleMajor) Next: Credits & Standing →
                     @elseif($degree === 'bs_accounting') Next: Accounting Requirements →
                     @else Next: Specialization Courses →
                     @endif

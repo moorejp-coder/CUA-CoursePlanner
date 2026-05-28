@@ -376,10 +376,6 @@
                     <span class="info-value">{{ $profile->expected_graduation ?? '—' }}</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">GPA</span>
-                    <span class="info-value">{{ $profile->gpa ? number_format($profile->gpa, 2) : 'Not provided' }}</span>
-                </div>
-                <div class="info-item">
                     <span class="info-label">Credits Completed</span>
                     <span class="info-value">{{ $profile->credits_completed ?? '—' }}</span>
                 </div>

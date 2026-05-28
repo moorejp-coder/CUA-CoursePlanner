@@ -49,7 +49,9 @@ class PlannerService
             $lines = array_merge($lines, $this->remainingCareerDiscernment($takenCodes));
         }
 
-        $creditEstimate = $this->estimateCreditsRemaining($degree, $creditsCompleted);
+        $creditEstimate = $this->estimateCreditsRemaining(
+            $degree, $catalogYear, $creditsCompleted, $takenCodes, $courses, $spec1, $spec2, $spec3
+        );
         $lines[] = "Estimated credits remaining to graduation: ~{$creditEstimate} credits";
 
         return implode("\n", $lines);
@@ -289,15 +291,154 @@ class PlannerService
         return $lines;
     }
 
-    private function estimateCreditsRemaining(string $degree, int $creditsCompleted): int
-    {
-        $totalRequired = match ($degree) {
-            'bs_accounting' => 120,
-            'double_major' => 120,
-            'business_minor' => 18,
-            default => 120,
-        };
+    private function estimateCreditsRemaining(
+        string $degree,
+        string $catalogYear,
+        int $creditsCompleted,
+        array $takenCodes,
+        Collection $courses,
+        ?string $spec1,
+        ?string $spec2,
+        ?string $spec3
+    ): int {
+        // Business minor: count remaining required + elective courses × 3 credits
+        if ($degree === 'business_minor') {
+            $minorKey = $spec1;
+            $minorData = $this->requirements['business_minors'][$minorKey] ?? null;
+            if (! $minorData) {
+                return max(0, 18 - $creditsCompleted);
+            }
+            $required = array_column($minorData['required'] ?? [], 'options');
+            $required = array_map(fn ($opts) => $opts[0] ?? '?', $required);
+            $remainingReq = count(array_diff($required, $takenCodes));
+            $electiveCredits = 0;
+            foreach ($minorData['electives'] ?? [] as $group) {
+                $taken = count(array_intersect($group['options'] ?? [], $takenCodes));
+                $need = max(0, (int) ($group['choose'] ?? 1) - $taken);
+                $electiveCredits += $need * 3;
+            }
 
-        return max(0, $totalRequired - $creditsCompleted);
+            return ($remainingReq * 3) + $electiveCredits;
+        }
+
+        // Double major: remaining core + pair courses × 3 credits each
+        if ($degree === 'double_major') {
+            $core = $this->requirements['double_major']['business_core'] ?? [];
+            $remainingCore = array_filter($core, function (string $item) use ($takenCodes) {
+                preg_match('/^([A-Z]+ \d+\w*)/', $item, $m);
+
+                return isset($m[1]) && ! in_array($m[1], $takenCodes);
+            });
+            $pairCourses = $this->requirements['double_major']['pairs'][$spec1]['courses'] ?? [];
+            $remainingPair = array_diff($pairCourses, $takenCodes);
+
+            return (count($remainingCore) + count($remainingPair)) * 3;
+        }
+
+        // BSBA / BS Accounting: count remaining required courses and multiply by their credit value
+        $credits = 0;
+
+        // Core slots (most are 3 credits; career discernment = 1 each; BUS 498/ACCT 498 = 0)
+        $zeroCredit = ['BUS 498', 'ACCT 498'];
+        $oneCredit = ['BUS 199', 'BUS 299A', 'MKT 299', 'BUS 399A', 'MKT 399', 'BUS 499A', 'MKT 499'];
+
+        $coreGroups = [
+            ['ENT 118A', 'ENT 118B'],
+            ['MGT 123A', 'MGT 123B'],
+            ['SRES 101', 'SRES 101H', 'ECON 100', 'ECON 102', 'ECON 104'],
+            ['SRES 102', 'SRES 102H', 'ECON 101', 'ECON 103', 'ECON 200'],
+            ['ACCT 205'],
+            ['ACCT 206'],
+            ['FIN 226'],
+            ['MKT 345', 'BUS 604'],
+            ['MGT 301', 'ACCT 442'],
+            ['MGT 321', 'MGT 322', 'MGT 371', 'SRES 411', 'ACCT 480'],
+            ['MGT 250'],
+            ['MGT 475'],
+            ['BUS 498', 'ACCT 498'],
+            ['MATH 110', 'MATH 111'],
+            $catalogYear === 'post_2024'
+                ? ['SRES 290']
+                : [],
+            $catalogYear === 'post_2024'
+                ? ['MGT 265', 'ECON 223']
+                : ['MGT 365', 'ECON 223', 'MGT 265'],
+            ['MGT 240', 'MGT 351', 'MGT 361', 'ECON 370', 'FIN 313', 'EAM 406', 'ENT 519', 'ACCT 425', 'DA 124', 'MGT 331'],
+        ];
+
+        foreach ($coreGroups as $group) {
+            if (empty($group)) {
+                continue;
+            }
+            if (count(array_intersect($group, $takenCodes)) === 0) {
+                // Not yet satisfied — determine credit value from representative code
+                $rep = $group[0];
+                if (in_array($rep, $zeroCredit)) {
+                    $credits += 0;
+                } elseif (array_intersect($group, $oneCredit)) {
+                    $credits += 1;
+                } else {
+                    $credits += 3;
+                }
+            }
+        }
+
+        // Career discernment (1 credit each)
+        $careerSlots = [
+            ['BUS 199'],
+            ['BUS 299A', 'MKT 299'],
+            ['BUS 399A', 'MKT 399'],
+            ['BUS 499A', 'MKT 499'],
+        ];
+        foreach ($careerSlots as $slot) {
+            if (count(array_intersect($slot, $takenCodes)) === 0) {
+                $credits += 1;
+            }
+        }
+
+        // Liberal arts: each unfilled slot = 3 credits
+        $laSlots = [
+            'Classical Philosophy', 'Modern Philosophy', 'Theology I', 'Theology II',
+            'Rhetoric & Composition', 'Natural Science', 'Literature', 'Fine Arts',
+            'History/Politics', 'Language I', 'Language II',
+            'Philosophy Elective', 'Theology Elective', 'Social Science', 'Math Thinking',
+        ];
+        $filledLa = $courses->where('requirement_category', 'liberal_arts')->pluck('course_name')->all();
+        $remainingLa = count(array_diff($laSlots, $filledLa));
+        $credits += $remainingLa * 3;
+
+        // Specialization required + electives (3 credits each)
+        $specData = $this->requirements[$catalogYear]['specializations'] ?? [];
+        foreach ([$spec1, $spec2, $spec3] as $specKey) {
+            if (! $specKey || ! isset($specData[$specKey])) {
+                continue;
+            }
+            $spec = $specData[$specKey];
+            $required = $spec['required'] ?? [];
+            $electives = $spec['electives'] ?? [];
+            $chooseCount = (int) ($spec['choose_count'] ?? 0);
+            $remainingRequired = count(array_diff($required, $takenCodes));
+            $takenElectives = count(array_intersect($electives, $takenCodes));
+            $remainingElectives = max(0, $chooseCount - $takenElectives);
+            $credits += ($remainingRequired + $remainingElectives) * 3;
+        }
+
+        // BS Accounting additional courses
+        if ($degree === 'bs_accounting') {
+            $acctRequired = ['ACCT 310', 'ACCT 311', 'ACCT 312', 'ACCT 412', 'ACCT 417', 'ACCT 418', 'ACCT 419', 'ACCT 422'];
+            foreach ($acctRequired as $code) {
+                if (! in_array($code, $takenCodes)) {
+                    $credits += 3;
+                }
+            }
+        }
+
+        // 2 business electives (can't know if taken without a marker — include if student has few electives)
+        $electiveCodes = $courses->where('requirement_category', 'business_core')
+            ->whereIn('course_name', ['Business Elective 1', 'Business Elective 2'])
+            ->count();
+        $credits += max(0, 2 - $electiveCodes) * 3;
+
+        return max(0, $credits);
     }
 }

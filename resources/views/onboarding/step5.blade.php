@@ -382,7 +382,7 @@
 
                     <div class="form-actions">
                         <a href="{{ route('onboarding.step', 2) }}" class="btn-secondary">← Back</a>
-                        <button type="submit" class="btn-primary">Next: Credits & GPA →</button>
+                        <button type="submit" class="btn-primary">Next: Credits & Standing →</button>
                     </div>
 
                 </form>

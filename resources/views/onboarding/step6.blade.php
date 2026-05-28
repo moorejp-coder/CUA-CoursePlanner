@@ -378,40 +378,23 @@
             @csrf
             <x-honeypot />
 
-            {{-- Credits & GPA --}}
+            {{-- Credits --}}
             <h3 class="step-heading">Academic Standing</h3>
 
-            <div class="two-col">
-                <div class="form-group">
-                    <label class="field-label" for="credits_completed">Credits Completed</label>
-                    <input
-                        type="number"
-                        id="credits_completed"
-                        name="credits_completed"
-                        x-model="credits"
-                        min="0"
-                        max="200"
-                        value="{{ old('credits_completed', $data['credits_completed'] ?? 0) }}"
-                        placeholder="e.g. 60"
-                    >
-                    <div class="standing-row" x-show="credits > 0 || credits === 0">
-                        You are a: <span class="standing-badge" x-text="standing"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="field-label" for="gpa">Cumulative GPA</label>
-                    <input
-                        type="number"
-                        id="gpa"
-                        name="gpa"
-                        min="0"
-                        max="4.00"
-                        step="0.01"
-                        value="{{ old('gpa', $data['gpa'] ?? '') }}"
-                        placeholder="e.g. 3.25"
-                    >
-                    <p class="field-hint">Enter your cumulative GPA (0.00 – 4.00)</p>
+            <div class="form-group">
+                <label class="field-label" for="credits_completed">Credits Completed</label>
+                <input
+                    type="number"
+                    id="credits_completed"
+                    name="credits_completed"
+                    x-model="credits"
+                    min="0"
+                    max="200"
+                    value="{{ old('credits_completed', $data['credits_completed'] ?? 0) }}"
+                    placeholder="e.g. 60"
+                >
+                <div class="standing-row" x-show="credits > 0 || credits === 0">
+                    You are a: <span class="standing-badge" x-text="standing"></span>
                 </div>
             </div>
 

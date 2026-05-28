@@ -466,7 +466,6 @@ class OnboardingController extends Controller
     {
         $validated = $request->validate([
             'credits_completed' => ['required', 'integer', 'min:0', 'max:200'],
-            'gpa' => ['nullable', 'numeric', 'min:0', 'max:4.00'],
         ]);
 
         // Cap at 20 courses, truncate each code to 20 chars, strip tags
@@ -748,7 +747,7 @@ class OnboardingController extends Controller
             'specialization_1' => $data['specialization_1'] ?? null,
             'specialization_2' => $data['specialization_2'] ?: null,
             'specialization_3' => $data['specialization_3'] ?: null,
-            'gpa' => isset($data['gpa']) && $data['gpa'] !== '' ? $data['gpa'] : null,
+            'gpa' => null,
             'credits_completed' => (int) ($data['credits_completed'] ?? 0),
             'projected_standing' => $data['projected_standing'] ?? 'Freshman',
             'last_updated_at' => now(),

@@ -130,7 +130,7 @@ class ChatController extends Controller
         $specList = implode(', ', $specs) ?: 'None selected';
 
         $lines = [
-            "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | GPA: ".($profile->gpa ?? 'N/A')." | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
+            "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
             "Specializations: {$specList}",
             'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
             'IN PROGRESS: '.(implode(', ', $inProgressCodes) ?: 'None'),
