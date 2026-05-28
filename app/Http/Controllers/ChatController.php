@@ -121,7 +121,13 @@ class ChatController extends Controller
             $msg = $e->getMessage();
             Log::error('Groq API error', ['exception' => $msg]);
 
-            // 413 = context window exceeded — guide the user to start fresh.
+            if (str_contains($msg, '429') || str_contains($msg, 'rate limit') || str_contains($msg, 'Rate limit')) {
+                return response()->json(
+                    ['error' => 'The AI is handling too many requests right now. Please wait a few seconds and try again.'],
+                    429,
+                );
+            }
+
             if (str_contains($msg, '413') || str_contains($msg, 'too large')) {
                 return response()->json(
                     ['error' => 'This conversation has grown too long for the AI to process. Please start a new conversation to continue.'],
@@ -140,6 +146,13 @@ class ChatController extends Controller
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+
+            if ($response->status() === 429) {
+                return response()->json(
+                    ['error' => 'The AI is handling too many requests right now. Please wait a few seconds and try again.'],
+                    429,
+                );
+            }
 
             if ($response->status() === 413) {
                 return response()->json(
