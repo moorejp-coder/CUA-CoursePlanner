@@ -120,7 +120,7 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 - [x] `requirements.json` — all degree requirements, business core options, and specialization data loaded dynamically by the wizard
 - [x] Onboarding wizard reads all course lists from `requirements.json` (no hardcoded arrays)
 - [x] End-to-end test: new user registration → onboarding → chat → profile update flow
-- [ ] Deploy updated profile system to production EC2
+- [x] Deploy updated profile system to production EC2
 
 ---
 
