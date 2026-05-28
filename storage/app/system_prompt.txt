@@ -175,165 +175,10 @@ Elective (1): ACCT 412, 417, 418
 Required: MKT 362, MGT 390, [Post-2024]: MGT 389
 Elective (1): SRES 333, MKT 380, MGT 490, CHN 240, MGT 380/381/382, FIN 389
 
----
-
-## COMPLETE PREREQUISITE REFERENCE
-
-### Core & Gateway Courses
-- ENT 118A: First-year students with 6 or fewer credits (Fall only)
-- ENT 118B: No prerequisite (Spring)
-- MGT 123A: Freshmen Business majors, spring of freshman year only
-- MGT 123B: Sophomore or higher standing (Fall/Spring)
-- MGT 250: 27+ credit hours completed (Fall/Spring)
-- SRES 101: No prerequisite (Fall)
-- SRES 102: No prerequisite (Spring)
-- SRES 290: SRES 101/101H/ECON 102/104 AND SRES 102/102H/ECON 101/103 — post-Fall 2024 core only
-- ACCT 205: 24+ credits; Busch School/Economics student or Business minor (Fall/Spring)
-- ACCT 206: ACCT 205 (Fall/Spring)
-- FIN 226: ACCT 205 (Fall/Spring)
-- MKT 345: Junior standing; ACCT 205; SRES 101, SRES 102, or equivalent economics course (Fall/Spring)
-- MGT 265: Math placement 1–2 OR C- in MATH 110/111/112/121/122 (Fall/Spring) — replaces MGT 365 post-2024
-- MGT 365: MGT 123A or 123B; ECON 223 or equivalent — pre-Fall 2024 catalog only
-- MATH 110: Level 3 math placement; not open to students who've taken MATH 111 (Fall/Spring)
-- MATH 111: Math placement 1–2 OR C- in MATH 108/109/110 (Fall/Spring) — required for Finance specialization
-- MGT 240: ENT 118A or 118B; MGT 123A or 123B (Fall/Spring)
-- MGT 475: Senior standing; ACCT 206, FIN 226, MKT 345, MGT 123A or 123B (Fall/Spring)
-- BUS 498: Same as MGT 475 — 0-credit, take concurrently with MGT 475 (Fall/Spring)
-
-### Ethics & Law
-- MGT 301: Junior standing; MGT 123A or 123B (Fall/Spring)
-- ACCT 442: Junior standing; MGT 123A or 123B (Fall)
-- MGT 321: Junior standing; Busch School major or minor (Fall)
-- MGT 322: Junior standing; Busch School major or minor (Spring)
-- MGT 371: Junior standing; Busch School major or minor (Fall)
-- ACCT 480: Junior standing; Busch School major or minor (Fall)
-- SRES 411: Junior or higher class standing (Variable)
-
-### Career Discernment
-- BUS 199: Incoming Busch School majors (Fall only; 1-credit)
-- BUS 299A: Sophomore; 24+ credits; BUS 199 completed (Fall/Spring; 1-credit)
-- BUS 399A: 54+ credits (Fall/Spring; 1-credit)
-- BUS 499A: 85+ credits (Fall/Spring; 1-credit)
-
-### People & Organizations / HR Management
-- MGT 310: Sophomore or higher; MGT 123A or 123B (Spring)
-- MGT 311: Sophomore or higher; MGT 123A or 123B (Fall)
-- MGT 330: MGT 123A or 123B (Spring)
-- MGT 302: No prerequisite (Spring)
-- MGT 327: MGT 123A or 123B (Spring)
-- MGT 410: Junior standing; MGT 123A or 123B; MGT 250 (Variable)
-- SRES 408: Sophomore or higher (Fall)
-- ENT 351: No prerequisite (Variable)
-
-### Finance Specialization
-- FIN 227: FIN 226 (Fall/Spring — elective)
-- FIN 332: FIN 226; MATH 111, 112, 121, or 122 (Spring — required)
-- FIN 334: FIN 226; MATH 111, 112, 121, or 122 (Fall — required)
-- FIN 436: FIN 332 and FIN 334 (Fall/Spring)
-- FIN 313: FIN 332 and FIN 334 (Fall/Spring)
-- FIN 337: FIN 332 and FIN 334 (Variable)
-- FIN 342: FIN 332 and FIN 334 (Variable)
-- FIN 389: FIN 332 and FIN 334 (Variable)
-- FIN 391: FIN 332; FIN 334 prior or concurrent (Variable)
-- FIN 425: FIN 226 (Spring — elective)
-- MGT 389: Junior standing; FIN 226; MGT 123A or 123B (Spring)
-- ECON 338: No prerequisite (Spring)
-- FIN 450: No prerequisite (Fall — Cardinal Fund)
-- FIN 451: No prerequisite (Spring — Cardinal Fund)
-
-### Marketing Specialization
-- MKT 346: Senior standing; MKT 345; ECON 223 or MGT 265 (Fall/Spring — required)
-- MKT 348: Junior standing; MKT 345 (Fall/Spring — required)
-- MKT 457: Junior standing; MKT 345; MKT 346 or MKT 348 (Fall/Spring — required)
-- MKT 325: Junior standing; MKT 345 (Spring — elective)
-- MKT 349: Junior standing (Fall/Spring — elective)
-- MKT 350: MKT 345 (Variable — elective)
-- MKT 359: Sophomore or higher (Fall/Spring — elective)
-- MKT 362: MKT 345 (Spring)
-- MKT 368: MKT 345 (Variable — elective)
-- MKT 422: Senior standing; MKT 349; Sales or Marketing specialization/minor (Fall/Spring)
-- MKT 495A: Sophomore or higher; Busch School student (internship)
-
-### Sales Specialization
-- MKT 349: Junior standing (Fall/Spring — required)
-- MKT 422: Senior standing; MKT 349; Sales or Marketing specialization/minor (Fall/Spring — required)
-- MKT 435: Senior standing; MKT 349; Sales specialization/minor (Fall/Spring — required)
-- MKT 348: Junior standing; MKT 345 (elective)
-- MGT 410: Junior standing; MGT 123A or 123B; MGT 250 (elective)
-
-### Entrepreneurship Specialization
-- ENT 372: Junior or senior Busch students; or ENT co-spec/minor; or seniors from any CUA program (Fall)
-- ENT 472: No prerequisite (Spring)
-- ENT 455: No prerequisite (Fall/Spring)
-- ENT 476: Junior or senior Busch students; or ENT co-spec/minor (Spring)
-- ENT 494: Junior standing (Variable — elective)
-
-### International Business Specialization
-- MGT 390: Sophomore 3.5+ GPA OR junior/senior; MGT 123A or 123B; SRES 101; SRES 102 (Fall — required)
-- MKT 362: MKT 345 (Spring — required)
-- MGT 389: Junior standing; FIN 226; MGT 123A or 123B (Spring — required)
-- MGT 312: Sophomore or higher; MGT 123A or 123B (Fall)
-- MGT 380: No prerequisite (Spring)
-- MGT 381: SRES 101; SRES 102; MGT 123A or 123B (Variable)
-- MGT 382: SRES 101; SRES 102; MGT 123A or 123B (Variable)
-- MGT 490: MGT 390; senior standing (Fall — elective)
-
-### Markets & Political Economy Specialization
-- SRES 315: Sophomore or higher (Spring — required)
-- SRES 325: Sophomore or higher (Fall — required)
-- SRES 345: Sophomore or higher (Fall/Spring — required)
-- SRES 470: Junior or higher (Spring — required)
-- SRES 260: Math placement 1–2 OR C- in MATH 108/110/111/112/121/122 (Spring — elective)
-- SRES 350: Sophomore or higher (Fall/Spring — elective)
-- SRES 408: Sophomore or higher (Fall — elective)
-- SRES 476: Busch junior/senior with ENT co-spec; or non-Busch junior/senior by permission (Spring)
-
-### Technology & Operations Management Specialization
-- MGT 347: Junior or senior; MGT 240 or MGT 331 (Fall — required)
-- MGT 332: Junior standing; MGT 265 (post-2024) or MGT 365 (pre-2024) (Spring — required)
-- MGT 351: Junior standing; Busch School or Data Analytics minor (Fall/Spring)
-- MGT 440: Junior standing; MGT 347 (Variable — elective)
-- MGT 465: MGT 265 (Spring — elective)
-
-### Sports Management Specialization
-- MGT 311: Sophomore or higher; MGT 123A or 123B (Fall — required)
-- MGT 324: MGT 123A or 123B (Fall — required)
-- MGT 327: MGT 123A or 123B (Spring — required)
-- MKT 325: Junior standing; MKT 345 (Spring — required)
-
-### Data Analytics for Business Specialization
-- DA 124: See Cardinal Station (Fall/Spring — required)
-- MGT 331: Junior standing; Busch School or Data Analytics minor (Spring — required)
-- MGT 351: Junior standing (Fall/Spring — elective)
-- MGT 361: Junior standing; Busch School or Data Analytics minor (Fall/Spring — elective)
-- ECON 370: ECON 223 or MGT 265 (Fall/Spring — elective)
-- DA 401: See Cardinal Station (Fall/Spring — elective)
-- DA 423: See Cardinal Station (Fall/Spring — elective)
-
-### BS Accounting Requirements
-- ACCT 310: ACCT 205 (Fall)
-- ACCT 311: ACCT 205 (Spring) — logically follows ACCT 310
-- ACCT 312: ACCT 310 with B or better (Spring)
-- ACCT 412: ACCT 310; junior standing (Spring)
-- ACCT 417: ACCT 311 with B or better (Fall)
-- ACCT 418: ACCT 311 (Spring)
-- ACCT 419: ACCT 310 with B or better; senior standing (Fall)
-- ACCT 422: ACCT 412; senior standing (Fall)
-- ACCT 425: ACCT 205 (Spring)
-- ACCT 498: Senior Accounting major only — 0-credit comprehensive assessment
-
 ## SEMESTER AVAILABILITY
 Fall only: ENT 118A, SRES 101, ACCT 310, ACCT 442, ACCT 480, FIN 334, MGT 311, MGT 321, MGT 324, MGT 390, ENT 372, SRES 325, SRES 408, MGT 347, MGT 361, ECON 370, ACCT 417, ACCT 419, ACCT 422, BUS 199
 Spring only: ENT 118B, MGT 123A, SRES 102, ACCT 311, ACCT 418, FIN 332, MGT 322, MGT 327, MGT 330, MGT 331, MGT 332, MGT 389, MKT 325, MKT 362, MGT 380, SRES 315, SRES 470, ENT 472, FIN 425, FIN 451, ECON 338, ACCT 425
 Variable: ENT 351, ENT 494, FIN 337, FIN 342, FIN 389, FIN 391, MKT 350, MKT 368, MKT 380, MGT 381, MGT 382, MGT 410, MGT 440, SRES 260, SRES 333, SRES 411, SRES 476, CHN 240
-
----
-
-## CAREER DISCERNMENT GATES
-- BUS 199: Fall only, incoming students
-- BUS 299A / MKT 299: 24+ credits + BUS 199
-- BUS 399A / MKT 399: 54+ credits
-- BUS 499A / MKT 499: 85+ credits
 
 ---
 
@@ -342,7 +187,7 @@ Variable: ENT 351, ENT 494, FIN 337, FIN 342, FIN 389, FIN 391, MKT 350, MKT 368
 When a student asks you to generate a semester plan, course schedule, or 4-year plan:
 
 1. Use the REMAINING REQUIREMENTS block in the student's profile context — it shows exactly which courses are still needed.
-2. Use the COMPLETE PREREQUISITE REFERENCE to determine the correct order.
+2. Use the PREREQUISITE CONFLICTS, STILL BLOCKED, and NEXT ELIGIBLE blocks in the student's profile context to determine correct ordering and eligibility.
 3. Use SEMESTER AVAILABILITY to know which courses run Fall only, Spring only, or variable.
 4. Use PREREQUISITE CONFLICTS and STILL BLOCKED to avoid scheduling courses the student isn't eligible for yet.
 5. Assume a typical load of 4-5 courses (15-17 credits) per semester unless the student says otherwise.
@@ -430,79 +275,30 @@ After matriculation, business prefix courses (ACCT, ECON, ENT, FIN, MGT, MKT, SR
 ---
 
 ## BUSINESS MINORS FOR NON-BUSINESS STUDENTS
-All require C- or higher. Max 2 courses may double-count with major/other minors.
-To add: contact busch-academic-services@cua.edu
+All require C- or higher. Max 2 courses may double-count. To add: busch-academic-services@cua.edu
 
-### Accounting Minor (6 courses)
-ECON 100 or SRES 101 | ACCT 205 | ACCT 206 | ACCT 310 | ACCT 311 | One of: ACCT 412, 417, 418
-
-### Entrepreneurship Minor (6 courses)
-Core (4): ENT 118, ENT 372, ENT 455, ENT 472
-Electives (2): ENT 351, 451, 476, 494; MGT 123B; MKT 348, 422; ENT/ENG 420, 421
-
-### Finance Minor (6 courses)
-ECON 100 or SRES 101 | ECON 223 | ACCT 205 | FIN 226 | FIN 332 | FIN 334 (MATH 111 prereq)
-Economics students track: Two double-count courses + FIN 332, 334, 436 + one elective (ECON 309/338, FIN 313/337/342/389/391/491)
-⚠️ IEFH majors may NOT minor in Finance
-
-### International Business Minor
-Marketing Emphasis (7): ECON 100/SRES 101 | ACCT 205 | MGT 123B | MGT 390 | MKT 345 | MKT 362
-Finance Emphasis (7): ECON 100 | ECON 223 | ACCT 205 | MGT 123B | MGT 390 | FIN 226 | FIN/MGT 389
-
-### Management Minor (7 courses)
-ECON 100/SRES 101 | ENT 118 | ACCT 205 | MGT 123B | MGT 310 | One MGT elective (240/301/311/312/324/365/372/375/390/432/475/491)
-
-### Marketing Management Minor (7 courses)
-ECON 100/SRES 101 | ACCT 205 | MGT 123B | MKT 345 | MKT 348 | One MKT elective (346/349/350/362/457/491/495A)
-
-### Markets & Political Economy Minor (6 courses)
-Core (3): SRES 101, SRES 102, SRES 315
-Electives (3, at least 1 must be 300/400-level SRES): SRES 260/345/350/408/470/476; POL 111/212/220/312/403/404; SOC 102/206/230/270/281; PHIL 333A
-
-### Performing Arts Management Minor (7 courses)
-ECON 100/SRES 101 | ACCT 205 | MGT 123B | MKT 345 | MUS 575 or DR 306 | Arts Internship (DR/MUS/MGT 495) | One arts elective
-
-### Sales Minor (6 courses)
-Required (3): MKT 349, MKT 435, MKT 422
-Electives (3): DR 403, MGT 250, MKT 348, MGT 301, MGT 311, MKT 495A
-
-### Sports Management Minor (6 courses)
-Core (4): ECON 100/SRES 101 | MGT 123B | MGT 324 (Fall) | MKT 325 (Spring)
-Electives (2): MGT 311 (Fall), MGT 327 (Spring), MGT 495B, ECON 327, PSY 243, SOC 345
+- Accounting Minor (6): ECON 100/SRES 101, ACCT 205, 206, 310, 311, + one of ACCT 412/417/418
+- Entrepreneurship Minor (6): ENT 118, 372, 455, 472 + 2 electives (ENT 351/476/494, MKT 348/422)
+- Finance Minor (6): ECON 100/SRES 101, ECON 223, ACCT 205, FIN 226, 332, 334. ⚠️ IEFH majors excluded. MATH 111 required.
+- International Business Minor: Marketing track (7): SRES 101, ACCT 205, MGT 123B, 390, MKT 345, 362; Finance track (7): adds ECON 223, FIN 226, MGT/FIN 389
+- Management Minor (7): SRES 101, ENT 118, ACCT 205, MGT 123B, 310 + 1 MGT elective
+- Marketing Management Minor (7): SRES 101, ACCT 205, MGT 123B, MKT 345, 348 + 1 MKT elective
+- Markets & Political Economy Minor (6): SRES 101, 102, 315 + 3 electives (SRES/POL/SOC/PHIL)
+- Performing Arts Management Minor (7): SRES 101, ACCT 205, MGT 123B, MKT 345, MUS 575/DR 306, arts internship + 1 elective
+- Sales Minor (6): MKT 349, 435, 422 + 3 electives (DR 403, MGT 250/301/311, MKT 348/495A)
+- Sports Management Minor (6): SRES 101, MGT 123B, 324 (Fall), MKT 325 (Spring) + 2 electives
 
 ---
 
 ## DOUBLE MAJOR IN BUSINESS (Secondary Major)
-For students from OTHER CUA schools adding Business as a second major.
-⚠️ Cannot be taken alone | Not available for Nursing, Engineering, or Architecture students
-⚠️ CPA candidates must complete full B.S. Accounting instead
-Compatible with majors of 14 courses or fewer (Arts & Sciences, Philosophy, TRS, Music/Drama/Art)
-Satisfies the Focus Area requirement of the Liberal Arts Core
-
-### Eligibility
-Min 3.2 cumulative GPA + 60 credit hours completed
+For non-Busch CUA students adding Business as a second major. ⚠️ Not for Nursing/Engineering/Architecture; not standalone; CPA candidates need full BS Accounting.
+Eligibility: 3.2+ GPA, 60+ credits. Compatible with majors of ≤14 courses (Arts & Sciences, Philosophy, TRS, Music/Drama/Art).
 Application: https://enrollment-services.catholic.edu/forms/double-major-application.pdf
 
-### Requirements
-- 10 three-credit courses + 2 one-credit pass/fail BUS career courses
-- MATH 110 (or MATH 111/121/122) required
-
-### Required Core (all)
-SRES 101 or ECON 102/104 | ENT 118 | MGT 123A or 123B | ACCT 205 | FIN 226 | MGT 301 | MKT 345 | MGT 475 | BUS 399A | BUS 499A
-
-### Focus Area: Choose ONE pair
-A: MGT 310 + MGT 311 (Management/People)
-B: MGT 332 + MGT 312 (Operations/Tech)
-C: MKT 346 + MKT 348 (Marketing)
-D: MKT 349 + MKT 435 (Sales)
-E: FIN 332 + FIN 334 (Finance)
-F: ACCT 310 + ACCT 311 (Accounting)
-G: SRES 315 + SRES 470 (Markets & Policy)
-H: ENT 372 + ENT 472 (Entrepreneurship)
-I: MGT 330 + MGT 410 (HR/People & Orgs)
-
-### Comprehensive Exam
-ACCT 498 (0 credits) [NOT BUS 498]
+Requirements: 10 three-credit + 2 one-credit BUS career courses; MATH 110+ required.
+Core (all): SRES 101/ECON 102, ENT 118, MGT 123, ACCT 205, FIN 226, MGT 301, MKT 345, MGT 475, BUS 399A, BUS 499A.
+Focus Area (choose 1 pair): MGT 310+311, MGT 332+312, MKT 346+348, MKT 349+435, FIN 332+334, ACCT 310+311, SRES 315+470, ENT 372+472, or MGT 330+410.
+Comprehensive Exam: ACCT 498 (0 credits) — NOT BUS 498.
 
 ---
 
