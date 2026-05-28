@@ -362,14 +362,24 @@ class PlannerService
             'Philosophy Elective', 'Theology Elective', 'Social Science', 'Math Thinking',
         ];
 
-        $filledNames = $courses
-            ->where('requirement_category', 'liberal_arts')
-            ->pluck('course_name')
-            ->all();
+        $laCourses = $courses->where('requirement_category', 'liberal_arts');
+        $filledNames = $laCourses->pluck('course_name')->all();
+
+        // SPAN 111 or SPAN 113 satisfies both Language I and Language II in one course.
+        $span11xExempt = $laCourses
+            ->whereIn('course_code', ['SPAN 111', 'SPAN 113'])
+            ->where('course_name', 'Language I')
+            ->isNotEmpty();
 
         $remaining = array_values(array_filter(
             $laSlots,
-            fn ($slot) => ! in_array($slot, $filledNames)
+            function (string $slot) use ($filledNames, $span11xExempt): bool {
+                if ($slot === 'Language II' && $span11xExempt) {
+                    return false;
+                }
+
+                return ! in_array($slot, $filledNames);
+            }
         ));
 
         $done = count($laSlots) - count($remaining);
@@ -604,7 +614,12 @@ class PlannerService
             'History/Politics', 'Language I', 'Language II',
             'Philosophy Elective', 'Theology Elective', 'Social Science', 'Math Thinking',
         ];
-        $filledLa = $courses->where('requirement_category', 'liberal_arts')->pluck('course_name')->all();
+        $laCourses = $courses->where('requirement_category', 'liberal_arts');
+        $filledLa = $laCourses->pluck('course_name')->all();
+        // SPAN 111 or SPAN 113 covers both Language I and Language II.
+        if ($laCourses->whereIn('course_code', ['SPAN 111', 'SPAN 113'])->where('course_name', 'Language I')->isNotEmpty()) {
+            $filledLa = array_unique(array_merge($filledLa, ['Language II']));
+        }
         $remainingLa = count(array_diff($laSlots, $filledLa));
         $credits += $remainingLa * 3;
 

@@ -51,6 +51,7 @@ Additional required:
 - Foundations in History or Politics: ANTH 215; CLAS 205/206/206R/207/220/226/260/304/308; ECST 315; EURO 203; HIST 140/142/151/202/205/206/206R/208/222/224/226/229/231A/231B/235/246/257/258/301/308B/309/309B/312/315/316/334A/349/351/371D/380D/384A/385; ITAL 221; MDIA 202; POL 111/112/211/226; WASH 101; HSHU 101/102/204; HSLS 205/351/354*
 - Language I (C- to advance): ARAB/CHN/FREN/GER/GR/IRSH/ITAL/LAT/SPAN 103
 - Language II: Same options at 104 level
+- SPAN 111 or SPAN 113 satisfies BOTH Language I and Language II in a single course — a student who completed SPAN 113 for Language I is automatically exempt from Language II and has no remaining language requirement
 
 * Honors Program courses; confirm eligibility with your advisor.
 Up to 2 courses may double-count between liberal arts and major.
@@ -101,9 +102,10 @@ Post-2024: same options plus BUS 606
 
 ### Section 11 — Career Discernment (1 credit each)
 - BUS 199 (Fall only): complete by 30 credits
-- BUS 299A: complete by 60 credits [Sales students: MKT 299]
-- BUS 399A: complete by 90 credits [Sales students: MKT 399]
-- BUS 499A: complete during senior year [Sales students: MKT 499]
+- BUS 299A: complete by 60 credits — Sales specialization students take MKT 299 instead (fully exempt from BUS 299A)
+- BUS 399A: complete by 90 credits — Sales specialization students take MKT 399 instead (fully exempt from BUS 399A)
+- BUS 499A: complete during senior year — Sales specialization students take MKT 499 instead (fully exempt from BUS 499A)
+- If a student's completed courses show MKT 299, MKT 399, or MKT 499, treat the corresponding BUS 299A, BUS 399A, or BUS 499A as satisfied — do not tell them they still need those courses
 
 ### Section 12 — Business Electives (Pre-2024 single-specialization students only)
 Two additional BUS/MGT/MKT/FIN/ACCT/ECON/ENT/SRES elective courses required.
