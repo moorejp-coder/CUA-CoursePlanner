@@ -205,39 +205,6 @@
         .send-btn:active:not(:disabled) { transform: scale(0.965); }
         .send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* ── File attachment tag ───────────────────────────── */
-        .file-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(10, 50, 85, 0.06);
-            border: 1px solid rgba(10, 50, 85, 0.18);
-            color: var(--cua-blue);
-            font-size: 12.5px;
-            font-family: 'Roboto', sans-serif;
-            font-weight: 500;
-            padding: 3px 10px 3px 8px;
-            border-radius: 20px;
-        }
-        .file-tag-name {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 240px;
-        }
-        .file-tag-remove {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #9ca3af;
-            font-size: 16px;
-            line-height: 1;
-            padding: 0;
-            flex-shrink: 0;
-            transition: color 0.12s;
-        }
-        .file-tag-remove:hover { color: var(--cua-red); }
-
         /* ── Mobile chips ──────────────────────────────────── */
         .chip {
             flex-shrink: 0;
@@ -662,37 +629,9 @@
                     @endforeach
                 </div>
 
-                {{-- Hidden file input --}}
-                <input type="file" x-ref="fileInput" accept=".csv,.pdf" class="hidden"
-                       @change="handleFileSelect($event)">
-
-                {{-- File tag --}}
-                <div x-show="fileName"
-                     x-transition:enter="transition ease-out duration-150"
-                     x-transition:enter-start="opacity-0 -translate-y-1"
-                     x-transition:enter-end="opacity-100 translate-y-0"
-                     class="mb-2">
-                    <span class="file-tag">
-                        <svg class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                        </svg>
-                        <span class="file-tag-name" x-text="fileName"></span>
-                        <button type="button" class="file-tag-remove" @click="removeFile()" aria-label="Remove file">&times;</button>
-                    </span>
-                </div>
-
                 {{-- Compose ring --}}
                 <form @submit.prevent="send()">
                     <div class="compose-ring">
-                        <button type="button" class="attach-btn"
-                                @click="$refs.fileInput.click()"
-                                :disabled="loading"
-                                title="Attach a file (.csv or .pdf)">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
-                            </svg>
-                        </button>
-
                         <textarea
                             x-model="input"
                             @keydown.enter.exact.prevent="send()"
@@ -703,15 +642,14 @@
                         ></textarea>
 
                         <button type="submit" class="send-btn"
-                                :disabled="loading || (!input.trim() && !file)">
+                                :disabled="loading || !input.trim()">
                             Send
                         </button>
                     </div>
 
                     <p class="hidden sm:block text-[11px] mt-1.5 pl-1 select-none" style="color:#a89f97;">
                         <span class="kbd">Enter</span> to send &nbsp;&middot;&nbsp;
-                        <span class="kbd">Shift+Enter</span> for new line &nbsp;&middot;&nbsp;
-                        <span class="kbd">📎</span> to attach a file
+                        <span class="kbd">Shift+Enter</span> for new line
                     </p>
                 </form>
             </div>
@@ -741,8 +679,6 @@ function chatApp() {
         input: '',
         loading: false,
         error: null,
-        file: null,
-        fileName: null,
         profileUpdate: null,
         semesterBanner: false,
         successToast: false,
@@ -829,8 +765,6 @@ function chatApp() {
             this.input = '';
             this.error = null;
             this.loading = false;
-            this.file = null;
-            this.fileName = null;
             this.profileUpdate = null;
             this.$nextTick(() => this.scrollToBottom());
         },
@@ -841,70 +775,15 @@ function chatApp() {
                 .replace(/\*(.*?)\*/gs, '$1');
         },
 
-        handleFileSelect(event) {
-            const f = event.target.files[0];
-            if (!f) return;
-            this.file = f;
-            this.fileName = f.name;
-            event.target.value = '';
-        },
-
-        removeFile() {
-            this.file = null;
-            this.fileName = null;
-        },
-
         async send() {
             const text = this.input.trim();
-            if ((!text && !this.file) || this.loading) return;
+            if (!text || this.loading) return;
 
             this.error = null;
             this.input = '';
 
-            let messageText = text;
-
-            if (this.file) {
-                const csrf = document.querySelector('meta[name="csrf-token"]').content;
-                const form = new FormData();
-                form.append('file', this.file);
-                form.append('_token', csrf);
-
-                this.loading = true;
-                this.scrollToBottom();
-
-                let extracted;
-                try {
-                    const uploadRes = await fetch('/api/upload', { method: 'POST', body: form });
-                    const uploadData = await uploadRes.json();
-                    if (!uploadRes.ok) {
-                        this.error = uploadData.error ?? 'File upload failed. Please try again.';
-                        this.loading = false;
-                        return;
-                    }
-                    extracted = uploadData.text;
-                } catch {
-                    this.error = 'Could not upload the file. Check your connection and try again.';
-                    this.loading = false;
-                    return;
-                }
-
-                if (extracted.startsWith('APW:')) {
-                    messageText = messageText
-                        ? extracted + '\n\nAdditional student question: ' + messageText
-                        : extracted;
-                } else {
-                    if (!messageText) {
-                        messageText = 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
-                    }
-                    messageText = `The student has uploaded their Academic Planning Worksheet or graduation progress report. Here is the content:\n\n${extracted}\n\nStudent question: ${messageText}`;
-                }
-
-                this.removeFile();
-            }
-
             const history = this.messages.map(m => ({ role: m.role, content: m.content }));
-            const displayText = text || 'Please analyze my uploaded document and tell me where I stand on my degree requirements.';
-            this.messages.push({ role: 'user', content: displayText });
+            this.messages.push({ role: 'user', content: text });
             if (!this.loading) {
                 this.loading = true;
                 this.scrollToBottom();
@@ -917,7 +796,7 @@ function chatApp() {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     },
-                    body: JSON.stringify({ message: messageText, history }),
+                    body: JSON.stringify({ message: text, history }),
                 });
 
                 const data = await res.json();

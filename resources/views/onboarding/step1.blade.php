@@ -301,6 +301,24 @@
                         >
                         <span><strong>B.S. Accounting</strong> — Bachelor of Science in Accounting</span>
                     </label>
+                    <label class="radio-option">
+                        <input
+                            type="radio"
+                            name="degree"
+                            value="double_major"
+                            {{ old('degree', $data['degree'] ?? '') === 'double_major' ? 'checked' : '' }}
+                        >
+                        <span><strong>Double Major / Secondary Major</strong> — BA in Business with another primary major</span>
+                    </label>
+                    <label class="radio-option">
+                        <input
+                            type="radio"
+                            name="degree"
+                            value="business_minor"
+                            {{ old('degree', $data['degree'] ?? '') === 'business_minor' ? 'checked' : '' }}
+                        >
+                        <span><strong>Business Minor</strong> — Minor in Business Administration</span>
+                    </label>
                 </div>
             </div>
 

@@ -46,7 +46,10 @@ class OnboardingController extends Controller
         }
 
         $data = session('onboarding', []);
-        $isAccounting = ($data['degree'] ?? '') === 'bs_accounting';
+        $degree = $data['degree'] ?? '';
+        $isAccounting = $degree === 'bs_accounting';
+        $isDoubleMajor = $degree === 'double_major';
+        $isMinor = $degree === 'business_minor';
 
         // BS Accounting skips step 2 (Specializations)
         if ($isAccounting && $step === 2) {
@@ -58,8 +61,24 @@ class OnboardingController extends Controller
             return redirect()->route('onboarding.step.accounting');
         }
 
+        // Business Minor skips step 3 (Liberal Arts) and step 4 (Business Core)
+        if ($isMinor && $step === 3) {
+            return redirect()->route('onboarding.step', 5);
+        }
+        if ($isMinor && $step === 4) {
+            return redirect()->route('onboarding.step', 5);
+        }
+
+        // Double Major skips step 3 (Liberal Arts) and step 5 (Spec Courses)
+        if ($isDoubleMajor && $step === 3) {
+            return redirect()->route('onboarding.step', 4);
+        }
+        if ($isDoubleMajor && $step === 5) {
+            return redirect()->route('onboarding.step', 6);
+        }
+
         $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
-        [$wizardStep, $wizardTotal] = $this->computeWizardProgress($step, $isAccounting);
+        [$wizardStep, $wizardTotal] = $this->computeWizardProgress($step, $isAccounting, $isDoubleMajor, $isMinor);
 
         return view("onboarding.step{$step}", [
             'step' => $step,
@@ -143,15 +162,30 @@ class OnboardingController extends Controller
             return redirect()->route('chat')->with('onboarding_complete', true);
         }
 
-        $isAccounting = ($data['degree'] ?? '') === 'bs_accounting';
+        $degree = $data['degree'] ?? '';
+        $isAccounting = $degree === 'bs_accounting';
+        $isDoubleMajor = $degree === 'double_major';
+        $isMinor = $degree === 'business_minor';
 
         // BS Accounting skips step 2 (Specializations) and step 5 (Spec Courses)
         if ($isAccounting && $step === 1) {
             return redirect()->route('onboarding.step', 3);
         }
-
         if ($isAccounting && $step === 4) {
             return redirect()->route('onboarding.step.accounting');
+        }
+
+        // Business Minor: after step 2 → skip to step 5
+        if ($isMinor && $step === 2) {
+            return redirect()->route('onboarding.step', 5);
+        }
+
+        // Double Major: after step 2 → skip to step 4; after step 4 → skip to step 6
+        if ($isDoubleMajor && $step === 2) {
+            return redirect()->route('onboarding.step', 4);
+        }
+        if ($isDoubleMajor && $step === 4) {
+            return redirect()->route('onboarding.step', 6);
         }
 
         return redirect()->route('onboarding.step', $step + 1);
@@ -162,7 +196,7 @@ class OnboardingController extends Controller
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'admit_term' => ['required', 'string', Rule::in(self::ADMIT_TERMS)],
-            'degree' => ['required', 'in:bsba,bs_accounting'],
+            'degree' => ['required', 'in:bsba,bs_accounting,double_major,business_minor'],
             'expected_graduation' => ['required', 'string', Rule::in(self::GRADUATION_TERMS)],
         ]);
 
@@ -176,6 +210,30 @@ class OnboardingController extends Controller
     private function validateStep2(Request $request, array $existingData): array
     {
         $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+
+        if (($existingData['degree'] ?? '') === 'double_major') {
+            $validPairs = array_keys($requirements['double_major']['pairs'] ?? []);
+
+            $validated = $request->validate([
+                'double_major_pair' => ['required', 'string', Rule::in($validPairs)],
+            ]);
+
+            // Save pair course statuses as spec_course_XXX keys
+            foreach (array_slice($request->input('spec_courses', []), 0, 2) as $code => $status) {
+                $safeCode = mb_substr(preg_replace('/[^A-Za-z0-9_ ]/', '', (string) $code), 0, 20);
+                if ($safeCode) {
+                    $validated["spec_course_{$safeCode}"] = in_array($status, ['completed', 'in_progress', 'not_yet'])
+                        ? $status
+                        : 'not_yet';
+                }
+            }
+
+            // Set specialization_1 to the pair key for profile storage
+            $validated['specialization_1'] = $validated['double_major_pair'];
+
+            return $validated;
+        }
+
         $catalogYear = $existingData['catalog_year'] ?? 'post_2024';
         $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
 
@@ -369,10 +427,10 @@ class OnboardingController extends Controller
     }
 
     /** Returns [visualStep, visualTotal] for the wizard header. */
-    private function computeWizardProgress(int $step, bool $isAccounting): array
+    private function computeWizardProgress(int $step, bool $isAccounting, bool $isDoubleMajor = false, bool $isMinor = false): array
     {
         if ($isAccounting) {
-            // BS Accounting: 5 visual steps mapped from real steps 1, 3, 4, accounting(handled separately), 6
+            // BS Accounting: 5 visual steps — real steps 1, 3, 4, accounting(handled separately), 6
             return [match ($step) {
                 1 => 1,
                 3 => 2,
@@ -380,6 +438,28 @@ class OnboardingController extends Controller
                 6 => 5,
                 default => 1,
             }, 5];
+        }
+
+        if ($isDoubleMajor) {
+            // Double Major: 4 visual steps — real steps 1, 2, 4, 6
+            return [match ($step) {
+                1 => 1,
+                2 => 2,
+                4 => 3,
+                6 => 4,
+                default => 1,
+            }, 4];
+        }
+
+        if ($isMinor) {
+            // Business Minor: 4 visual steps — real steps 1, 2, 5, 6
+            return [match ($step) {
+                1 => 1,
+                2 => 2,
+                5 => 3,
+                6 => 4,
+                default => 1,
+            }, 4];
         }
 
         return [$step, 6];
@@ -537,6 +617,7 @@ class OnboardingController extends Controller
         $ethics = array_unique(array_merge(
             $requirements['post_2024']['business_core_options']['ethics'] ?? [],
             $requirements['pre_2024']['business_core_options']['ethics'] ?? [],
+            ['MGT 301', 'in_progress'],
         ));
 
         $lawCodes = [];
@@ -552,7 +633,7 @@ class OnboardingController extends Controller
         return [
             'core_ent118' => ['not_yet', 'ENT 118A', 'ENT 118B'],
             'core_mgt123' => ['not_yet', 'MGT 123A', 'MGT 123B'],
-            'core_sres101' => ['not_yet', 'SRES 101', 'ECON 100', 'ECON 102'],
+            'core_sres101' => ['not_yet', 'SRES 101', 'SRES 101H', 'ECON 100', 'ECON 102', 'ECON 104'],
             'core_sres102' => ['not_yet', 'SRES 102', 'ECON 200', 'ECON 101'],
             'core_sres290' => $status3,
             'core_acct205' => $status3,
@@ -566,7 +647,7 @@ class OnboardingController extends Controller
             'core_bus299a' => array_merge($status3, ['BUS 299A', 'MKT 299']),
             'core_bus399a' => array_merge($status3, ['BUS 399A', 'MKT 399']),
             'core_bus499a' => array_merge($status3, ['BUS 499A', 'MKT 499']),
-            'core_mkt345' => ['not_yet', 'in_progress', 'MKT 345'],
+            'core_mkt345' => ['not_yet', 'in_progress', 'MKT 345', 'BUS 604'],
             'core_stats' => ['not_yet', 'MGT 265', 'ECON 223'],
             'core_math' => ['not_yet', 'MATH 110', 'MATH 111', 'Level 1 or 2 Exempt'],
             'core_info_gateway' => array_merge(['not_yet'], $infoGateway),
@@ -595,6 +676,10 @@ class OnboardingController extends Controller
             'last_updated_at' => now(),
         ]);
 
+        $degree = $data['degree'] ?? 'bsba';
+        $skipLa = in_array($degree, ['business_minor', 'double_major']);
+        $skipCore = $degree === 'business_minor';
+
         // Build student_courses rows from wizard data
         $courses = [];
 
@@ -619,7 +704,7 @@ class OnboardingController extends Controller
 
         $ssAutofilled = ! empty($data['la_social_science_autofilled']);
 
-        foreach ($laMap as $key => $meta) {
+        foreach ($skipLa ? [] : $laMap as $key => $meta) {
             $val = $data[$key] ?? '';
             if ($val && $val !== 'not_yet') {
                 $note = null;
@@ -641,7 +726,7 @@ class OnboardingController extends Controller
             }
         }
 
-        // Business core
+        // Business core (skipped for business_minor)
         $coreMap = [
             'core_ent118' => ['code' => '',         'name' => 'ENT 118'],
             'core_mgt123' => ['code' => '',         'name' => 'MGT 123'],
@@ -669,7 +754,7 @@ class OnboardingController extends Controller
             'core_elective_2' => ['code' => '',         'name' => 'Business Elective 2'],
         ];
 
-        foreach ($coreMap as $key => $meta) {
+        foreach ($skipCore ? [] : $coreMap as $key => $meta) {
             $val = $data[$key] ?? '';
             if (! $val || $val === 'not_yet') {
                 continue;

@@ -282,13 +282,14 @@
     @php
         $catalogYear  = $data['catalog_year'] ?? 'post_2024';
         $isPost2024   = $catalogYear === 'post_2024';
+        $isDoubleMajor = $degree === 'double_major';
         $isSales      = in_array('sales', [
             $data['specialization_1'] ?? '',
             $data['specialization_2'] ?? '',
             $data['specialization_3'] ?? '',
         ]);
         $isSingleSpec = empty($data['specialization_2'] ?? '') && empty($data['specialization_3'] ?? '');
-        $showElectives = ! $isPost2024 && $isSingleSpec;
+        $showElectives = ! $isPost2024 && $isSingleSpec && ! $isDoubleMajor;
         $v = fn (string $key, string $default = 'not_yet') => old($key, $data[$key] ?? $default);
         $coreOptions = $requirements[$catalogYear]['business_core_options'] ?? [];
     @endphp
@@ -302,6 +303,13 @@
         <form method="POST" action="{{ route('onboarding.save', 4) }}">
             @csrf
             <x-honeypot />
+
+            @if($isDoubleMajor)
+                <div class="alert-info">
+                    <strong>Double Major / Secondary Major Core</strong> — This is the reduced core required for the BA in Business.
+                    Your focus area pair courses were captured in the previous step.
+                </div>
+            @endif
 
             {{-- ─── SECTION 1: Business Foundations ─────────────────────────── --}}
             <h3 class="step-heading">1. Business Foundations</h3>
@@ -332,15 +340,22 @@
             <div class="form-grid">
 
                 <div class="form-group">
-                    <label class="field-label" for="core_sres101">SRES 101 — Markets and Prosperity I</label>
+                    <label class="field-label" for="core_sres101">
+                        @if($isDoubleMajor) SRES 101 / ECON 102 / ECON 104 — Economic Thought @else SRES 101 — Markets and Prosperity I @endif
+                    </label>
                     <select id="core_sres101" name="core_sres101">
                         <option value="not_yet"        {{ $v('core_sres101') === 'not_yet'        ? 'selected' : '' }}>Not yet completed</option>
                         <option value="SRES 101"       {{ $v('core_sres101') === 'SRES 101'       ? 'selected' : '' }}>SRES 101</option>
+                        <option value="SRES 101H"      {{ $v('core_sres101') === 'SRES 101H'      ? 'selected' : '' }}>SRES 101H (Honors)</option>
                         <option value="ECON 100"       {{ $v('core_sres101') === 'ECON 100'       ? 'selected' : '' }}>ECON 100 (equivalent)</option>
                         <option value="ECON 102"       {{ $v('core_sres101') === 'ECON 102'       ? 'selected' : '' }}>ECON 102 (equivalent)</option>
+                        @if($isDoubleMajor)
+                            <option value="ECON 104"   {{ $v('core_sres101') === 'ECON 104'       ? 'selected' : '' }}>ECON 104 (equivalent)</option>
+                        @endif
                     </select>
                 </div>
 
+                @if(!$isDoubleMajor)
                 <div class="form-group">
                     <label class="field-label" for="core_sres102">SRES 102 — Markets and Prosperity II</label>
                     <select id="core_sres102" name="core_sres102">
@@ -364,12 +379,13 @@
                         </select>
                     </div>
                 @endif
+                @endif
 
             </div>
 
             {{-- ─── SECTION 3: Accounting ─────────────────────────────────────── --}}
             <h3 class="step-heading">3. Accounting</h3>
-            <p class="section-note">ACCT 205 is a prerequisite for ACCT 206 and FIN 226.</p>
+            <p class="section-note">ACCT 205 is a prerequisite for FIN 226{{ $isDoubleMajor ? '.' : ' and ACCT 206.' }}</p>
             <div class="form-grid">
 
                 <div class="form-group">
@@ -381,6 +397,7 @@
                     </select>
                 </div>
 
+                @if(!$isDoubleMajor)
                 <div class="form-group">
                     <label class="field-label" for="core_acct206">ACCT 206 — Managerial Accounting</label>
                     <select id="core_acct206" name="core_acct206">
@@ -389,6 +406,7 @@
                         <option value="Completed"   {{ $v('core_acct206') === 'Completed'   ? 'selected' : '' }}>Completed</option>
                     </select>
                 </div>
+                @endif
 
             </div>
 
@@ -403,6 +421,7 @@
                 </select>
             </div>
 
+            @if(!$isDoubleMajor)
             {{-- ─── SECTION 5: Communications ─────────────────────────────────── --}}
             <h3 class="step-heading">5. Communications</h3>
             <div class="form-group narrow">
@@ -413,26 +432,30 @@
                     <option value="Completed"   {{ $v('core_mgt250') === 'Completed'   ? 'selected' : '' }}>Completed</option>
                 </select>
             </div>
+            @endif
 
             {{-- ─── SECTION 6: Marketing ──────────────────────────────────────── --}}
             <h3 class="step-heading">6. Marketing</h3>
             <div class="form-group narrow">
-                <label class="field-label" for="core_mkt345">MKT 345 — Marketing Management</label>
+                <label class="field-label" for="core_mkt345">MKT 345{{ $isDoubleMajor ? ' or BUS 604' : '' }} — Marketing Management</label>
                 <select id="core_mkt345" name="core_mkt345">
                     <option value="not_yet"     {{ $v('core_mkt345') === 'not_yet'     ? 'selected' : '' }}>Not yet completed</option>
                     <option value="in_progress" {{ $v('core_mkt345') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="MKT 345"     {{ $v('core_mkt345') === 'MKT 345'     ? 'selected' : '' }}>MKT 345 (completed)</option>
+                    @if($isDoubleMajor)
+                        <option value="BUS 604" {{ $v('core_mkt345') === 'BUS 604'     ? 'selected' : '' }}>BUS 604 (equivalent)</option>
+                    @endif
                 </select>
             </div>
 
             {{-- ─── SECTION 7: Mathematics and Statistics ─────────────────────── --}}
-            <h3 class="step-heading">7. Mathematics and Statistics</h3>
+            <h3 class="step-heading">7. Mathematics{{ $isDoubleMajor ? '' : ' and Statistics' }}</h3>
             <p class="section-note">
                 Level 3 placement requires MATH 110. Levels 1 or 2 fulfill the requirement.
-                Finance and Accounting specializations require MATH 111.
             </p>
             <div class="form-grid">
 
+                @if(!$isDoubleMajor)
                 <div class="form-group">
                     <label class="field-label" for="core_stats">
                         Statistics for Business
@@ -465,6 +488,7 @@
                         </select>
                     </div>
                 @endif
+                @endif
 
                 <div class="form-group">
                     <label class="field-label" for="core_math">Mathematics</label>
@@ -478,6 +502,7 @@
 
             </div>
 
+            @if(!$isDoubleMajor)
             {{-- ─── SECTION 8: Information Management ────────────────────────── --}}
             <h3 class="step-heading">8. Information Management Gateway</h3>
             <p class="section-note">Choose one course not already in your specialization requirements.</p>
@@ -490,21 +515,30 @@
                     @endforeach
                 </select>
             </div>
+            @endif
 
             {{-- ─── SECTION 9: Ethics and Law ─────────────────────────────────── --}}
-            <h3 class="step-heading">9. Ethics and Law</h3>
+            <h3 class="step-heading">{{ $isDoubleMajor ? '8' : '9' }}. Ethics{{ $isDoubleMajor ? '' : ' and Law' }}</h3>
             <div class="form-grid">
 
                 <div class="form-group">
-                    <label class="field-label" for="core_ethics">Business Ethics (choose one)</label>
+                    <label class="field-label" for="core_ethics">
+                        @if($isDoubleMajor) MGT 301 — Business Ethics @else Business Ethics (choose one) @endif
+                    </label>
                     <select id="core_ethics" name="core_ethics">
                         <option value="not_yet" {{ $v('core_ethics', 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($coreOptions['ethics'] ?? [] as $c)
-                            <option value="{{ $c }}" {{ $v('core_ethics', 'not_yet') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
+                        @if($isDoubleMajor)
+                            <option value="MGT 301" {{ $v('core_ethics', 'not_yet') === 'MGT 301' ? 'selected' : '' }}>MGT 301 (completed)</option>
+                            <option value="in_progress" {{ $v('core_ethics', 'not_yet') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                        @else
+                            @foreach($coreOptions['ethics'] ?? [] as $c)
+                                <option value="{{ $c }}" {{ $v('core_ethics', 'not_yet') === $c ? 'selected' : '' }}>{{ $c }}</option>
+                            @endforeach
+                        @endif
                     </select>
                 </div>
 
+                @if(!$isDoubleMajor)
                 <div class="form-group">
                     <label class="field-label" for="core_law">Business Law (choose one)</label>
                     <select id="core_law" name="core_law">
@@ -515,6 +549,7 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
 
             </div>
 
@@ -544,16 +579,23 @@
             </div>
 
             {{-- ─── SECTION 11: Career Discernment ─────────────────────────────── --}}
-            <h3 class="step-heading">11. Career Discernment</h3>
+            <h3 class="step-heading">{{ $isDoubleMajor ? '9' : '11' }}. Career Discernment</h3>
             <div class="alert-info">
-                <strong>Milestone guide:</strong>
-                BUS 199 by 30 credits (Fall only) &nbsp;&bull;&nbsp;
-                BUS 299A by 60 credits &nbsp;&bull;&nbsp;
-                BUS 399A by 90 credits &nbsp;&bull;&nbsp;
-                BUS 499A during senior year
+                @if($isDoubleMajor)
+                    <strong>Milestone guide:</strong>
+                    BUS 399A by 90 credits &nbsp;&bull;&nbsp;
+                    BUS 499A during senior year
+                @else
+                    <strong>Milestone guide:</strong>
+                    BUS 199 by 30 credits (Fall only) &nbsp;&bull;&nbsp;
+                    BUS 299A by 60 credits &nbsp;&bull;&nbsp;
+                    BUS 399A by 90 credits &nbsp;&bull;&nbsp;
+                    BUS 499A during senior year
+                @endif
             </div>
             <div class="form-grid">
 
+                @if(!$isDoubleMajor)
                 <div class="form-group">
                     <label class="field-label" for="core_bus199">BUS 199 — Career Discernment I (Fall Only)</label>
                     <select id="core_bus199" name="core_bus199">
@@ -574,6 +616,7 @@
                         @endif
                     </select>
                 </div>
+                @endif
 
                 <div class="form-group">
                     <label class="field-label" for="core_bus399a">BUS 399A — Career Discernment III{{ $isSales ? ' / MKT 399' : '' }}</label>
@@ -679,8 +722,17 @@
             </template>
 
             <div class="form-actions">
-                <a href="{{ route('onboarding.step', 3) }}" class="btn-secondary">← Back</a>
-                <button type="submit" class="btn-primary">{{ $degree === 'bs_accounting' ? 'Next: Accounting Requirements →' : 'Next: Specialization Courses →' }}</button>
+                @if($isDoubleMajor)
+                    <a href="{{ route('onboarding.step', 2) }}" class="btn-secondary">← Back</a>
+                @else
+                    <a href="{{ route('onboarding.step', 3) }}" class="btn-secondary">← Back</a>
+                @endif
+                <button type="submit" class="btn-primary">
+                    @if($isDoubleMajor) Next: Credits & GPA →
+                    @elseif($degree === 'bs_accounting') Next: Accounting Requirements →
+                    @else Next: Specialization Courses →
+                    @endif
+                </button>
             </div>
 
         </form>

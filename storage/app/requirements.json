@@ -966,5 +966,59 @@
                 }
             ]
         }
+    },
+    "double_major": {
+        "business_core": [
+            "ENT 118A or ENT 118B — Vocation of Business",
+            "MGT 123A or MGT 123B — Foundations of Business",
+            "SRES 101 / ECON 102 / ECON 104 — Economic Thought",
+            "ACCT 205 — Financial Accounting",
+            "FIN 226 — Financial Management (prereq: ACCT 205)",
+            "MGT 301 — Business Ethics",
+            "MKT 345 or BUS 604 — Marketing Management",
+            "MATH 110 or placement exempt",
+            "BUS 399A or MKT 399 (Sales) — Career Discernment III",
+            "BUS 499A or MKT 499 (Sales) — Career Discernment IV",
+            "MGT 475 — Business Strategy  ⚠ MUST take same semester as BUS 498",
+            "BUS 498 — Comprehensive Assessment (0 credits)  ⚠ MUST take same semester as MGT 475"
+        ],
+        "pairs": {
+            "pair_a": {
+                "label": "Pair A — People & Organizations",
+                "courses": ["MGT 310", "MGT 311"]
+            },
+            "pair_b": {
+                "label": "Pair B — Operations & Supply Chain",
+                "courses": ["MGT 332", "MGT 312"]
+            },
+            "pair_c": {
+                "label": "Pair C — Marketing Foundations",
+                "courses": ["MKT 346", "MKT 348"]
+            },
+            "pair_d": {
+                "label": "Pair D — Marketing Strategy",
+                "courses": ["MKT 349", "MKT 435"]
+            },
+            "pair_e": {
+                "label": "Pair E — Finance",
+                "courses": ["FIN 332", "FIN 334"]
+            },
+            "pair_f": {
+                "label": "Pair F — Accounting",
+                "courses": ["ACCT 310", "ACCT 311"]
+            },
+            "pair_g": {
+                "label": "Pair G — Social Enterprise",
+                "courses": ["SRES 315", "SRES 470"]
+            },
+            "pair_h": {
+                "label": "Pair H — Entrepreneurship",
+                "courses": ["ENT 372", "ENT 472"]
+            },
+            "pair_i": {
+                "label": "Pair I — HR Management",
+                "courses": ["MGT 330", "MGT 410"]
+            }
+        }
     }
 }

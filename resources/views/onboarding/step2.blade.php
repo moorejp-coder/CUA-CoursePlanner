@@ -242,7 +242,10 @@
 
     @php
         $catalogYear = $data['catalog_year'] ?? 'post_2024';
+        $isDoubleMajor = $degree === 'double_major';
+        $isMinor = $degree === 'business_minor';
         $specs = $requirements[$catalogYear]['specializations'] ?? [];
+        $pairs = $requirements['double_major']['pairs'] ?? [];
 
         $descriptions = [
             'people_and_organizations'          => 'Focus on human resources, organizational behavior, and leadership.',
@@ -273,105 +276,206 @@
             $data['specialization_3'] ?? null,
         ]);
         $preSelectedJson = json_encode(array_values($preSelected));
+
+        $selectedPair = $data['double_major_pair'] ?? '';
     @endphp
 
-    <div class="wizard-card"
-         x-data="{
-            selected: {{ $preSelectedJson }},
-            maxAllowed: 3,
-            needDouble: {{ Js::from($mustDoubleSpecs) }},
-            mathReq: {{ Js::from($mathReqSpecs) }},
-            toggle(key) {
-                const idx = this.selected.indexOf(key);
-                if (idx >= 0) {
-                    this.selected.splice(idx, 1);
-                } else if (this.selected.length < this.maxAllowed) {
-                    this.selected.push(key);
+    @if ($isDoubleMajor)
+        {{-- ── Double Major: Focus Area Pair Selection ──────────────── --}}
+        <div class="wizard-card"
+             x-data="{
+                selectedPair: '{{ old('double_major_pair', $selectedPair) }}',
+                pairs: {{ Js::from($pairs) }},
+                courseStatuses: {
+                    @foreach($pairs as $pKey => $pair)
+                        @foreach($pair['courses'] as $course)
+                            @php $safeKey = str_replace(' ', '_', $course); @endphp
+                            '{{ $safeKey }}': '{{ old('spec_courses.'.$safeKey, $data['spec_course_'.$safeKey] ?? 'not_yet') }}',
+                        @endforeach
+                    @endforeach
+                },
+                get activePairCourses() {
+                    if (!this.selectedPair || !this.pairs[this.selectedPair]) return [];
+                    return this.pairs[this.selectedPair].courses;
                 }
-            },
-            isSelected(key) { return this.selected.includes(key); },
-            isDisabled(key) { return this.selected.length >= this.maxAllowed && !this.selected.includes(key); },
-            hasDouble() {
-                return this.selected.some(s => this.needDouble.includes(s));
-            },
-            hasMath111() {
-                return this.selected.some(s => this.mathReq.includes(s));
-            },
-            submitForm() {
-                if (this.selected.length === 0) {
-                    alert('Please select at least one specialization.');
-                    return;
-                }
-                this.$refs.spec1.value = this.selected[0] || '';
-                this.$refs.spec2.value = this.selected[1] || '';
-                this.$refs.spec3.value = this.selected[2] || '';
-                document.getElementById('spec-form').submit();
-            }
-         }"
-    >
+             }"
+        >
+            @if ($errors->any())
+                <div class="alert-warning">{{ $errors->first() }}</div>
+            @endif
 
-        @if ($errors->any())
-            <div class="alert-warning">{{ $errors->first() }}</div>
-        @endif
+            <h3 class="step-heading">Choose Your Focus Area Pair</h3>
+            <p class="step-subtext">
+                Select the pair of courses that forms your focus area for the BA in Business.
+                You must take both courses in your chosen pair.
+            </p>
 
-        <h3 class="step-heading">
-            Choose Your Specialization(s)
-            <span class="counter-badge" x-text="selected.length + ' / 3'"></span>
-        </h3>
-        <p class="step-subtext">
-            Select 1–3 specializations. Some require a second specialization (noted below).
-            You are on the <strong>{{ $catalogYear === 'post_2024' ? 'Post-2024' : 'Pre-2024' }}</strong> catalog.
-        </p>
+            <form id="pair-form" method="POST" action="{{ route('onboarding.save', 2) }}">
+                @csrf
+                <x-honeypot />
 
-        {{-- Warnings --}}
-        <div x-show="hasDouble() && selected.length < 2" x-transition class="alert-warning">
-            Sports Management / Entrepreneurship require a second specialization.
-        </div>
-
-        <div x-show="hasMath111()" x-transition class="alert-info">
-            Note: MATH 111 is required for one or more of your selected specializations.
-        </div>
-
-        <form id="spec-form" method="POST" action="{{ route('onboarding.save', 2) }}">
-            @csrf
-            <x-honeypot />
-
-            <input type="hidden" name="specialization_1" x-ref="spec1">
-            <input type="hidden" name="specialization_2" x-ref="spec2">
-            <input type="hidden" name="specialization_3" x-ref="spec3">
-
-            <div class="spec-grid">
-                @foreach($specs as $key => $spec)
-                    <div
-                        class="spec-card"
-                        :class="{
-                            'selected': isSelected('{{ $key }}'),
-                            'disabled': isDisabled('{{ $key }}')
-                        }"
-                        @click="!isDisabled('{{ $key }}') && toggle('{{ $key }}')"
-                    >
-                        <input
-                            type="checkbox"
-                            :checked="isSelected('{{ $key }}')"
-                            :disabled="isDisabled('{{ $key }}')"
-                            @click.stop="toggle('{{ $key }}')"
-                            tabindex="-1"
+                <div class="spec-grid">
+                    @foreach($pairs as $pKey => $pair)
+                        <div
+                            class="spec-card"
+                            :class="{ 'selected': selectedPair === '{{ $pKey }}' }"
+                            @click="selectedPair = '{{ $pKey }}'"
                         >
-                        <div class="spec-card-text">
-                            <strong>{{ $spec['name'] }}</strong>
-                            <p>{{ $descriptions[$key] ?? '' }}</p>
+                            <input
+                                type="radio"
+                                name="double_major_pair"
+                                value="{{ $pKey }}"
+                                x-model="selectedPair"
+                                @click.stop
+                                style="accent-color: var(--cua-red); width:1rem; height:1rem; flex-shrink:0; margin-top:0.15rem;"
+                            >
+                            <div class="spec-card-text">
+                                <strong>{{ $pair['label'] }}</strong>
+                                <p>{{ implode(' + ', $pair['courses']) }}</p>
+                            </div>
                         </div>
+                    @endforeach
+                </div>
+
+                {{-- Course status for selected pair --}}
+                <div x-show="selectedPair" x-transition style="margin-top:1.25rem;">
+                    <h3 class="step-heading" style="margin-top:0;">Course Status</h3>
+                    <p class="step-subtext">Mark your progress on each course in your pair.</p>
+                    <div class="form-grid">
+                        @foreach($pairs as $pKey => $pair)
+                            @foreach($pair['courses'] as $course)
+                                @php $safeKey = str_replace(' ', '_', $course); @endphp
+                                <div class="form-group" x-show="selectedPair === '{{ $pKey }}'">
+                                    <label class="field-label" style="font-size:0.88rem;">{{ $course }}</label>
+                                    <select name="spec_courses[{{ $safeKey }}]" x-model="courseStatuses['{{ $safeKey }}']"
+                                            style="width:100%;padding:0.55rem 0.8rem;border:1.5px solid #ccc;border-radius:6px;font-size:0.93rem;font-family:'Roboto',sans-serif;background:#fff;">
+                                        <option value="not_yet">Not yet taken</option>
+                                        <option value="in_progress">In Progress</option>
+                                        <option value="completed">Completed</option>
+                                    </select>
+                                </div>
+                            @endforeach
+                        @endforeach
                     </div>
-                @endforeach
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
+                    <button type="submit" class="btn-primary"
+                            onclick="if(!document.querySelector('input[name=double_major_pair]:checked')){alert('Please select a focus area pair.');return false;}">
+                        Next: Business Core →
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+    @else
+        {{-- ── BSBA / Business Minor: Specialization Selection ──────── --}}
+        <div class="wizard-card"
+             x-data="{
+                selected: {{ $preSelectedJson }},
+                maxAllowed: 3,
+                needDouble: {{ Js::from($mustDoubleSpecs) }},
+                mathReq: {{ Js::from($mathReqSpecs) }},
+                toggle(key) {
+                    const idx = this.selected.indexOf(key);
+                    if (idx >= 0) {
+                        this.selected.splice(idx, 1);
+                    } else if (this.selected.length < this.maxAllowed) {
+                        this.selected.push(key);
+                    }
+                },
+                isSelected(key) { return this.selected.includes(key); },
+                isDisabled(key) { return this.selected.length >= this.maxAllowed && !this.selected.includes(key); },
+                hasDouble() {
+                    return this.selected.some(s => this.needDouble.includes(s));
+                },
+                hasMath111() {
+                    return this.selected.some(s => this.mathReq.includes(s));
+                },
+                submitForm() {
+                    if (this.selected.length === 0) {
+                        alert('Please select at least one specialization.');
+                        return;
+                    }
+                    this.$refs.spec1.value = this.selected[0] || '';
+                    this.$refs.spec2.value = this.selected[1] || '';
+                    this.$refs.spec3.value = this.selected[2] || '';
+                    document.getElementById('spec-form').submit();
+                }
+             }"
+        >
+
+            @if ($errors->any())
+                <div class="alert-warning">{{ $errors->first() }}</div>
+            @endif
+
+            <h3 class="step-heading">
+                @if($isMinor) Choose Your Minor Concentration @else Choose Your Specialization(s) @endif
+                <span class="counter-badge" x-text="selected.length + ' / 3'"></span>
+            </h3>
+            <p class="step-subtext">
+                @if($isMinor)
+                    Select the specialization area for your Business Minor.
+                @else
+                    Select 1–3 specializations. Some require a second specialization (noted below).
+                    You are on the <strong>{{ $catalogYear === 'post_2024' ? 'Post-2024' : 'Pre-2024' }}</strong> catalog.
+                @endif
+            </p>
+
+            {{-- Warnings --}}
+            <div x-show="hasDouble() && selected.length < 2" x-transition class="alert-warning">
+                Sports Management / Entrepreneurship require a second specialization.
             </div>
 
-            <div class="form-actions">
-                <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
-                <button type="button" class="btn-primary" @click="submitForm()">Next: Liberal Arts →</button>
+            <div x-show="hasMath111()" x-transition class="alert-info">
+                Note: MATH 111 is required for one or more of your selected specializations.
             </div>
 
-        </form>
-    </div>
+            <form id="spec-form" method="POST" action="{{ route('onboarding.save', 2) }}">
+                @csrf
+                <x-honeypot />
+
+                <input type="hidden" name="specialization_1" x-ref="spec1">
+                <input type="hidden" name="specialization_2" x-ref="spec2">
+                <input type="hidden" name="specialization_3" x-ref="spec3">
+
+                <div class="spec-grid">
+                    @foreach($specs as $key => $spec)
+                        <div
+                            class="spec-card"
+                            :class="{
+                                'selected': isSelected('{{ $key }}'),
+                                'disabled': isDisabled('{{ $key }}')
+                            }"
+                            @click="!isDisabled('{{ $key }}') && toggle('{{ $key }}')"
+                        >
+                            <input
+                                type="checkbox"
+                                :checked="isSelected('{{ $key }}')"
+                                :disabled="isDisabled('{{ $key }}')"
+                                @click.stop="toggle('{{ $key }}')"
+                                tabindex="-1"
+                            >
+                            <div class="spec-card-text">
+                                <strong>{{ $spec['name'] }}</strong>
+                                <p>{{ $descriptions[$key] ?? '' }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="form-actions">
+                    <a href="{{ route('onboarding.step', 1) }}" class="btn-secondary">← Back</a>
+                    <button type="button" class="btn-primary" @click="submitForm()">
+                        @if($isMinor) Next: Specialization Courses → @else Next: Liberal Arts → @endif
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    @endif
 
 </body>
 </html>
