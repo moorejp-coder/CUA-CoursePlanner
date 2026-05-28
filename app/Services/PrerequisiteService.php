@@ -231,11 +231,16 @@ class PrerequisiteService
         ?string $spec2,
         ?string $spec3
     ): array {
+        $isSales = in_array('sales', array_filter([$spec1, $spec2, $spec3]));
+
         // Universal core gates that matter to almost every student
         $core = [
             'MGT 123B', 'ACCT 205', 'ACCT 206', 'FIN 226', 'MKT 345',
             'MGT 301', 'MGT 250', 'MGT 265', 'MGT 475', 'BUS 498',
-            'BUS 199', 'BUS 299A', 'BUS 399A', 'BUS 499A',
+            'BUS 199',
+            $isSales ? 'MKT 299' : 'BUS 299A',
+            $isSales ? 'MKT 399' : 'BUS 399A',
+            $isSales ? 'MKT 499' : 'BUS 499A',
         ];
 
         if ($degree === 'double_major') {

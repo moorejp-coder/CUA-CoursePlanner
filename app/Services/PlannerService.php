@@ -48,7 +48,8 @@ class PlannerService
             $lines = array_merge($lines, $this->remainingCore($degree, $catalogYear, $takenCodes, $courses));
             $lines = array_merge($lines, $this->remainingSpecs($catalogYear, $takenCodes, $spec1, $spec2, $spec3));
             $lines = array_merge($lines, $this->remainingLiberalArts($courses));
-            $lines = array_merge($lines, $this->remainingCareerDiscernment($takenCodes));
+            $isSales = in_array('sales', array_filter([$spec1, $spec2, $spec3]));
+            $lines = array_merge($lines, $this->remainingCareerDiscernment($takenCodes, $isSales));
         }
 
         $creditEstimate = $this->estimateCreditsRemaining(
@@ -392,13 +393,13 @@ class PlannerService
     }
 
     /** @return string[] */
-    private function remainingCareerDiscernment(array $takenCodes): array
+    private function remainingCareerDiscernment(array $takenCodes, bool $isSales = false): array
     {
         $slots = [
             'BUS 199' => ['BUS 199'],
-            'BUS 299A' => ['BUS 299A', 'MKT 299'],
-            'BUS 399A' => ['BUS 399A', 'MKT 399'],
-            'BUS 499A' => ['BUS 499A', 'MKT 499'],
+            ($isSales ? 'MKT 299' : 'BUS 299A') => ['BUS 299A', 'MKT 299'],
+            ($isSales ? 'MKT 399' : 'BUS 399A') => ['BUS 399A', 'MKT 399'],
+            ($isSales ? 'MKT 499' : 'BUS 499A') => ['BUS 499A', 'MKT 499'],
         ];
 
         $remaining = [];

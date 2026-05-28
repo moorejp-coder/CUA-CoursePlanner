@@ -101,11 +101,10 @@ Post-2024: same options plus BUS 606
 - BUS 498: Comprehensive Assessment — 0 credits (taken same semester as MGT 475)
 
 ### Section 11 — Career Discernment (1 credit each)
-- BUS 199 (Fall only): complete by 30 credits
-- BUS 299A: complete by 60 credits — Sales specialization students take MKT 299 instead (fully exempt from BUS 299A)
-- BUS 399A: complete by 90 credits — Sales specialization students take MKT 399 instead (fully exempt from BUS 399A)
-- BUS 499A: complete during senior year — Sales specialization students take MKT 499 instead (fully exempt from BUS 499A)
-- If a student's completed courses show MKT 299, MKT 399, or MKT 499, treat the corresponding BUS 299A, BUS 399A, or BUS 499A as satisfied — do not tell them they still need those courses
+- BUS 199 (Fall only): complete by 30 credits — all students
+- Non-Sales students: BUS 299A (by 60 cr), BUS 399A (by 90 cr), BUS 499A (senior year)
+- Sales students: MKT 299 (by 60 cr), MKT 399 (by 90 cr), MKT 499 (senior year) — these are the default requirements; BUS 299A/399A/499A are not expected and are not a gap if missing
+- Either version satisfies the slot: MKT 299 ↔ BUS 299A, MKT 399 ↔ BUS 399A, MKT 499 ↔ BUS 499A
 
 ### Section 12 — Business Electives (Pre-2024 single-specialization students only)
 Two additional BUS/MGT/MKT/FIN/ACCT/ECON/ENT/SRES elective courses required.
