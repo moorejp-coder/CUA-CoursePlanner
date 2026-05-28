@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\StudentCourse;
 use Illuminate\Support\Collection;
 
+// PrerequisiteService is used inside buildEligibleElectives for real-time eligibility checks
+
 class PlannerService
 {
     private array $requirements;
@@ -55,6 +57,198 @@ class PlannerService
         $lines[] = "Estimated credits remaining to graduation: ~{$creditEstimate} credits";
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * Build the ELIGIBLE ELECTIVES context block.
+     * Shows which elective options in each specialization the student can register for now.
+     *
+     * @param  string[]  $completedCodes
+     * @param  string[]  $inProgressCodes
+     */
+    public function buildEligibleElectives(
+        string $catalogYear,
+        array $completedCodes,
+        array $inProgressCodes,
+        string $standing,
+        int $credits,
+        ?string $spec1,
+        ?string $spec2,
+        ?string $spec3
+    ): string {
+        $prereqService = new PrerequisiteService;
+        $specData = $this->requirements[$catalogYear]['specializations'] ?? [];
+        $lines = [];
+
+        foreach (array_filter([$spec1, $spec2, $spec3]) as $specKey) {
+            if (! isset($specData[$specKey])) {
+                continue;
+            }
+
+            $spec = $specData[$specKey];
+            $label = $spec['label'] ?? $specKey;
+            $pool = $spec['electives'] ?? [];
+            $chooseCount = (int) ($spec['choose_count'] ?? 0);
+
+            if ($chooseCount === 0 || empty($pool)) {
+                continue;
+            }
+
+            $takenElectives = array_intersect($pool, array_merge($completedCodes, $inProgressCodes));
+            $stillNeeded = max(0, $chooseCount - count($takenElectives));
+
+            if ($stillNeeded === 0) {
+                continue;
+            }
+
+            $eligible = $prereqService->nowEligible($pool, $completedCodes, $inProgressCodes, $standing, $credits);
+            $blocked = array_values(array_diff($pool, array_merge($completedCodes, $inProgressCodes, $eligible)));
+
+            $parts = [];
+            if ($eligible) {
+                $parts[] = 'can register now: '.implode(', ', $eligible);
+            }
+            if ($blocked) {
+                $parts[] = 'prereqs not yet met: '.implode(', ', $blocked);
+            }
+
+            if ($parts) {
+                $lines[] = "ELECTIVE OPTIONS - {$label} (need {$stillNeeded} more): ".implode(' | ', $parts);
+            }
+        }
+
+        return $lines ? implode("\n", $lines) : '';
+    }
+
+    /**
+     * Build the FASTEST PATH context block.
+     * Identifies critical sequential chains, semester bottlenecks, and minimum semesters remaining.
+     *
+     * @param  string[]  $completedCodes
+     * @param  string[]  $inProgressCodes
+     */
+    public function buildFastestPathAnalysis(
+        string $degree,
+        string $catalogYear,
+        array $completedCodes,
+        array $inProgressCodes,
+        string $standing,
+        int $creditsCompleted,
+        ?string $spec1,
+        ?string $spec2,
+        ?string $spec3
+    ): string {
+        $taken = array_merge($completedCodes, $inProgressCodes);
+        $lines = [];
+
+        // Critical sequential chains — each step must be completed before the next
+        // Format: [label, [[course, semester_lock], ...]]
+        // semester_lock: 'Fall', 'Spring', or null
+        $chains = [
+            'Core gateway' => [
+                ['ACCT 205', null],
+                ['ACCT 206 + FIN 226', null],
+                ['MKT 345 (junior req)', null],
+                ['MGT 475 + BUS 498 (senior req)', null],
+            ],
+            'Finance chain' => [
+                ['ACCT 205', null],
+                ['FIN 226 + MATH 111', null],
+                ['FIN 334', 'Fall'],
+                ['FIN 332', 'Spring'],
+                ['FIN 436', null],
+            ],
+            'Accounting chain' => [
+                ['ACCT 205', null],
+                ['ACCT 310', 'Fall'],
+                ['ACCT 311', 'Spring'],
+                ['ACCT 312 + ACCT 412', 'Spring'],
+                ['ACCT 418 + ACCT 419', null],
+            ],
+            'Marketing chain' => [
+                ['ACCT 205', null],
+                ['MKT 345 (junior req)', null],
+                ['MKT 348 or MKT 346', null],
+                ['MKT 457', null],
+            ],
+            'Sales chain' => [
+                ['MKT 349 (junior req)', null],
+                ['MKT 422 + MKT 435 (senior req)', null],
+            ],
+        ];
+
+        // Determine which chains are relevant to this student
+        $specData = $this->requirements[$catalogYear]['specializations'] ?? [];
+        $relevantChainKeys = ['Core gateway'];
+        foreach (array_filter([$spec1, $spec2, $spec3]) as $sk) {
+            if (str_contains($sk, 'finance')) {
+                $relevantChainKeys[] = 'Finance chain';
+            }
+            if (str_contains($sk, 'accounting')) {
+                $relevantChainKeys[] = 'Accounting chain';
+            }
+            if (str_contains($sk, 'marketing')) {
+                $relevantChainKeys[] = 'Marketing chain';
+            }
+            if (str_contains($sk, 'sales')) {
+                $relevantChainKeys[] = 'Sales chain';
+            }
+        }
+        if ($degree === 'bs_accounting') {
+            $relevantChainKeys[] = 'Accounting chain';
+        }
+        $relevantChainKeys = array_unique($relevantChainKeys);
+
+        $maxChainSemesters = 0;
+        $semesterBottlenecks = [];
+
+        foreach ($relevantChainKeys as $chainKey) {
+            $chain = $chains[$chainKey] ?? [];
+            $remainingSteps = [];
+            $chainSemesters = 0;
+
+            foreach ($chain as [$stepLabel, $lock]) {
+                // Extract representative course codes from the step label
+                preg_match_all('/[A-Z]{2,5} \d{3}\w*/', $stepLabel, $m);
+                $codes = $m[0];
+
+                // Step is done if ALL representative codes are in taken (or step has no parseable codes)
+                $stepDone = ! empty($codes) && count(array_diff($codes, $taken)) === 0;
+
+                if (! $stepDone) {
+                    $remainingSteps[] = $stepLabel.($lock ? " ({$lock} only)" : '');
+                    $chainSemesters++;
+                    if ($lock) {
+                        $semesterBottlenecks[] = "{$stepLabel} ({$lock} only)";
+                    }
+                }
+            }
+
+            if (! empty($remainingSteps)) {
+                $lines[] = "Critical chain — {$chainKey}: ".implode(' → ', $remainingSteps).". Min {$chainSemesters} semester(s) remaining in this chain.";
+                $maxChainSemesters = max($maxChainSemesters, $chainSemesters);
+            }
+        }
+
+        // Semester bottlenecks summary (deduplicated)
+        $semesterBottlenecks = array_unique($semesterBottlenecks);
+        if ($semesterBottlenecks) {
+            $lines[] = 'Semester locks in remaining path: '.implode(', ', $semesterBottlenecks);
+        }
+
+        // Minimum semesters estimate: max of credit-based and chain-based
+        $creditEstimate = $this->estimateCreditsRemaining(
+            $degree, $catalogYear, $creditsCompleted,
+            $taken, collect([]), $spec1, $spec2, $spec3
+        );
+        $creditBasedSemesters = (int) ceil($creditEstimate / 15);
+        $minSemesters = max($creditBasedSemesters, $maxChainSemesters);
+
+        if ($minSemesters > 0) {
+            $lines[] = "Minimum semesters to graduation: ~{$minSemesters} (based on credits + critical chains).";
+        }
+
+        return $lines ? implode("\n", $lines) : '';
     }
 
     /** @return string[] */

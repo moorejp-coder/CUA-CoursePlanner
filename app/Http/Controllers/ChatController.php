@@ -181,6 +181,39 @@ class ChatController extends Controller
             $lines[] = $prereqSummary;
         }
 
+        // Eligible elective suggestions per specialization
+        $eligibleElectives = $plannerService->buildEligibleElectives(
+            $profile->catalog_year,
+            $completedCodes,
+            $inProgressCodes,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        );
+
+        if ($eligibleElectives) {
+            $lines[] = $eligibleElectives;
+        }
+
+        // Fastest path to graduation — critical chains + minimum semesters
+        $fastestPath = $plannerService->buildFastestPathAnalysis(
+            $profile->degree,
+            $profile->catalog_year,
+            $completedCodes,
+            $inProgressCodes,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        );
+
+        if ($fastestPath) {
+            $lines[] = $fastestPath;
+        }
+
         return "\n\n".implode("\n", $lines);
     }
 }
