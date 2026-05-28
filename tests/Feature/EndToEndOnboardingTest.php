@@ -5,11 +5,9 @@ use App\Models\StudentProfile;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
-/** Create a minimal StudentProfile for a user (no factory exists). */
 function makeProfile(User $user, array $attrs = []): StudentProfile
 {
-    return StudentProfile::create(array_merge([
-        'user_id' => $user->id,
+    return StudentProfile::factory()->for($user)->create(array_merge([
         'full_name' => $user->name,
         'degree' => 'bsba',
         'catalog_year' => 'post_2024',

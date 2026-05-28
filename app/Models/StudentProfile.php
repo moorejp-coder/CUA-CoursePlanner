@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -29,6 +30,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Hidden(['id', 'user_id', 'created_at', 'updated_at', 'semester_prompt_shown_at', 'last_updated_at'])]
 class StudentProfile extends Model
 {
+    use HasFactory;
+
     /**
      * Get the attributes that should be cast.
      *
