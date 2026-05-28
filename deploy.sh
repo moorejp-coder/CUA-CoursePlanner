@@ -19,7 +19,7 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   cd "$DEPLOY_PATH"
 
   echo "--- Fixing storage file ownership for git ---"
-  sudo chown -R "$EC2_USER":"$EC2_USER" "$DEPLOY_PATH/storage/app" 2>/dev/null || true
+  sudo chown -R "$EC2_USER":"$EC2_USER" "$DEPLOY_PATH/storage" 2>/dev/null || true
 
   echo "--- Pulling latest code ---"
   git pull origin main
