@@ -86,7 +86,7 @@ class PlannerService
             }
 
             $spec = $specData[$specKey];
-            $label = $spec['label'] ?? $specKey;
+            $label = $this->cleanLabel($spec['label'] ?? $specKey);
             $pool = $spec['electives'] ?? [];
             $chooseCount = (int) ($spec['choose_count'] ?? 0);
 
@@ -225,7 +225,7 @@ class PlannerService
             }
 
             if (! empty($remainingSteps)) {
-                $lines[] = "Critical chain — {$chainKey}: ".implode(' → ', $remainingSteps).". Min {$chainSemesters} semester(s) remaining in this chain.";
+                $lines[] = "Critical chain - {$chainKey}: ".implode(' -> ', $remainingSteps).". Min {$chainSemesters} semester(s) remaining in this chain.";
                 $maxChainSemesters = max($maxChainSemesters, $chainSemesters);
             }
         }
@@ -322,7 +322,7 @@ class PlannerService
             }
 
             $spec = $specData[$specKey];
-            $label = $spec['label'] ?? $specKey;
+            $label = $this->cleanLabel($spec['label'] ?? $specKey);
             $required = $spec['required'] ?? [];
             $electives = $spec['electives'] ?? [];
             $chooseCount = (int) ($spec['choose_count'] ?? 0);
@@ -483,6 +483,13 @@ class PlannerService
         }
 
         return $lines;
+    }
+
+    /** Strip warning annotations (e.g. "Finance  ⚠ Requires MATH 111" → "Finance") */
+    private function cleanLabel(string $raw): string
+    {
+        // Split on two or more spaces, which precede the ⚠ warning annotation
+        return trim(preg_split('/\s{2,}/', $raw)[0] ?? $raw);
     }
 
     private function estimateCreditsRemaining(
