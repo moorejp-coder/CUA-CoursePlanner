@@ -99,7 +99,10 @@ class ChatController extends Controller
         $profileContext = $this->buildProfileContext();
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
-        foreach ($validated['history'] ?? [] as $turn) {
+        // Keep only the most recent 20 history turns to stay within token limits.
+        $history = array_slice($validated['history'] ?? [], -20);
+
+        foreach ($history as $turn) {
             $messages[] = ['role' => $turn['role'], 'content' => strip_tags($turn['content'])];
         }
 
@@ -112,13 +115,19 @@ class ChatController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => config('services.groq.model'),
                     'messages' => $messages,
-                    'max_tokens' => 4096,
+                    'max_tokens' => 1500,
                 ]);
         } catch (\Throwable $e) {
-            Log::error('Groq API connection error', [
-                'exception' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            $msg = $e->getMessage();
+            Log::error('Groq API error', ['exception' => $msg]);
+
+            // 413 = context window exceeded — guide the user to start fresh.
+            if (str_contains($msg, '413') || str_contains($msg, 'too large')) {
+                return response()->json(
+                    ['error' => 'This conversation has grown too long for the AI to process. Please start a new conversation to continue.'],
+                    413,
+                );
+            }
 
             return response()->json(
                 ['error' => 'The AI service is temporarily unavailable. Please try again.'],
@@ -131,6 +140,13 @@ class ChatController extends Controller
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+
+            if ($response->status() === 413) {
+                return response()->json(
+                    ['error' => 'This conversation has grown too long for the AI to process. Please start a new conversation to continue.'],
+                    413,
+                );
+            }
 
             return response()->json(
                 ['error' => 'The AI service is temporarily unavailable. Please try again.'],
