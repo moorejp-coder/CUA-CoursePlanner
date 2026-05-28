@@ -175,19 +175,155 @@ Elective (1): SRES 333, MKT 380, MGT 490, CHN 240, MGT 380/381/382, FIN 389
 
 ---
 
-## KEY PREREQUISITES
-- ACCT 205 → ACCT 206, FIN 226, ACCT 310, 311
-- FIN 226 + MATH 111 → FIN 332 (Spring), FIN 334 (Fall)
-- FIN 332 + 334 → FIN 436, FIN 313, 337, 342, 389, 391
-- MKT 345 → MKT 346, 348, 362, 457
-- MKT 349 → MKT 422, 435 (senior only)
-- MGT 123 → MGT 301 (junior+), MGT 311 (soph+), MGT 330
-- MGT 475/BUS 498: ACCT 206, FIN 226, MKT 345, MGT 123 all required; senior standing
+## COMPLETE PREREQUISITE REFERENCE
+
+### Core & Gateway Courses
+- ENT 118A: First-year students with 6 or fewer credits (Fall only)
+- ENT 118B: No prerequisite (Spring)
+- MGT 123A: Freshmen Business majors, spring of freshman year only
+- MGT 123B: Sophomore or higher standing (Fall/Spring)
+- MGT 250: 27+ credit hours completed (Fall/Spring)
+- SRES 101: No prerequisite (Fall)
+- SRES 102: No prerequisite (Spring)
+- SRES 290: SRES 101/101H/ECON 102/104 AND SRES 102/102H/ECON 101/103 — post-Fall 2024 core only
+- ACCT 205: 24+ credits; Busch School/Economics student or Business minor (Fall/Spring)
+- ACCT 206: ACCT 205 (Fall/Spring)
+- FIN 226: ACCT 205 (Fall/Spring)
+- MKT 345: Junior standing; ACCT 205; SRES 101, SRES 102, or equivalent economics course (Fall/Spring)
+- MGT 265: Math placement 1–2 OR C- in MATH 110/111/112/121/122 (Fall/Spring) — replaces MGT 365 post-2024
+- MGT 365: MGT 123A or 123B; ECON 223 or equivalent — pre-Fall 2024 catalog only
+- MATH 110: Level 3 math placement; not open to students who've taken MATH 111 (Fall/Spring)
+- MATH 111: Math placement 1–2 OR C- in MATH 108/109/110 (Fall/Spring) — required for Finance specialization
+- MGT 240: ENT 118A or 118B; MGT 123A or 123B (Fall/Spring)
+- MGT 475: Senior standing; ACCT 206, FIN 226, MKT 345, MGT 123A or 123B (Fall/Spring)
+- BUS 498: Same as MGT 475 — 0-credit, take concurrently with MGT 475 (Fall/Spring)
+
+### Ethics & Law
+- MGT 301: Junior standing; MGT 123A or 123B (Fall/Spring)
+- ACCT 442: Junior standing; MGT 123A or 123B (Fall)
+- MGT 321: Junior standing; Busch School major or minor (Fall)
+- MGT 322: Junior standing; Busch School major or minor (Spring)
+- MGT 371: Junior standing; Busch School major or minor (Fall)
+- ACCT 480: Junior standing; Busch School major or minor (Fall)
+- SRES 411: Junior or higher class standing (Variable)
+
+### Career Discernment
+- BUS 199: Incoming Busch School majors (Fall only; 1-credit)
+- BUS 299A: Sophomore; 24+ credits; BUS 199 completed (Fall/Spring; 1-credit)
+- BUS 399A: 54+ credits (Fall/Spring; 1-credit)
+- BUS 499A: 85+ credits (Fall/Spring; 1-credit)
+
+### People & Organizations / HR Management
+- MGT 310: Sophomore or higher; MGT 123A or 123B (Spring)
+- MGT 311: Sophomore or higher; MGT 123A or 123B (Fall)
+- MGT 330: MGT 123A or 123B (Spring)
+- MGT 302: No prerequisite (Spring)
+- MGT 327: MGT 123A or 123B (Spring)
+- MGT 410: Junior standing; MGT 123A or 123B; MGT 250 (Variable)
+- SRES 408: Sophomore or higher (Fall)
+- ENT 351: No prerequisite (Variable)
+
+### Finance Specialization
+- FIN 227: FIN 226 (Fall/Spring — elective)
+- FIN 332: FIN 226; MATH 111, 112, 121, or 122 (Spring — required)
+- FIN 334: FIN 226; MATH 111, 112, 121, or 122 (Fall — required)
+- FIN 436: FIN 332 and FIN 334 (Fall/Spring)
+- FIN 313: FIN 332 and FIN 334 (Fall/Spring)
+- FIN 337: FIN 332 and FIN 334 (Variable)
+- FIN 342: FIN 332 and FIN 334 (Variable)
+- FIN 389: FIN 332 and FIN 334 (Variable)
+- FIN 391: FIN 332; FIN 334 prior or concurrent (Variable)
+- FIN 425: FIN 226 (Spring — elective)
+- MGT 389: Junior standing; FIN 226; MGT 123A or 123B (Spring)
+- ECON 338: No prerequisite (Spring)
+- FIN 450: No prerequisite (Fall — Cardinal Fund)
+- FIN 451: No prerequisite (Spring — Cardinal Fund)
+
+### Marketing Specialization
+- MKT 346: Senior standing; MKT 345; ECON 223 or MGT 265 (Fall/Spring — required)
+- MKT 348: Junior standing; MKT 345 (Fall/Spring — required)
+- MKT 457: Junior standing; MKT 345; MKT 346 or MKT 348 (Fall/Spring — required)
+- MKT 325: Junior standing; MKT 345 (Spring — elective)
+- MKT 349: Junior standing (Fall/Spring — elective)
+- MKT 350: MKT 345 (Variable — elective)
+- MKT 359: Sophomore or higher (Fall/Spring — elective)
+- MKT 362: MKT 345 (Spring)
+- MKT 368: MKT 345 (Variable — elective)
+- MKT 422: Senior standing; MKT 349; Sales or Marketing specialization/minor (Fall/Spring)
+- MKT 495A: Sophomore or higher; Busch School student (internship)
+
+### Sales Specialization
+- MKT 349: Junior standing (Fall/Spring — required)
+- MKT 422: Senior standing; MKT 349; Sales or Marketing specialization/minor (Fall/Spring — required)
+- MKT 435: Senior standing; MKT 349; Sales specialization/minor (Fall/Spring — required)
+- MKT 348: Junior standing; MKT 345 (elective)
+- MGT 410: Junior standing; MGT 123A or 123B; MGT 250 (elective)
+
+### Entrepreneurship Specialization
+- ENT 372: Junior or senior Busch students; or ENT co-spec/minor; or seniors from any CUA program (Fall)
+- ENT 472: No prerequisite (Spring)
+- ENT 455: No prerequisite (Fall/Spring)
+- ENT 476: Junior or senior Busch students; or ENT co-spec/minor (Spring)
+- ENT 494: Junior standing (Variable — elective)
+
+### International Business Specialization
+- MGT 390: Sophomore 3.5+ GPA OR junior/senior; MGT 123A or 123B; SRES 101; SRES 102 (Fall — required)
+- MKT 362: MKT 345 (Spring — required)
+- MGT 389: Junior standing; FIN 226; MGT 123A or 123B (Spring — required)
+- MGT 312: Sophomore or higher; MGT 123A or 123B (Fall)
+- MGT 380: No prerequisite (Spring)
+- MGT 381: SRES 101; SRES 102; MGT 123A or 123B (Variable)
+- MGT 382: SRES 101; SRES 102; MGT 123A or 123B (Variable)
+- MGT 490: MGT 390; senior standing (Fall — elective)
+
+### Markets & Political Economy Specialization
+- SRES 315: Sophomore or higher (Spring — required)
+- SRES 325: Sophomore or higher (Fall — required)
+- SRES 345: Sophomore or higher (Fall/Spring — required)
+- SRES 470: Junior or higher (Spring — required)
+- SRES 260: Math placement 1–2 OR C- in MATH 108/110/111/112/121/122 (Spring — elective)
+- SRES 350: Sophomore or higher (Fall/Spring — elective)
+- SRES 408: Sophomore or higher (Fall — elective)
+- SRES 476: Busch junior/senior with ENT co-spec; or non-Busch junior/senior by permission (Spring)
+
+### Technology & Operations Management Specialization
+- MGT 347: Junior or senior; MGT 240 or MGT 331 (Fall — required)
+- MGT 332: Junior standing; MGT 265 (post-2024) or MGT 365 (pre-2024) (Spring — required)
+- MGT 351: Junior standing; Busch School or Data Analytics minor (Fall/Spring)
+- MGT 440: Junior standing; MGT 347 (Variable — elective)
+- MGT 465: MGT 265 (Spring — elective)
+
+### Sports Management Specialization
+- MGT 311: Sophomore or higher; MGT 123A or 123B (Fall — required)
+- MGT 324: MGT 123A or 123B (Fall — required)
+- MGT 327: MGT 123A or 123B (Spring — required)
+- MKT 325: Junior standing; MKT 345 (Spring — required)
+
+### Data Analytics for Business Specialization
+- DA 124: See Cardinal Station (Fall/Spring — required)
+- MGT 331: Junior standing; Busch School or Data Analytics minor (Spring — required)
+- MGT 351: Junior standing (Fall/Spring — elective)
+- MGT 361: Junior standing; Busch School or Data Analytics minor (Fall/Spring — elective)
+- ECON 370: ECON 223 or MGT 265 (Fall/Spring — elective)
+- DA 401: See Cardinal Station (Fall/Spring — elective)
+- DA 423: See Cardinal Station (Fall/Spring — elective)
+
+### BS Accounting Requirements
+- ACCT 310: ACCT 205 (Fall)
+- ACCT 311: ACCT 205 (Spring) — logically follows ACCT 310
+- ACCT 312: ACCT 310 with B or better (Spring)
+- ACCT 412: ACCT 310; junior standing (Spring)
+- ACCT 417: ACCT 311 with B or better (Fall)
+- ACCT 418: ACCT 311 (Spring)
+- ACCT 419: ACCT 310 with B or better; senior standing (Fall)
+- ACCT 422: ACCT 412; senior standing (Fall)
+- ACCT 425: ACCT 205 (Spring)
+- ACCT 498: Senior Accounting major only — 0-credit comprehensive assessment
 
 ## SEMESTER AVAILABILITY
-Fall only: SRES 101, MGT 311, FIN 334, ACCT 310, MGT 321, ACCT 442, MGT 390, ENT 372, MGT 324, SRES 408
-Spring only: SRES 102, FIN 332, ACCT 311, MGT 322, MGT 330, SRES 315/325/345/470, MKT 325, 362, ENT 472
-Variable: MGT 410, FIN 337/342/389/391, SRES 333, 411, ENT 351
+Fall only: ENT 118A, SRES 101, ACCT 310, ACCT 442, ACCT 480, FIN 334, MGT 311, MGT 321, MGT 324, MGT 390, ENT 372, SRES 325, SRES 408, MGT 347, MGT 361, ECON 370, ACCT 417, ACCT 419, ACCT 422, BUS 199
+Spring only: ENT 118B, MGT 123A, SRES 102, ACCT 311, ACCT 418, FIN 332, MGT 322, MGT 327, MGT 330, MGT 331, MGT 332, MGT 389, MKT 325, MKT 362, MGT 380, SRES 315, SRES 470, ENT 472, FIN 425, FIN 451, ECON 338, ACCT 425
+Variable: ENT 351, ENT 494, FIN 337, FIN 342, FIN 389, FIN 391, MKT 350, MKT 368, MKT 380, MGT 381, MGT 382, MGT 410, MGT 440, SRES 260, SRES 333, SRES 411, SRES 476, CHN 240
 
 ---
 
