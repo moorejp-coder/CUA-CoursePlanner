@@ -160,28 +160,6 @@
         .text-input.input-error { border-color: var(--cua-red); }
         .text-input.input-valid { border-color: #22c55e; }
 
-        .filter-input {
-            width: 100%;
-            padding: 0.4rem 0.7rem;
-            border: 1.5px solid #ccc;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            font-size: 0.82rem;
-            font-family: 'Roboto', sans-serif;
-            transition: border-color 0.2s;
-            background: #fafafa;
-        }
-
-        .filter-input:focus {
-            outline: none;
-            border-color: var(--cua-navy);
-            box-shadow: 0 0 0 2px rgba(0,51,102,0.12);
-        }
-
-        .filter-input + select {
-            border-radius: 0 0 6px 6px;
-        }
-
         .field-hint {
             font-size: 0.78rem;
             color: #777;
@@ -278,11 +256,6 @@
             letter-spacing: 0.02em;
         }
 
-        select.autofill-border {
-            border-color: var(--cua-gold) !important;
-            box-shadow: 0 0 0 2px rgba(201,168,76,0.25);
-        }
-
         .autofill-note {
             font-size: 0.8rem;
             color: #6b4d00;
@@ -293,6 +266,97 @@
             margin-top: 0.3rem;
             line-height: 1.4;
         }
+
+        /* ── Combobox (searchable dropdown) ──────────────────────────── */
+        .cb-wrap {
+            position: relative;
+        }
+
+        .cb-input {
+            width: 100%;
+            padding: 0.55rem 2.2rem 0.55rem 0.8rem;
+            border: 1.5px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.93rem;
+            font-family: 'Roboto', sans-serif;
+            transition: border-color 0.2s;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .cb-input:focus {
+            outline: none;
+            border-color: var(--cua-navy);
+            box-shadow: 0 0 0 2px rgba(0,51,102,0.12);
+            cursor: text;
+        }
+
+        .cb-open .cb-input {
+            border-radius: 6px 6px 0 0;
+            border-color: var(--cua-navy);
+        }
+
+        .cb-chevron {
+            position: absolute;
+            right: 0.55rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            width: 1.1rem;
+            height: 1.1rem;
+            color: #888;
+            transition: transform 0.15s;
+        }
+
+        .cb-open .cb-chevron {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .cb-dropdown {
+            position: absolute;
+            z-index: 200;
+            width: 100%;
+            max-height: 220px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1.5px solid var(--cua-navy);
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.13);
+            top: 100%;
+            left: 0;
+        }
+
+        .cb-opt {
+            padding: 0.45rem 0.8rem;
+            font-size: 0.91rem;
+            cursor: pointer;
+            line-height: 1.4;
+            transition: background 0.08s;
+        }
+
+        .cb-opt:hover,
+        .cb-opt-active {
+            background: #e8f0fe;
+            color: var(--cua-navy);
+        }
+
+        .cb-opt-selected {
+            font-weight: 600;
+            background: #f0f4ff;
+        }
+
+        .cb-no-results {
+            padding: 0.5rem 0.8rem;
+            font-size: 0.85rem;
+            color: #999;
+            font-style: italic;
+        }
+
+        .cb-autofill .cb-input {
+            border-color: var(--cua-gold) !important;
+            box-shadow: 0 0 0 2px rgba(201,168,76,0.25) !important;
+        }
     </style>
 </head>
 <body>
@@ -300,6 +364,7 @@
     @include('onboarding.partials.header', ['step' => $step, 'totalSteps' => $totalSteps])
 
     @php
+        /* ── Raw course code lists ───────────────────────────────── */
         $natSciOptions = [
             'ANTH 105' => 'ANTH 105', 'ANTH 108' => 'ANTH 108',
             'ANTH 204' => 'ANTH 204', 'ANTH 206' => 'ANTH 206',
@@ -394,7 +459,31 @@
             'math_exempt',
         ];
 
-        // Social Science auto-fill from Economic Thought (SRES/ECON in business core)
+        /* ── Build {value, label} arrays for Alpine comboboxes ────── */
+        $notYet = [['value' => 'not_yet', 'label' => 'Not yet completed']];
+
+        $natSciOpts = array_merge($notYet,
+            array_map(fn($v, $l) => ['value' => $v, 'label' => $l],
+                array_keys($natSciOptions), array_values($natSciOptions))
+        );
+
+        $litOpts = array_merge($notYet,
+            array_map(fn($c) => ['value' => $c, 'label' => $c], $litOptions)
+        );
+
+        $fineArtsOpts = array_merge($notYet,
+            array_map(fn($c) => ['value' => $c, 'label' => $c], $fineArtsOptions)
+        );
+
+        $socialSciOpts = array_merge($notYet,
+            array_map(fn($c) => ['value' => $c, 'label' => $c], $socialSciOptions)
+        );
+
+        $histPolOpts = array_merge($notYet,
+            array_map(fn($c) => ['value' => $c, 'label' => $c], $histPolOptions)
+        );
+
+        /* ── Social Science auto-fill ─────────────────────────────── */
         $ssAutoFill  = $socialScienceAutoFill ?? null;
         $ssValue     = $ssAutoFill['value'] ?? null;
         $ssNote      = $ssAutoFill['note'] ?? null;
@@ -430,7 +519,7 @@
 
             <div class="form-grid">
 
-                {{-- Classical Philosophy --}}
+                {{-- Classical Philosophy (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_classical_philosophy">Classical Philosophy</label>
                     <select id="la_classical_philosophy" name="la_classical_philosophy">
@@ -441,7 +530,7 @@
                     </select>
                 </div>
 
-                {{-- Modern Philosophy --}}
+                {{-- Modern Philosophy (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_modern_philosophy">Modern Philosophy</label>
                     <select id="la_modern_philosophy" name="la_modern_philosophy">
@@ -452,7 +541,7 @@
                     </select>
                 </div>
 
-                {{-- Theology I --}}
+                {{-- Theology I (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_theology_1">Theology I</label>
                     <select id="la_theology_1" name="la_theology_1">
@@ -463,7 +552,7 @@
                     </select>
                 </div>
 
-                {{-- Theology II --}}
+                {{-- Theology II (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_theology_2">Theology II</label>
                     <select id="la_theology_2" name="la_theology_2">
@@ -474,7 +563,7 @@
                     </select>
                 </div>
 
-                {{-- Rhetoric & Composition --}}
+                {{-- Rhetoric & Composition (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_rhetoric">Rhetoric &amp; Composition</label>
                     <select id="la_rhetoric" name="la_rhetoric">
@@ -485,77 +574,279 @@
                     </select>
                 </div>
 
-                {{-- Foundations in Natural Science (searchable) --}}
-                <div class="form-group">
-                    <label class="field-label" for="select-natural-science">Foundations in Natural Science</label>
-                    <input type="text" id="filter-natural-science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="select-natural-science" name="la_natural_science">
-                        <option value="not_yet" {{ old('la_natural_science', $data['la_natural_science'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($natSciOptions as $val => $label)
-                            <option value="{{ $val }}" {{ old('la_natural_science', $data['la_natural_science'] ?? '') === $val ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Explorations in Literature (searchable) --}}
-                <div class="form-group">
-                    <label class="field-label" for="select-literature">Explorations in Literature</label>
-                    <input type="text" id="filter-literature" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="select-literature" name="la_literature">
-                        <option value="not_yet" {{ old('la_literature', $data['la_literature'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($litOptions as $c)
-                            <option value="{{ $c }}" {{ old('la_literature', $data['la_literature'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Explorations in Fine Arts (searchable) --}}
-                <div class="form-group">
-                    <label class="field-label" for="select-fine-arts">Explorations in Fine Arts</label>
-                    <input type="text" id="filter-fine-arts" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="select-fine-arts" name="la_fine_arts">
-                        <option value="not_yet" {{ old('la_fine_arts', $data['la_fine_arts'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($fineArtsOptions as $c)
-                            <option value="{{ $c }}" {{ old('la_fine_arts', $data['la_fine_arts'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Foundations in Social Science (searchable, auto-fill from SRES/ECON) --}}
+                {{-- Foundations in Natural Science (searchable combobox) --}}
                 <div class="form-group"
-                     x-data="{ autofilled: {{ $showSsAutoFill ? 'true' : 'false' }}, autoFillValue: '{{ e($ssValue ?? '') }}' }">
-                    <label class="field-label" for="select-social-science">
+                     x-data="{
+                         opts: @json($natSciOpts),
+                         sel: null, q: '', open: false, ai: -1,
+                         init() {
+                             const v = @json(old('la_natural_science', $data['la_natural_science'] ?? 'not_yet'));
+                             this.sel = this.opts.find(o => o.value === v) || this.opts[0];
+                         },
+                         get fi() {
+                             if (!this.q.trim()) return this.opts;
+                             const q = this.q.toLowerCase();
+                             return this.opts.filter(o => o.value === 'not_yet' || o.label.toLowerCase().includes(q));
+                         },
+                         pick(o) { this.sel = o; this.q = ''; this.open = false; this.ai = -1; },
+                         onFocus() { this.q = ''; this.open = true; this.ai = -1; },
+                         onBlur() { setTimeout(() => { this.open = false; this.q = ''; }, 150); },
+                         onKey(e) {
+                             const f = this.fi;
+                             if (!this.open) { if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); this.open = true; } return; }
+                             if (e.key === 'ArrowDown') { e.preventDefault(); this.ai = Math.min(this.ai + 1, f.length - 1); }
+                             else if (e.key === 'ArrowUp') { e.preventDefault(); this.ai = Math.max(this.ai - 1, 0); }
+                             else if (e.key === 'Enter') { e.preventDefault(); const o = this.ai >= 0 ? f[this.ai] : (f.length === 1 ? f[0] : null); if (o) this.pick(o); }
+                             else if (e.key === 'Escape') { this.open = false; this.q = ''; }
+                         }
+                     }"
+                     @click.outside="open = false; q = ''">
+                    <label class="field-label">Foundations in Natural Science</label>
+                    <input type="hidden" name="la_natural_science" :value="sel ? sel.value : 'not_yet'">
+                    <div class="cb-wrap" :class="{ 'cb-open': open }">
+                        <input type="text" class="cb-input"
+                               :value="open ? q : (sel ? sel.label : '')"
+                               @input="q = $event.target.value; open = true; ai = -1"
+                               @focus="onFocus()"
+                               @blur="onBlur()"
+                               @keydown="onKey($event)"
+                               placeholder="Select or type to search..."
+                               autocomplete="off">
+                        <svg class="cb-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                        <div class="cb-dropdown" x-show="open" x-cloak>
+                            <template x-for="(opt, idx) in fi" :key="opt.value">
+                                <div class="cb-opt"
+                                     :class="{ 'cb-opt-active': idx === ai, 'cb-opt-selected': sel && opt.value === sel.value }"
+                                     @click="pick(opt)"
+                                     @mouseenter="ai = idx"
+                                     x-text="opt.label"></div>
+                            </template>
+                            <div x-show="fi.length === 0" class="cb-no-results">No matches found</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Explorations in Literature (searchable combobox) --}}
+                <div class="form-group"
+                     x-data="{
+                         opts: @json($litOpts),
+                         sel: null, q: '', open: false, ai: -1,
+                         init() {
+                             const v = @json(old('la_literature', $data['la_literature'] ?? 'not_yet'));
+                             this.sel = this.opts.find(o => o.value === v) || this.opts[0];
+                         },
+                         get fi() {
+                             if (!this.q.trim()) return this.opts;
+                             const q = this.q.toLowerCase();
+                             return this.opts.filter(o => o.value === 'not_yet' || o.label.toLowerCase().includes(q));
+                         },
+                         pick(o) { this.sel = o; this.q = ''; this.open = false; this.ai = -1; },
+                         onFocus() { this.q = ''; this.open = true; this.ai = -1; },
+                         onBlur() { setTimeout(() => { this.open = false; this.q = ''; }, 150); },
+                         onKey(e) {
+                             const f = this.fi;
+                             if (!this.open) { if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); this.open = true; } return; }
+                             if (e.key === 'ArrowDown') { e.preventDefault(); this.ai = Math.min(this.ai + 1, f.length - 1); }
+                             else if (e.key === 'ArrowUp') { e.preventDefault(); this.ai = Math.max(this.ai - 1, 0); }
+                             else if (e.key === 'Enter') { e.preventDefault(); const o = this.ai >= 0 ? f[this.ai] : (f.length === 1 ? f[0] : null); if (o) this.pick(o); }
+                             else if (e.key === 'Escape') { this.open = false; this.q = ''; }
+                         }
+                     }"
+                     @click.outside="open = false; q = ''">
+                    <label class="field-label">Explorations in Literature</label>
+                    <input type="hidden" name="la_literature" :value="sel ? sel.value : 'not_yet'">
+                    <div class="cb-wrap" :class="{ 'cb-open': open }">
+                        <input type="text" class="cb-input"
+                               :value="open ? q : (sel ? sel.label : '')"
+                               @input="q = $event.target.value; open = true; ai = -1"
+                               @focus="onFocus()"
+                               @blur="onBlur()"
+                               @keydown="onKey($event)"
+                               placeholder="Select or type to search..."
+                               autocomplete="off">
+                        <svg class="cb-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                        <div class="cb-dropdown" x-show="open" x-cloak>
+                            <template x-for="(opt, idx) in fi" :key="opt.value">
+                                <div class="cb-opt"
+                                     :class="{ 'cb-opt-active': idx === ai, 'cb-opt-selected': sel && opt.value === sel.value }"
+                                     @click="pick(opt)"
+                                     @mouseenter="ai = idx"
+                                     x-text="opt.label"></div>
+                            </template>
+                            <div x-show="fi.length === 0" class="cb-no-results">No matches found</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Explorations in Fine Arts (searchable combobox) --}}
+                <div class="form-group"
+                     x-data="{
+                         opts: @json($fineArtsOpts),
+                         sel: null, q: '', open: false, ai: -1,
+                         init() {
+                             const v = @json(old('la_fine_arts', $data['la_fine_arts'] ?? 'not_yet'));
+                             this.sel = this.opts.find(o => o.value === v) || this.opts[0];
+                         },
+                         get fi() {
+                             if (!this.q.trim()) return this.opts;
+                             const q = this.q.toLowerCase();
+                             return this.opts.filter(o => o.value === 'not_yet' || o.label.toLowerCase().includes(q));
+                         },
+                         pick(o) { this.sel = o; this.q = ''; this.open = false; this.ai = -1; },
+                         onFocus() { this.q = ''; this.open = true; this.ai = -1; },
+                         onBlur() { setTimeout(() => { this.open = false; this.q = ''; }, 150); },
+                         onKey(e) {
+                             const f = this.fi;
+                             if (!this.open) { if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); this.open = true; } return; }
+                             if (e.key === 'ArrowDown') { e.preventDefault(); this.ai = Math.min(this.ai + 1, f.length - 1); }
+                             else if (e.key === 'ArrowUp') { e.preventDefault(); this.ai = Math.max(this.ai - 1, 0); }
+                             else if (e.key === 'Enter') { e.preventDefault(); const o = this.ai >= 0 ? f[this.ai] : (f.length === 1 ? f[0] : null); if (o) this.pick(o); }
+                             else if (e.key === 'Escape') { this.open = false; this.q = ''; }
+                         }
+                     }"
+                     @click.outside="open = false; q = ''">
+                    <label class="field-label">Explorations in Fine Arts</label>
+                    <input type="hidden" name="la_fine_arts" :value="sel ? sel.value : 'not_yet'">
+                    <div class="cb-wrap" :class="{ 'cb-open': open }">
+                        <input type="text" class="cb-input"
+                               :value="open ? q : (sel ? sel.label : '')"
+                               @input="q = $event.target.value; open = true; ai = -1"
+                               @focus="onFocus()"
+                               @blur="onBlur()"
+                               @keydown="onKey($event)"
+                               placeholder="Select or type to search..."
+                               autocomplete="off">
+                        <svg class="cb-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                        <div class="cb-dropdown" x-show="open" x-cloak>
+                            <template x-for="(opt, idx) in fi" :key="opt.value">
+                                <div class="cb-opt"
+                                     :class="{ 'cb-opt-active': idx === ai, 'cb-opt-selected': sel && opt.value === sel.value }"
+                                     @click="pick(opt)"
+                                     @mouseenter="ai = idx"
+                                     x-text="opt.label"></div>
+                            </template>
+                            <div x-show="fi.length === 0" class="cb-no-results">No matches found</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Foundations in Social Science (combobox + auto-fill from SRES/ECON) --}}
+                <div class="form-group"
+                     x-data="{
+                         opts: @json($socialSciOpts),
+                         sel: null, q: '', open: false, ai: -1,
+                         autofilled: {{ $showSsAutoFill ? 'true' : 'false' }},
+                         autoFillValue: @json($ssValue ?? ''),
+                         init() {
+                             const v = @json($currentSS);
+                             this.sel = this.opts.find(o => o.value === v) || this.opts[0];
+                         },
+                         get fi() {
+                             if (!this.q.trim()) return this.opts;
+                             const q = this.q.toLowerCase();
+                             return this.opts.filter(o => o.value === 'not_yet' || o.label.toLowerCase().includes(q));
+                         },
+                         pick(o) {
+                             this.sel = o; this.q = ''; this.open = false; this.ai = -1;
+                             this.autofilled = (o.value === this.autoFillValue && this.autoFillValue !== '');
+                         },
+                         onFocus() { this.q = ''; this.open = true; this.ai = -1; },
+                         onBlur() { setTimeout(() => { this.open = false; this.q = ''; }, 150); },
+                         onKey(e) {
+                             const f = this.fi;
+                             if (!this.open) { if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); this.open = true; } return; }
+                             if (e.key === 'ArrowDown') { e.preventDefault(); this.ai = Math.min(this.ai + 1, f.length - 1); }
+                             else if (e.key === 'ArrowUp') { e.preventDefault(); this.ai = Math.max(this.ai - 1, 0); }
+                             else if (e.key === 'Enter') { e.preventDefault(); const o = this.ai >= 0 ? f[this.ai] : (f.length === 1 ? f[0] : null); if (o) this.pick(o); }
+                             else if (e.key === 'Escape') { this.open = false; this.q = ''; }
+                         }
+                     }"
+                     @click.outside="open = false; q = ''">
+                    <label class="field-label">
                         Foundations in Social Science
                         <span x-show="autofilled" class="autofill-badge" {{ $showSsAutoFill ? '' : 'style="display:none;"' }}>Auto-filled from Economic Thought</span>
                     </label>
-                    <input type="text" id="filter-social-science" class="filter-input" placeholder="Type to filter..." autocomplete="off">
+                    <input type="hidden" name="la_social_science" :value="sel ? sel.value : 'not_yet'">
                     <input type="hidden" name="la_social_science_autofilled" :value="autofilled ? '1' : '0'" value="{{ $showSsAutoFill ? '1' : '0' }}">
-                    <select id="select-social-science" name="la_social_science"
-                            :class="{ 'autofill-border': autofilled }"
-                            @change="autofilled = ($event.target.value === autoFillValue && autoFillValue !== '')">
-                        <option value="not_yet" {{ $currentSS === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($socialSciOptions as $c)
-                            <option value="{{ $c }}" {{ $currentSS === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
+                    <div class="cb-wrap" :class="{ 'cb-open': open, 'cb-autofill': autofilled }">
+                        <input type="text" class="cb-input"
+                               :value="open ? q : (sel ? sel.label : '')"
+                               @input="q = $event.target.value; open = true; ai = -1"
+                               @focus="onFocus()"
+                               @blur="onBlur()"
+                               @keydown="onKey($event)"
+                               placeholder="Select or type to search..."
+                               autocomplete="off">
+                        <svg class="cb-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                        <div class="cb-dropdown" x-show="open" x-cloak>
+                            <template x-for="(opt, idx) in fi" :key="opt.value">
+                                <div class="cb-opt"
+                                     :class="{ 'cb-opt-active': idx === ai, 'cb-opt-selected': sel && opt.value === sel.value }"
+                                     @click="pick(opt)"
+                                     @mouseenter="ai = idx"
+                                     x-text="opt.label"></div>
+                            </template>
+                            <div x-show="fi.length === 0" class="cb-no-results">No matches found</div>
+                        </div>
+                    </div>
                     @if($ssNote)
                     <p x-show="autofilled" class="autofill-note" {{ $showSsAutoFill ? '' : 'style="display:none;"' }}>{{ $ssNote }}</p>
                     @endif
                 </div>
 
-                {{-- Foundations in History or Politics (searchable) --}}
-                <div class="form-group">
-                    <label class="field-label" for="select-history-politics">Foundations in History or Politics</label>
-                    <input type="text" id="filter-history-politics" class="filter-input" placeholder="Type to filter..." autocomplete="off">
-                    <select id="select-history-politics" name="la_history_politics">
-                        <option value="not_yet" {{ old('la_history_politics', $data['la_history_politics'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
-                        @foreach($histPolOptions as $c)
-                            <option value="{{ $c }}" {{ old('la_history_politics', $data['la_history_politics'] ?? '') === $c ? 'selected' : '' }}>{{ $c }}</option>
-                        @endforeach
-                    </select>
+                {{-- Foundations in History or Politics (searchable combobox) --}}
+                <div class="form-group"
+                     x-data="{
+                         opts: @json($histPolOpts),
+                         sel: null, q: '', open: false, ai: -1,
+                         init() {
+                             const v = @json(old('la_history_politics', $data['la_history_politics'] ?? 'not_yet'));
+                             this.sel = this.opts.find(o => o.value === v) || this.opts[0];
+                         },
+                         get fi() {
+                             if (!this.q.trim()) return this.opts;
+                             const q = this.q.toLowerCase();
+                             return this.opts.filter(o => o.value === 'not_yet' || o.label.toLowerCase().includes(q));
+                         },
+                         pick(o) { this.sel = o; this.q = ''; this.open = false; this.ai = -1; },
+                         onFocus() { this.q = ''; this.open = true; this.ai = -1; },
+                         onBlur() { setTimeout(() => { this.open = false; this.q = ''; }, 150); },
+                         onKey(e) {
+                             const f = this.fi;
+                             if (!this.open) { if (e.key === 'ArrowDown' || e.key === 'Enter') { e.preventDefault(); this.open = true; } return; }
+                             if (e.key === 'ArrowDown') { e.preventDefault(); this.ai = Math.min(this.ai + 1, f.length - 1); }
+                             else if (e.key === 'ArrowUp') { e.preventDefault(); this.ai = Math.max(this.ai - 1, 0); }
+                             else if (e.key === 'Enter') { e.preventDefault(); const o = this.ai >= 0 ? f[this.ai] : (f.length === 1 ? f[0] : null); if (o) this.pick(o); }
+                             else if (e.key === 'Escape') { this.open = false; this.q = ''; }
+                         }
+                     }"
+                     @click.outside="open = false; q = ''">
+                    <label class="field-label">Foundations in History or Politics</label>
+                    <input type="hidden" name="la_history_politics" :value="sel ? sel.value : 'not_yet'">
+                    <div class="cb-wrap" :class="{ 'cb-open': open }">
+                        <input type="text" class="cb-input"
+                               :value="open ? q : (sel ? sel.label : '')"
+                               @input="q = $event.target.value; open = true; ai = -1"
+                               @focus="onFocus()"
+                               @blur="onBlur()"
+                               @keydown="onKey($event)"
+                               placeholder="Select or type to search..."
+                               autocomplete="off">
+                        <svg class="cb-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
+                        <div class="cb-dropdown" x-show="open" x-cloak>
+                            <template x-for="(opt, idx) in fi" :key="opt.value">
+                                <div class="cb-opt"
+                                     :class="{ 'cb-opt-active': idx === ai, 'cb-opt-selected': sel && opt.value === sel.value }"
+                                     @click="pick(opt)"
+                                     @mouseenter="ai = idx"
+                                     x-text="opt.label"></div>
+                            </template>
+                            <div x-show="fi.length === 0" class="cb-no-results">No matches found</div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Language I --}}
+                {{-- Language I (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_language_1">Language I</label>
                     <select id="la_language_1" name="la_language_1">
@@ -566,7 +857,7 @@
                     </select>
                 </div>
 
-                {{-- Language II --}}
+                {{-- Language II (small list — plain select) --}}
                 <div class="form-group">
                     <label class="field-label" for="la_language_2">Language II</label>
                     <select id="la_language_2" name="la_language_2">
@@ -633,8 +924,8 @@
                 <select id="la_math_thinking" name="la_math_thinking">
                     <option value="not_yet" {{ old('la_math_thinking', $data['la_math_thinking'] ?? 'not_yet') === 'not_yet' ? 'selected' : '' }}>Not yet completed</option>
                     @foreach($mathOptions as $c)
-                        @php $label = $c === 'math_exempt' ? 'Math Placement Exempt' : $c; @endphp
-                        <option value="{{ $c }}" {{ old('la_math_thinking', $data['la_math_thinking'] ?? '') === $c ? 'selected' : '' }}>{{ $label }}</option>
+                        @php $mathLabel = $c === 'math_exempt' ? 'Math Placement Exempt' : $c; @endphp
+                        <option value="{{ $c }}" {{ old('la_math_thinking', $data['la_math_thinking'] ?? '') === $c ? 'selected' : '' }}>{{ $mathLabel }}</option>
                     @endforeach
                 </select>
             </div>
@@ -648,32 +939,8 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var filters = [
-                { input: 'filter-natural-science',  select: 'select-natural-science' },
-                { input: 'filter-literature',        select: 'select-literature' },
-                { input: 'filter-fine-arts',         select: 'select-fine-arts' },
-                { input: 'filter-social-science',    select: 'select-social-science' },
-                { input: 'filter-history-politics',  select: 'select-history-politics' },
-            ];
-
-            filters.forEach(function(pair) {
-                var input  = document.getElementById(pair.input);
-                var select = document.getElementById(pair.select);
-                if (!input || !select) { return; }
-                var allOptions = Array.from(select.options);
-                input.addEventListener('input', function() {
-                    var query = this.value.toLowerCase().trim();
-                    select.innerHTML = '';
-                    allOptions.forEach(function(option) {
-                        if (option.value === '' || option.value === 'not_yet' || option.text.toLowerCase().includes(query)) {
-                            select.appendChild(option.cloneNode(true));
-                        }
-                    });
-                });
-            });
-
-            function initElecovalidator(inputId, errorId, validator) {
+        document.addEventListener('DOMContentLoaded', function () {
+            function initTextValidator(inputId, errorId, validator) {
                 var input   = document.getElementById(inputId);
                 var errorEl = document.getElementById(errorId);
                 if (!input || !errorEl) { return; }
@@ -694,11 +961,11 @@
                 });
             }
 
-            initElecovalidator('la_phil_elective', 'err_la_phil_elective', function(val) {
+            initTextValidator('la_phil_elective', 'err_la_phil_elective', function (val) {
                 return val.indexOf('PHIL ') === 0 || val === 'HSPH 203' || val === 'HSPH 204';
             });
 
-            initElecovalidator('la_theology_elective', 'err_la_theology_elective', function(val) {
+            initTextValidator('la_theology_elective', 'err_la_theology_elective', function (val) {
                 return val.indexOf('TRS ') === 0 || val.indexOf('HSTR ') === 0 || val === 'HSEV 102';
             });
         });
