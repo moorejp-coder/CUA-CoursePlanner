@@ -119,7 +119,7 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 - [x] Semester prompt banner — September/January gold banner prompts profile refresh
 - [x] `requirements.json` — all degree requirements, business core options, and specialization data loaded dynamically by the wizard
 - [x] Onboarding wizard reads all course lists from `requirements.json` (no hardcoded arrays)
-- [ ] End-to-end test: new user registration → onboarding → chat → profile update flow
+- [x] End-to-end test: new user registration → onboarding → chat → profile update flow
 - [ ] Deploy updated profile system to production EC2
 
 ---
