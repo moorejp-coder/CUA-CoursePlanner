@@ -288,6 +288,54 @@ class AcademicProfileController extends Controller
         return response()->json(['success' => true, 'course_code' => $course->course_code]);
     }
 
+    public function updateField(Request $request): JsonResponse
+    {
+        $this->authorizeAccess($request, fn ($user) => $user->studentProfile !== null);
+
+        $allowedFields = [
+            'degree', 'catalog_year',
+            'specialization_1', 'specialization_2', 'specialization_3',
+            'credits_completed', 'expected_graduation', 'admit_term', 'projected_standing',
+        ];
+
+        $validated = $request->validate([
+            'field' => ['required', 'string', 'in:'.implode(',', $allowedFields)],
+            'value' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $field = $validated['field'];
+        $value = $validated['value'] ?? null;
+
+        match ($field) {
+            'degree' => $this->validateEnum($value, ['bsba', 'bs_accounting', 'ba_double_major', 'minor']),
+            'catalog_year' => $this->validateEnum($value, ['pre_2024', 'post_2024']),
+            'projected_standing' => $this->validateEnum($value, ['freshman', 'sophomore', 'junior', 'senior']),
+            'credits_completed' => $this->validateCredits($value),
+            default => null,
+        };
+
+        $profile = $request->user()->studentProfile;
+        $profile->$field = ($field === 'credits_completed') ? (int) $value : ($value ?: null);
+        $profile->last_updated_at = now();
+        $profile->save();
+
+        return response()->json(['success' => true, 'field' => $field]);
+    }
+
+    private function validateEnum(?string $value, array $allowed): void
+    {
+        if (! in_array($value, $allowed, true)) {
+            abort(422, 'Invalid value for field. Allowed: '.implode(', ', $allowed));
+        }
+    }
+
+    private function validateCredits(?string $value): void
+    {
+        if (! is_numeric($value) || (int) $value < 0 || (int) $value > 250) {
+            abort(422, 'credits_completed must be a number between 0 and 250.');
+        }
+    }
+
     public function dismissSemesterPrompt(Request $request): JsonResponse
     {
         $this->authorizeAccess($request, fn ($user) => $user->studentProfile !== null);

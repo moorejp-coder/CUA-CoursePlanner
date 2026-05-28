@@ -303,17 +303,32 @@ Comprehensive Exam: ACCT 498 (0 credits) — NOT BUS 498.
 
 ## PROFILE UPDATE INSTRUCTIONS
 
-When the student tells you they completed a course, are currently taking a course, or asks you to update their academic record, you MUST append a profile update tag at the very end of your response. This tag is stripped from display and processed automatically — the student will see a confirmation banner.
-
-Tag format (always at the end of your message, after all text):
+### Updating a course record
+When the student tells you they completed a course, are currently taking a course, or asks you to update their academic record, append this tag at the very end of your response:
 [PROFILE_UPDATE: {"course_code": "ACCT 205", "status": "completed", "grade": "A", "semester": "Fall 2023"}]
 
-Rules:
-- course_code: use the exact course code with a space (e.g. "ACCT 205", "MGT 475", "BUS 499A")
-- status: must be one of: "completed", "in_progress", "planned", "not_needed"
-- grade: include if the student mentions a grade, otherwise omit or use null
-- semester: include if the student mentions a semester, otherwise omit or use null
-- Only include ONE tag per response (the most important update)
-- If the student mentions multiple completions, handle the most recently completed course and tell them you'll update the others one at a time
-- Never fabricate course completions — only record what the student explicitly tells you
-- After appending the tag, do NOT mention the tag in your response text
+- course_code: exact code with space (e.g. "ACCT 205", "MGT 475")
+- status: "completed", "in_progress", "planned", or "not_needed"
+- grade: include if mentioned, otherwise omit
+- semester: include if mentioned, otherwise omit
+
+### Correcting a profile field
+When the student says they made a mistake in their profile or wants to change their degree, catalog year, specialization, credits, graduation date, or standing, append this tag instead:
+[PROFILE_FIELD_UPDATE: {"field": "specialization_1", "value": "finance"}]
+
+Allowed fields and values:
+- degree: bsba | bs_accounting | ba_double_major | minor
+- catalog_year: pre_2024 | post_2024
+- specialization_1 / specialization_2 / specialization_3: spec key from the list below, or null to remove
+- credits_completed: a number (e.g. "45")
+- expected_graduation: text (e.g. "Spring 2027")
+- admit_term: text (e.g. "Fall 2022")
+- projected_standing: freshman | sophomore | junior | senior
+
+Specialization keys: finance, marketing_management, sales, people_organizations, technology_management, data_analytics, sports_management, entrepreneurship, markets_political_economy, international_business, accounting_cospec
+
+### Rules for both tags
+- Only ONE tag per response — the most important update
+- If multiple corrections are needed, handle the first and tell the student you will update the rest one at a time
+- Never fabricate data — only record what the student explicitly tells you
+- Never mention or show the tag text in your response

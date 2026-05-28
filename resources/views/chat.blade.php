@@ -716,8 +716,12 @@ function chatApp() {
             const update = this.profileUpdate;
             this.profileUpdate = null;
 
+            const endpoint = update._type === 'field'
+                ? '/api/profile/field-update'
+                : '/api/profile/suggest-update';
+
             try {
-                await fetch('/api/profile/suggest-update', {
+                const res = await fetch(endpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -725,6 +729,7 @@ function chatApp() {
                     },
                     body: JSON.stringify(update),
                 });
+                if (!res.ok) throw new Error('Server error');
                 this.successToast = true;
                 setTimeout(() => { this.successToast = false; }, 3000);
             } catch {
@@ -735,6 +740,34 @@ function chatApp() {
         profileUpdateMessage() {
             if (!this.profileUpdate) return '';
             const p = this.profileUpdate;
+
+            if (p._type === 'field') {
+                const fieldLabels = {
+                    degree: 'Degree Program',
+                    catalog_year: 'Catalog Year',
+                    specialization_1: 'Primary Specialization',
+                    specialization_2: 'Second Specialization',
+                    specialization_3: 'Third Specialization',
+                    credits_completed: 'Credits Completed',
+                    expected_graduation: 'Expected Graduation',
+                    admit_term: 'Admit Term',
+                    projected_standing: 'Academic Standing',
+                };
+                const valueLabels = {
+                    bsba: 'B.S.B.A.',
+                    bs_accounting: 'B.S. in Accounting',
+                    ba_double_major: 'B.A. in Business (Double Major)',
+                    minor: 'Business Minor',
+                    pre_2024: 'Pre-2024 Catalog',
+                    post_2024: 'Post-2024 Catalog',
+                    freshman: 'Freshman', sophomore: 'Sophomore',
+                    junior: 'Junior', senior: 'Senior',
+                };
+                const fieldLabel = fieldLabels[p.field] || p.field.replace(/_/g, ' ');
+                const valueLabel = valueLabels[p.value] || p.value || '(none)';
+                return `Update your ${fieldLabel} to: ${valueLabel}. Accept or Dismiss?`;
+            }
+
             const statusLabel = (p.status || '').replace(/_/g, ' ');
             let msg = `Your advisor suggests marking ${p.course_code} as ${statusLabel}`;
             const details = [];
@@ -745,15 +778,29 @@ function chatApp() {
         },
 
         extractProfileUpdate(text) {
-            const match = text.match(/\[PROFILE_UPDATE:\s*(\{[^}]+\})\]/s);
-            if (!match) return { text, update: null };
-            try {
-                const update = JSON.parse(match[1]);
-                const cleanText = text.replace(match[0], '').trim();
-                return { text: cleanText, update };
-            } catch {
-                return { text: text.replace(match[0], '').trim(), update: null };
+            // Course status update
+            const courseMatch = text.match(/\[PROFILE_UPDATE:\s*(\{[^}]+\})\]/s);
+            if (courseMatch) {
+                try {
+                    const update = JSON.parse(courseMatch[1]);
+                    update._type = 'course';
+                    return { text: text.replace(courseMatch[0], '').trim(), update };
+                } catch {
+                    return { text: text.replace(courseMatch[0], '').trim(), update: null };
+                }
             }
+            // Profile field update (degree, catalog year, specialization, credits, etc.)
+            const fieldMatch = text.match(/\[PROFILE_FIELD_UPDATE:\s*(\{[^}]+\})\]/s);
+            if (fieldMatch) {
+                try {
+                    const update = JSON.parse(fieldMatch[1]);
+                    update._type = 'field';
+                    return { text: text.replace(fieldMatch[0], '').trim(), update };
+                } catch {
+                    return { text: text.replace(fieldMatch[0], '').trim(), update: null };
+                }
+            }
+            return { text, update: null };
         },
 
         newChat() {
