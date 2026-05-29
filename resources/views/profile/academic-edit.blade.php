@@ -480,13 +480,202 @@
 
     </form>
 
-    {{-- Note about course history --}}
-    <div class="mt-6 p-4 rounded-lg text-sm" style="background:#fff; border:1px solid var(--border); color:var(--text-muted);">
-        <strong style="color:#374151;">Need to update completed courses?</strong>
-        Tell the planning bot which courses you have finished and it will update your academic record automatically — or visit your
-        <a href="{{ route('profile.academic') }}" style="color:var(--cua-blue); text-decoration:underline;">Academic Profile</a>
-        to review your current course history.
+    {{-- ── COURSES SECTION ── --}}
+    @if(session('course_success'))
+    <div class="alert-success mt-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </svg>
+        {{ session('course_success') }}
     </div>
+    @endif
+
+    <form method="POST" action="{{ route('profile.academic.courses') }}"
+          x-data="{
+              toDelete: [],
+              markDelete(id) {
+                  if (this.toDelete.includes(id)) {
+                      this.toDelete = this.toDelete.filter(x => x !== id);
+                  } else {
+                      this.toDelete.push(id);
+                  }
+              },
+              isDeleted(id) { return this.toDelete.includes(id); }
+          }">
+        @csrf
+
+        {{-- Existing courses table --}}
+        <div class="section-card mt-6">
+            <div class="section-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75" style="color:var(--cua-blue); flex-shrink:0;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/>
+                </svg>
+                <span class="section-title">My Courses</span>
+                <span style="margin-left:auto; font-size:12px; color:var(--text-muted); font-weight:500;">
+                    {{ $courses->count() }} {{ $courses->count() === 1 ? 'course' : 'courses' }} on record
+                </span>
+            </div>
+
+            @if($courses->isEmpty())
+            <div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:14px;">
+                No courses on record yet. Use the form below to add your first course.
+            </div>
+            @else
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:13.5px;">
+                    <thead>
+                        <tr style="background:#faf8f6; border-bottom:1px solid var(--border-light);">
+                            <th style="padding:9px 16px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted);">Code</th>
+                            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted);">Name / Slot</th>
+                            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted);">Status</th>
+                            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted);">Grade</th>
+                            <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-muted);">Semester</th>
+                            <th style="padding:9px 12px; width:44px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($courses as $course)
+                        <tr x-bind:style="isDeleted({{ $course->id }}) ? 'opacity:0.35; background:#fff1f2;' : ''"
+                            style="border-bottom:1px solid var(--border-light); transition:opacity 0.15s, background 0.15s;">
+                            {{-- Hidden fields --}}
+                            <input type="hidden" name="courses[{{ $course->id }}][id]" value="{{ $course->id }}">
+
+                            {{-- Course code --}}
+                            <td style="padding:9px 16px; font-weight:600; color:#1a1a1a; white-space:nowrap;">
+                                {{ $course->course_code }}
+                            </td>
+
+                            {{-- Course name / slot --}}
+                            <td style="padding:9px 12px; color:#374151; max-width:180px;">
+                                @if($course->course_name && $course->course_name !== $course->course_code)
+                                    <span style="font-size:12.5px;">{{ $course->course_name }}</span>
+                                @else
+                                    <span style="color:#c0b8b0; font-size:12px; font-style:italic;">—</span>
+                                @endif
+                            </td>
+
+                            {{-- Status dropdown --}}
+                            <td style="padding:9px 12px;">
+                                <select name="courses[{{ $course->id }}][status]"
+                                        style="font-size:12.5px; padding:5px 28px 5px 9px; border:1.5px solid var(--border); border-radius:6px; background-color:#fff; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 8px center; appearance:none; cursor:pointer;"
+                                        :disabled="isDeleted({{ $course->id }})">
+                                    <option value="completed" {{ $course->status === 'completed' ? 'selected' : '' }}>Completed</option>
+                                    <option value="in_progress" {{ $course->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                                    <option value="not_yet" {{ $course->status === 'not_yet' ? 'selected' : '' }}>Not Yet</option>
+                                    <option value="planned" {{ $course->status === 'planned' ? 'selected' : '' }}>Planned</option>
+                                </select>
+                            </td>
+
+                            {{-- Grade --}}
+                            <td style="padding:9px 12px;">
+                                <input type="text" name="courses[{{ $course->id }}][grade]"
+                                       value="{{ $course->grade }}"
+                                       placeholder="A, B+…"
+                                       maxlength="5"
+                                       :disabled="isDeleted({{ $course->id }})"
+                                       style="width:64px; font-size:12.5px; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px; text-transform:uppercase;">
+                            </td>
+
+                            {{-- Semester --}}
+                            <td style="padding:9px 12px;">
+                                <input type="text" name="courses[{{ $course->id }}][semester]"
+                                       value="{{ $course->semester_completed }}"
+                                       placeholder="Fall 2024"
+                                       maxlength="30"
+                                       list="semester-options"
+                                       :disabled="isDeleted({{ $course->id }})"
+                                       style="width:120px; font-size:12.5px; padding:5px 8px; border:1.5px solid var(--border); border-radius:6px;">
+                            </td>
+
+                            {{-- Remove toggle --}}
+                            <td style="padding:9px 12px; text-align:center;">
+                                <input type="hidden" :name="isDeleted({{ $course->id }}) ? 'delete_courses[]' : '_ignore'" value="{{ $course->id }}">
+                                <button type="button"
+                                        @click="markDelete({{ $course->id }})"
+                                        :title="isDeleted({{ $course->id }}) ? 'Undo remove' : 'Remove course'"
+                                        style="width:28px; height:28px; border:none; border-radius:6px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:background 0.12s;"
+                                        :style="isDeleted({{ $course->id }}) ? 'background:#fee2e2; color:#dc2626;' : 'background:#f3f4f6; color:#9ca3af;'"
+                                        onmouseover="if(!this.disabled) this.style.background=this.style.background.includes('fee') ? '#fecaca' : '#e5e7eb'"
+                                        onmouseout="this.style.background = ({{ 'true' }}) ? (this.getAttribute('data-del') === '1' ? '#fee2e2' : '#f3f4f6') : '#f3f4f6'">
+                                    <template x-if="!isDeleted({{ $course->id }})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </template>
+                                    <template x-if="isDeleted({{ $course->id }})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>
+                                        </svg>
+                                    </template>
+                                </button>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+
+            {{-- Add a course row --}}
+            <div style="padding:16px 20px; border-top:2px solid var(--border-light); background:var(--sandstone);">
+                <p style="font-size:12px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Add a Course</p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Course Code *</label>
+                        <input type="text" name="new_course_code"
+                               value="{{ old('new_course_code') }}"
+                               placeholder="e.g. ACCT 205"
+                               maxlength="20"
+                               style="width:130px; font-size:13px; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; text-transform:uppercase; background:#fff;">
+                        @error('new_course_code')<p style="margin-top:4px; font-size:11.5px; color:#dc2626;">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Status</label>
+                        <select name="new_course_status"
+                                style="font-size:13px; padding:7px 28px 7px 10px; border:1.5px solid var(--border); border-radius:7px; background-color:#fff; background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\"); background-repeat:no-repeat; background-position:right 8px center; appearance:none;">
+                            <option value="completed" {{ old('new_course_status') !== 'in_progress' ? 'selected' : '' }}>Completed</option>
+                            <option value="in_progress" {{ old('new_course_status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="not_yet">Not Yet</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Grade</label>
+                        <input type="text" name="new_course_grade"
+                               value="{{ old('new_course_grade') }}"
+                               placeholder="A, B+…"
+                               maxlength="5"
+                               style="width:72px; font-size:13px; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; text-transform:uppercase; background:#fff;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase; color:var(--text-muted); margin-bottom:4px;">Semester</label>
+                        <input type="text" name="new_course_semester"
+                               value="{{ old('new_course_semester') }}"
+                               placeholder="Fall 2024"
+                               maxlength="30"
+                               list="semester-options"
+                               style="width:130px; font-size:13px; padding:7px 10px; border:1.5px solid var(--border); border-radius:7px; background:#fff;">
+                    </div>
+                    <button type="submit"
+                            style="height:38px; padding:0 20px; background:var(--cua-blue); color:#fff; border:none; border-radius:7px; font-family:'Oswald',sans-serif; font-weight:600; font-size:13px; letter-spacing:0.07em; text-transform:uppercase; cursor:pointer; white-space:nowrap; transition:background 0.12s;"
+                            onmouseover="this.style.background='#0d3f6e'"
+                            onmouseout="this.style.background='var(--cua-blue)'">
+                        Save All Changes
+                    </button>
+                </div>
+                <p style="margin-top:8px; font-size:11.5px; color:var(--text-muted);">
+                    Course code format: DEPT 123 (e.g. ACCT 205, MGT 475, BIOL 109). Grade and semester are optional.
+                </p>
+            </div>
+        </div>
+
+        {{-- Datalist for semester suggestions --}}
+        <datalist id="semester-options">
+            @foreach(['Fall 2020','Spring 2021','Fall 2021','Spring 2022','Fall 2022','Spring 2023','Fall 2023','Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026'] as $t)
+            <option value="{{ $t }}">
+            @endforeach
+        </datalist>
+
+    </form>
 
 </main>
 

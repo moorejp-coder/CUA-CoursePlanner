@@ -28,7 +28,7 @@ class AcademicProfileController extends Controller
 
     public function editAcademic(Request $request): View|RedirectResponse
     {
-        $user = $request->user()->load('studentProfile');
+        $user = $request->user()->load(['studentProfile', 'studentCourses']);
         $profile = $user->studentProfile;
 
         if (! $profile) {
@@ -47,13 +47,87 @@ class AcademicProfileController extends Controller
             $specsPre[$key] = trim(preg_split('/\s{2,}/', $spec['label'] ?? $key)[0] ?? $key);
         }
 
+        $courses = $user->studentCourses->sortBy([
+            fn ($a, $b) => ['in_progress' => 0, 'completed' => 1][$a->status] ?? 2
+                <=> (['in_progress' => 0, 'completed' => 1][$b->status] ?? 2),
+            fn ($a, $b) => $a->course_code <=> $b->course_code,
+        ])->values();
+
         return view('profile.academic-edit', [
             'profile' => $profile,
+            'courses' => $courses,
             'specsPost' => $specsPost,
             'specsPre' => $specsPre,
             'admitTerms' => self::ADMIT_TERMS,
             'graduationTerms' => self::GRADUATION_TERMS,
         ]);
+    }
+
+    public function updateCourses(Request $request): RedirectResponse
+    {
+        $user = $request->user()->load(['studentProfile', 'studentCourses']);
+
+        if (! $user->studentProfile) {
+            return Redirect::route('onboarding');
+        }
+
+        $userCourseIds = $user->studentCourses->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $validStatuses = ['completed', 'in_progress', 'not_yet', 'planned', 'not_needed'];
+
+        // Delete marked courses (verify ownership)
+        $deleteIds = array_values(array_filter(
+            array_map('intval', (array) $request->input('delete_courses', [])),
+            fn ($id) => in_array($id, $userCourseIds, true)
+        ));
+
+        if ($deleteIds) {
+            StudentCourse::whereIn('id', $deleteIds)->where('user_id', $user->id)->delete();
+        }
+
+        // Update existing courses
+        foreach ((array) $request->input('courses', []) as $rawId => $data) {
+            $id = (int) $rawId;
+            if (! in_array($id, $userCourseIds, true) || in_array($id, $deleteIds, true)) {
+                continue;
+            }
+            $course = $user->studentCourses->firstWhere('id', $id);
+            if (! $course) {
+                continue;
+            }
+            $course->status = in_array($data['status'] ?? '', $validStatuses) ? $data['status'] : $course->status;
+            $course->grade = ! empty(trim($data['grade'] ?? '')) ? trim($data['grade']) : null;
+            $course->semester_completed = ! empty(trim($data['semester'] ?? '')) ? trim($data['semester']) : null;
+            $course->save();
+        }
+
+        // Add new course if code is provided
+        $newCode = strtoupper(trim($request->input('new_course_code', '')));
+        if ($newCode !== '') {
+            $request->validate([
+                'new_course_code' => ['required', 'string', 'max:20', 'regex:/^[A-Z]{2,6} \d{3}\w*$/'],
+                'new_course_status' => ['required', Rule::in($validStatuses)],
+                'new_course_grade' => ['nullable', 'string', 'max:5'],
+                'new_course_semester' => ['nullable', 'string', 'max:30'],
+            ], [
+                'new_course_code.regex' => 'Course code must be in the format DEPT 123 (e.g. ACCT 205, MGT 475).',
+            ]);
+
+            StudentCourse::updateOrCreate(
+                ['user_id' => $user->id, 'course_code' => $newCode],
+                [
+                    'course_name' => $newCode,
+                    'requirement_category' => 'updated_by_bot',
+                    'status' => $request->input('new_course_status', 'completed'),
+                    'grade' => ! empty($request->input('new_course_grade')) ? trim($request->input('new_course_grade')) : null,
+                    'semester_completed' => ! empty($request->input('new_course_semester')) ? trim($request->input('new_course_semester')) : null,
+                ]
+            );
+        }
+
+        $user->studentProfile->last_updated_at = now();
+        $user->studentProfile->save();
+
+        return Redirect::route('profile.academic.edit')->with('course_success', 'Your course list has been updated.');
     }
 
     public function updateAcademic(Request $request): RedirectResponse
