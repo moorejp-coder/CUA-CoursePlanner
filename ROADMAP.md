@@ -153,6 +153,16 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
+## Milestone 7.6 — Slot-Based Course Edit Page ✅ COMPLETE (May 2026)
+**Delivers:** Students can review and update their saved courses through the same requirement-slot UI as the onboarding wizard instead of a raw data table.
+- [x] `/profile/academic/edit` courses section rebuilt: Liberal Arts (15 slots, 5 subject groups), Business Core (9 numbered sections), Specialization (per-spec), Other Courses
+- [x] Form pre-populates from DB; saves via `updateOrCreate` with `la_*`, `core_*`, `spec_courses[CODE]` field-type logic
+- [x] Catalog-year-conditional fields (SRES 290, MGT 365/ECON 223, Business Electives)
+- [x] Sales-variant Career Discernment selects (MKT 299/399/499)
+- [x] Other Courses simplified to display-only with Alpine.js delete toggles
+
+---
+
 ## Milestone 8 — Advanced AI Features ✅ COMPLETE
 **Delivers:** Features that impress judges on the AI innovation rubric.
 - [x] Bot generates a personalized semester-by-semester 4-year plan (PlannerService + system prompt)

@@ -37,6 +37,7 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's save
 
 - **6-Step Onboarding Wizard** — supports all four degree paths: BSBA (full 6 steps), BS Accounting (dedicated accounting step instead of specializations), BA in Business Double Major (8-course reduced core + pair picker for 9 pairs A–I), and Business Minor (minor picker for all 12 business minors with required, double-count, and elective group tracking)
 - **Academic Profile Page** — `/profile/academic` shows every required LA slot (15) and core slot including "not yet" rows, per-specialization blocks with elective lists, completion summary cards with progress bars, and transfer credit records
+- **Slot-Based Course Edit Page** — `/profile/academic/edit` courses section mirrors the onboarding wizard: requirement-slot cards for Liberal Arts (15 slots, 5 subject groups), Business Core (9 numbered sections, catalog-year-conditional fields, Sales-variant options), Specialization (per-spec blocks with required and elective rows), and Other Courses (transfer/misc with delete toggles). Form pre-populates from saved DB records and saves back via `updateOrCreate`.
 - **Bot-Driven Profile Updates** — bot can suggest marking a course as completed via a `[PROFILE_UPDATE]` tag; student sees a confirmation banner and clicks Accept to save the change
 - **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
 
