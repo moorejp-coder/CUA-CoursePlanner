@@ -47,19 +47,40 @@ class AcademicProfileController extends Controller
             $specsPre[$key] = trim(preg_split('/\s{2,}/', $spec['label'] ?? $key)[0] ?? $key);
         }
 
-        $courses = $user->studentCourses->sortBy([
-            fn ($a, $b) => ['in_progress' => 0, 'completed' => 1][$a->status] ?? 2
-                <=> (['in_progress' => 0, 'completed' => 1][$b->status] ?? 2),
-            fn ($a, $b) => $a->course_code <=> $b->course_code,
-        ])->values();
+        $courses = $user->studentCourses;
+        $catalogYear = $profile->catalog_year ?? 'post_2024';
+        $isPost2024 = $catalogYear === 'post_2024';
+        $selectedSpecs = array_values(array_filter([
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        ]));
+        $isSales = in_array('sales', $selectedSpecs, true);
+        $isSingleSpec = count($selectedSpecs) <= 1;
+        $allSpecs = $requirements[$catalogYear]['specializations'] ?? [];
+
+        $otherCourses = $courses->whereNotIn('requirement_category', [
+            'liberal_arts', 'business_core', 'specialization', 'accounting',
+        ])->sortBy('course_code')->values();
 
         return view('profile.academic-edit', [
             'profile' => $profile,
-            'courses' => $courses,
+            'courses' => $otherCourses,
             'specsPost' => $specsPost,
             'specsPre' => $specsPre,
             'admitTerms' => self::ADMIT_TERMS,
             'graduationTerms' => self::GRADUATION_TERMS,
+            'requirements' => $requirements,
+            'isPost2024' => $isPost2024,
+            'isSales' => $isSales,
+            'isSingleSpec' => $isSingleSpec,
+            'selectedSpecs' => $selectedSpecs,
+            'allSpecs' => $allSpecs,
+            'laData' => $this->buildLaDataFromCourses($courses),
+            'coreData' => $this->buildCoreDataFromCourses($courses),
+            'specData' => $this->buildSpecDataFromCourses($courses),
+            'catalogYear' => $catalogYear,
+            'allowedLa' => $this->allowedLaSelects(),
         ]);
     }
 
@@ -71,41 +92,150 @@ class AcademicProfileController extends Controller
             return Redirect::route('onboarding');
         }
 
-        $userCourseIds = $user->studentCourses->pluck('id')->map(fn ($id) => (int) $id)->all();
-        $validStatuses = ['completed', 'in_progress', 'not_yet', 'planned', 'not_needed'];
+        $userId = $user->id;
 
-        // Delete marked courses (verify ownership)
+        // ── Liberal Arts (slot-based) ─────────────────────────────────────────
+        $laSlotMap = [
+            'la_classical_philosophy' => 'Classical Philosophy',
+            'la_modern_philosophy' => 'Modern Philosophy',
+            'la_theology_1' => 'Theology I',
+            'la_theology_2' => 'Theology II',
+            'la_rhetoric' => 'Rhetoric & Composition',
+            'la_natural_science' => 'Natural Science',
+            'la_literature' => 'Literature',
+            'la_fine_arts' => 'Fine Arts',
+            'la_social_science' => 'Social Science',
+            'la_history_politics' => 'History/Politics',
+            'la_language_1' => 'Language I',
+            'la_language_2' => 'Language II',
+            'la_phil_elective' => 'Philosophy Elective',
+            'la_theology_elective' => 'Theology Elective',
+            'la_math_thinking' => 'Math Thinking',
+        ];
+
+        foreach ($laSlotMap as $field => $slotName) {
+            $val = strtoupper(trim($request->input($field, '')));
+            if ($val === '' || $val === 'NOT_YET') {
+                StudentCourse::where('user_id', $userId)
+                    ->where('requirement_category', 'liberal_arts')
+                    ->where('course_name', $slotName)
+                    ->delete();
+            } else {
+                StudentCourse::updateOrCreate(
+                    ['user_id' => $userId, 'requirement_category' => 'liberal_arts', 'course_name' => $slotName],
+                    ['course_code' => $val, 'status' => 'completed']
+                );
+            }
+        }
+
+        // ── Business Core (slot-based) ────────────────────────────────────────
+        // type 'status'         → options: not_yet | in_progress | Completed; fixed course_code
+        // type 'code_select'    → options: not_yet | specific_code; code = the value itself
+        // type 'code_or_status' → options: not_yet | in_progress | specific_code(s)
+        $coreFieldMap = [
+            'core_ent118' => ['name' => 'ENT 118',                 'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_mgt123' => ['name' => 'MGT 123',                 'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_sres101' => ['name' => 'SRES 101/ECON',           'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_sres102' => ['name' => 'SRES 102/ECON',           'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_acct205' => ['name' => 'Financial Accounting',    'code' => 'ACCT 205', 'default' => 'ACCT 205', 'type' => 'status'],
+            'core_acct206' => ['name' => 'Managerial Accounting',   'code' => 'ACCT 206', 'default' => 'ACCT 206', 'type' => 'status'],
+            'core_fin226' => ['name' => 'Financial Management',    'code' => 'FIN 226',  'default' => 'FIN 226',  'type' => 'status'],
+            'core_math' => ['name' => 'Math Requirement',        'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_bus199' => ['name' => 'Career Discernment I',    'code' => 'BUS 199',  'default' => 'BUS 199',  'type' => 'status'],
+            'core_bus299a' => ['name' => 'Career Discernment II',   'code' => null,       'default' => 'BUS 299A', 'type' => 'code_or_status'],
+            'core_mgt250' => ['name' => 'Business Communications', 'code' => 'MGT 250',  'default' => 'MGT 250',  'type' => 'status'],
+            'core_sres290' => ['name' => 'SRES 290',                'code' => 'SRES 290', 'default' => 'SRES 290', 'type' => 'status'],
+            'core_stats' => ['name' => 'Statistics',              'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_info_gateway' => ['name' => 'Info Management Gateway', 'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_mkt345' => ['name' => 'Marketing Management',    'code' => null,       'default' => 'MKT 345',  'type' => 'code_or_status'],
+            'core_ethics' => ['name' => 'Business Ethics',         'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_law' => ['name' => 'Business Law',            'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_mgt365' => ['name' => 'Quantitative Methods',    'code' => null,       'default' => 'MGT 365',  'type' => 'code_or_status'],
+            'core_bus399a' => ['name' => 'Career Discernment III',  'code' => null,       'default' => 'BUS 399A', 'type' => 'code_or_status'],
+            'core_bus499a' => ['name' => 'Career Discernment IV',   'code' => null,       'default' => 'BUS 499A', 'type' => 'code_or_status'],
+            'core_mgt475' => ['name' => 'Business Strategy',       'code' => 'MGT 475',  'default' => 'MGT 475',  'type' => 'status'],
+            'core_bus498' => ['name' => 'Comprehensive Assessment', 'code' => 'BUS 498',  'default' => 'BUS 498',  'type' => 'status'],
+            'core_elective_1' => ['name' => 'Business Elective 1',     'code' => null,       'default' => null,       'type' => 'code_select'],
+            'core_elective_2' => ['name' => 'Business Elective 2',     'code' => null,       'default' => null,       'type' => 'code_select'],
+        ];
+
+        foreach ($coreFieldMap as $field => $meta) {
+            $val = trim($request->input($field, ''));
+
+            if ($val === '' || $val === 'not_yet') {
+                StudentCourse::where('user_id', $userId)
+                    ->where('requirement_category', 'business_core')
+                    ->where('course_name', $meta['name'])
+                    ->delete();
+
+                continue;
+            }
+
+            if ($meta['type'] === 'status') {
+                $courseCode = $meta['code'];
+                $status = $val === 'in_progress' ? 'in_progress' : 'completed';
+            } elseif ($meta['type'] === 'code_or_status') {
+                if ($val === 'in_progress') {
+                    $courseCode = $meta['default'] ?? $val;
+                    $status = 'in_progress';
+                } else {
+                    $courseCode = strtoupper($val);
+                    $status = 'completed';
+                }
+            } else {
+                // code_select
+                $courseCode = strtoupper($val);
+                $status = 'completed';
+            }
+
+            if (! $courseCode) {
+                continue;
+            }
+
+            StudentCourse::updateOrCreate(
+                ['user_id' => $userId, 'requirement_category' => 'business_core', 'course_name' => $meta['name']],
+                ['course_code' => $courseCode, 'status' => $status]
+            );
+        }
+
+        // ── Specialization Courses ────────────────────────────────────────────
+        $validSpecStatuses = ['completed', 'in_progress', 'not_yet'];
+        foreach (array_slice((array) $request->input('spec_courses', []), 0, 50) as $rawCode => $status) {
+            $code = strtoupper(trim(preg_replace('/[^A-Za-z0-9 ]/', '', (string) $rawCode)));
+            $status = in_array($status, $validSpecStatuses, true) ? $status : 'not_yet';
+            if (! $code) {
+                continue;
+            }
+
+            if ($status === 'not_yet') {
+                StudentCourse::where('user_id', $userId)
+                    ->where('requirement_category', 'specialization')
+                    ->where('course_code', $code)
+                    ->delete();
+            } else {
+                StudentCourse::updateOrCreate(
+                    ['user_id' => $userId, 'requirement_category' => 'specialization', 'course_code' => $code],
+                    ['course_name' => $code, 'status' => $status]
+                );
+            }
+        }
+
+        // ── Other courses: delete only (ownership-verified) ───────────────────
+        $userCourseIds = $user->studentCourses->pluck('id')->map(fn ($id) => (int) $id)->all();
         $deleteIds = array_values(array_filter(
             array_map('intval', (array) $request->input('delete_courses', [])),
             fn ($id) => in_array($id, $userCourseIds, true)
         ));
-
         if ($deleteIds) {
-            StudentCourse::whereIn('id', $deleteIds)->where('user_id', $user->id)->delete();
+            StudentCourse::whereIn('id', $deleteIds)->where('user_id', $userId)->delete();
         }
 
-        // Update existing courses
-        foreach ((array) $request->input('courses', []) as $rawId => $data) {
-            $id = (int) $rawId;
-            if (! in_array($id, $userCourseIds, true) || in_array($id, $deleteIds, true)) {
-                continue;
-            }
-            $course = $user->studentCourses->firstWhere('id', $id);
-            if (! $course) {
-                continue;
-            }
-            $course->status = in_array($data['status'] ?? '', $validStatuses) ? $data['status'] : $course->status;
-            $course->grade = ! empty(trim($data['grade'] ?? '')) ? trim($data['grade']) : null;
-            $course->semester_completed = ! empty(trim($data['semester'] ?? '')) ? trim($data['semester']) : null;
-            $course->save();
-        }
-
-        // Add new course if code is provided
+        // ── Add a misc course ─────────────────────────────────────────────────
         $newCode = strtoupper(trim($request->input('new_course_code', '')));
         if ($newCode !== '') {
             $request->validate([
                 'new_course_code' => ['required', 'string', 'max:20', 'regex:/^[A-Z]{2,6} \d{3}\w*$/'],
-                'new_course_status' => ['required', Rule::in($validStatuses)],
+                'new_course_status' => ['required', Rule::in(['completed', 'in_progress', 'not_yet'])],
                 'new_course_grade' => ['nullable', 'string', 'max:5'],
                 'new_course_semester' => ['nullable', 'string', 'max:30'],
             ], [
@@ -113,7 +243,7 @@ class AcademicProfileController extends Controller
             ]);
 
             StudentCourse::updateOrCreate(
-                ['user_id' => $user->id, 'course_code' => $newCode],
+                ['user_id' => $userId, 'course_code' => $newCode],
                 [
                     'course_name' => $newCode,
                     'requirement_category' => 'updated_by_bot',
@@ -127,7 +257,7 @@ class AcademicProfileController extends Controller
         $user->studentProfile->last_updated_at = now();
         $user->studentProfile->save();
 
-        return Redirect::route('profile.academic.edit')->with('course_success', 'Your course list has been updated.');
+        return Redirect::route('profile.academic.edit')->with('course_success', 'Your courses have been updated.');
     }
 
     public function updateAcademic(Request $request): RedirectResponse
@@ -422,6 +552,187 @@ class AcademicProfileController extends Controller
         }
 
         return $slots;
+    }
+
+    // ── Private helpers: build pre-population data from DB ──────────────────
+
+    private function buildLaDataFromCourses($courses): array
+    {
+        $laCourses = $courses->where('requirement_category', 'liberal_arts')->keyBy('course_name');
+
+        $slotMap = [
+            'la_classical_philosophy' => 'Classical Philosophy',
+            'la_modern_philosophy' => 'Modern Philosophy',
+            'la_theology_1' => 'Theology I',
+            'la_theology_2' => 'Theology II',
+            'la_rhetoric' => 'Rhetoric & Composition',
+            'la_natural_science' => 'Natural Science',
+            'la_literature' => 'Literature',
+            'la_fine_arts' => 'Fine Arts',
+            'la_social_science' => 'Social Science',
+            'la_history_politics' => 'History/Politics',
+            'la_language_1' => 'Language I',
+            'la_language_2' => 'Language II',
+            'la_phil_elective' => 'Philosophy Elective',
+            'la_theology_elective' => 'Theology Elective',
+            'la_math_thinking' => 'Math Thinking',
+        ];
+
+        $data = [];
+        foreach ($slotMap as $fieldKey => $slotName) {
+            $course = $laCourses->get($slotName);
+            $data[$fieldKey] = $course ? $course->course_code : 'not_yet';
+        }
+
+        return $data;
+    }
+
+    private function buildCoreDataFromCourses($courses): array
+    {
+        $core = $courses->where('requirement_category', 'business_core');
+        $byCode = $core->keyBy('course_code');
+        $byName = $core->keyBy('course_name');
+
+        $statusVal = static function ($c): string {
+            if (! $c) {
+                return 'not_yet';
+            }
+
+            return $c->status === 'in_progress' ? 'in_progress' : 'Completed';
+        };
+
+        $codeVal = static function ($c): string {
+            if (! $c) {
+                return 'not_yet';
+            }
+            if ($c->status === 'in_progress') {
+                return 'in_progress';
+            }
+
+            return $c->course_code ?: 'not_yet';
+        };
+
+        return [
+            'core_ent118' => $codeVal($byName->get('ENT 118')),
+            'core_mgt123' => $codeVal($byName->get('MGT 123')),
+            'core_sres101' => $codeVal($byName->get('SRES 101/ECON')),
+            'core_sres102' => $codeVal($byName->get('SRES 102/ECON')),
+            'core_acct205' => $statusVal($byCode->get('ACCT 205')),
+            'core_acct206' => $statusVal($byCode->get('ACCT 206')),
+            'core_fin226' => $statusVal($byCode->get('FIN 226')),
+            'core_math' => $codeVal($byName->get('Math Requirement')),
+            'core_bus199' => $statusVal($byCode->get('BUS 199')),
+            'core_bus299a' => $codeVal($byCode->get('BUS 299A') ?? $byCode->get('MKT 299')),
+            'core_mgt250' => $statusVal($byCode->get('MGT 250')),
+            'core_sres290' => $statusVal($byCode->get('SRES 290')),
+            'core_stats' => $codeVal($byName->get('Statistics')),
+            'core_info_gateway' => $codeVal($byName->get('Info Management Gateway')),
+            'core_mkt345' => $codeVal($byCode->get('MKT 345') ?? $byCode->get('BUS 604')),
+            'core_ethics' => $codeVal($byName->get('Business Ethics')),
+            'core_law' => $codeVal($byName->get('Business Law')),
+            'core_mgt365' => $codeVal($byCode->get('MGT 365') ?? $byCode->get('BUS 603') ?? $byName->get('Quantitative Methods')),
+            'core_bus399a' => $codeVal($byCode->get('BUS 399A') ?? $byCode->get('MKT 399')),
+            'core_bus499a' => $codeVal($byCode->get('BUS 499A') ?? $byCode->get('MKT 499')),
+            'core_mgt475' => $statusVal($byCode->get('MGT 475')),
+            'core_bus498' => $statusVal($byCode->get('BUS 498')),
+            'core_elective_1' => ($c = $byName->get('Business Elective 1')) ? ($c->course_code ?? '') : '',
+            'core_elective_2' => ($c = $byName->get('Business Elective 2')) ? ($c->course_code ?? '') : '',
+        ];
+    }
+
+    private function buildSpecDataFromCourses($courses): array
+    {
+        $data = [];
+        foreach ($courses->where('requirement_category', 'specialization') as $course) {
+            $data[$course->course_code] = $course->status;
+        }
+
+        return $data;
+    }
+
+    private function allowedLaSelects(): array
+    {
+        return [
+            'la_classical_philosophy' => ['not_yet', 'PHIL 201', 'PHIL 211', 'HSPH 101'],
+            'la_modern_philosophy' => ['not_yet', 'PHIL 202', 'PHIL 212', 'HSPH 102'],
+            'la_theology_1' => ['not_yet', 'TRS 201', 'HSTR 101'],
+            'la_theology_2' => ['not_yet', 'TRS 202A', 'TRS 202B', 'HSTR (any)'],
+            'la_rhetoric' => ['not_yet', 'ENG 101', 'ENG 101H', 'ENG 101C'],
+            'la_natural_science' => array_merge(['not_yet'], [
+                'ANTH 105', 'ANTH 108', 'ANTH 204', 'ANTH 206', 'ANTH 352', 'ANTH 354',
+                'BIOL 103', 'BIOL 109', 'CHEM 10', 'CHEM 110', 'CHEM 125', 'CHEM 126',
+                'CHEM 127', 'CHEM 128R', 'CHEM 130', 'PHYS 101', 'PHYS 103', 'PHYS 122',
+                'PHYS 206', 'PHYS 215H', 'PSY 204', 'SAS 225', 'HSEV 101',
+            ]),
+            'la_literature' => array_merge(['not_yet'], [
+                'ARAB 279', 'CLAS 105', 'CLAS 106', 'CLAS 211', 'CLAS 212R',
+                'CLAS 244', 'CLAS 251', 'CLAS 261',
+                'ENG 206', 'ENG 212', 'ENG 231', 'ENG 232', 'ENG 235', 'ENG 236',
+                'ENG 278', 'ENG 305', 'ENG 306', 'ENG 312', 'ENG 341', 'ENG 345',
+                'ENG 347', 'ENG 351', 'ENG 352', 'ENG 356', 'ENG 364', 'ENG 369',
+                'ENG 376', 'ENG 378-R', 'ENG 379', 'ENG 461', 'ENG 462',
+                'FREN 220', 'FREN 230', 'FREN 242', 'FREN 279',
+                'GER 220', 'GER 225', 'GER 230', 'GER 255',
+                'GS 220', 'HUM 101', 'HUM 124',
+                'ITAL 212', 'ITAL 220', 'ITAL 226', 'ITAL 232',
+                'MDIA 225', 'SPAN 224', 'SPAN 225', 'SPAN 240', 'SPAN 321',
+                'HSHU 203', 'HSLS 353',
+            ]),
+            'la_fine_arts' => array_merge(['not_yet'], [
+                'ARPL 211',
+                'ART 201', 'ART 211', 'ART 212', 'ART 213', 'ART 222',
+                'ART 251', 'ART 252', 'ART 272', 'ART 302', 'ART 308',
+                'ART 317', 'ART 318', 'ART 319', 'ART 320', 'ART 335',
+                'CLAS 214', 'CLAS 221', 'CLAS 251', 'CLAS 261',
+                'CLAS 317', 'CLAS 318', 'CLAS 318R',
+                'DR 105', 'DR 106', 'DR 110', 'DR 201', 'DR 202',
+                'DR 207', 'DR 305', 'DR 403', 'DNCE 101',
+                'ENG 300', 'ENG 302', 'ENGR 101', 'HIST 390A', 'ITAL 219-R',
+                'MDIA 201', 'MDIA 343',
+                'MUS 110', 'MUS 112', 'MUS 131', 'MUS 134', 'MUS 135',
+                'MUS 178', 'MUS 276', 'MUS 304', 'MUS 327', 'MUS 328', 'MUS 328H',
+                'HSLS 352', 'HSAM 101',
+            ]),
+            'la_social_science' => array_merge(['not_yet'], [
+                'ANTH 101', 'ANTH 110', 'ANTH 201', 'ANTH 203', 'ANTH 211',
+                'ANTH 226', 'ANTH 240', 'ANTH 260', 'CEE 201',
+                'ECON 100', 'ECON 101', 'ECON 102', 'ECON 103', 'ECON 104', 'ECON 200',
+                'GS 101', 'PSY 201', 'PSY 226', 'PSY 261',
+                'SOC 101', 'SOC 102', 'SOC 102H', 'SOC 202', 'SOC 206',
+                'SOC 210', 'SOC 281', 'SOC 330', 'SOC 358', 'SOC 358H',
+                'SRES 101', 'SRES 102', 'SRES 345', 'SSS 101', 'SSS 226',
+                'HSEV 203', 'HSSS 101', 'HSSS 102', 'HSSS 204',
+            ]),
+            'la_history_politics' => array_merge(['not_yet'], [
+                'ANTH 215',
+                'CLAS 205', 'CLAS 206', 'CLAS 206R', 'CLAS 207', 'CLAS 220',
+                'CLAS 226', 'CLAS 260', 'CLAS 304', 'CLAS 308', 'ECST 315',
+                'EURO 203',
+                'HIST 140', 'HIST 142', 'HIST 151', 'HIST 202', 'HIST 205',
+                'HIST 206', 'HIST 206R', 'HIST 208', 'HIST 222', 'HIST 224',
+                'HIST 226', 'HIST 229', 'HIST 231A', 'HIST 231B', 'HIST 235',
+                'HIST 246', 'HIST 257', 'HIST 258', 'HIST 301', 'HIST 308B',
+                'HIST 309', 'HIST 309B', 'HIST 312', 'HIST 315', 'HIST 316',
+                'HIST 334A', 'HIST 349', 'HIST 351', 'HIST 371D', 'HIST 380D',
+                'HIST 384A', 'HIST 385', 'ITAL 221', 'MDIA 202',
+                'POL 111', 'POL 112', 'POL 211', 'POL 226', 'WASH 101',
+                'HSHU 101', 'HSHU 102', 'HSHU 204',
+                'HSLS 205', 'HSLS 351', 'HSLS 354',
+            ]),
+            'la_language_1' => array_merge(['not_yet'], [
+                'ARAB 103', 'CHN 103', 'FREN 103', 'GER 103', 'GR 103',
+                'IRSH 103', 'ITAL 103', 'LAT 103', 'SPAN 103', 'SPAN 111', 'SPAN 113',
+            ]),
+            'la_language_2' => array_merge(['not_yet'], [
+                'ARAB 104', 'CHN 104', 'FREN 104', 'GER 104', 'GR 104',
+                'IRSH 104', 'ITAL 104', 'LAT 104', 'SPAN 104',
+            ]),
+            'la_math_thinking' => array_merge(['not_yet'], [
+                'MATH 111', 'MATH 112', 'MATH 114', 'MATH 121', 'MATH 122',
+                'MATH 168', 'MATH 175', 'MATH 187',
+                'HSMS 230', 'HSMS 330', 'HSSS 203', 'math_exempt',
+            ]),
+        ];
     }
 
     public function suggestUpdate(Request $request): JsonResponse
