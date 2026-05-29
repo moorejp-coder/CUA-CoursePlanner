@@ -221,11 +221,38 @@ class ChatController extends Controller
 
     private function buildProfileContext(): string
     {
+        $now = now();
+        $month = (int) $now->month;
+        $year = (int) $now->year;
+
+        // Map calendar month to CUA academic semester
+        if ($month <= 5) {
+            $currentSemester = "Spring {$year}";
+            $nextSemester = "Fall {$year}";
+        } elseif ($month <= 7) {
+            $currentSemester = "Summer {$year}";
+            $nextSemester = "Fall {$year}";
+        } else {
+            $currentSemester = "Fall {$year}";
+            $nextSemester = 'Spring '.($year + 1);
+        }
+
+        // Advise on registration window so the bot can tell students what to register for
+        $registrationNote = match (true) {
+            $month >= 3 && $month <= 4 => "Fall {$year} registration is open — recommend courses for next fall.",
+            $month >= 10 && $month <= 11 => 'Spring '.($year + 1).' registration is open — recommend courses for next spring.',
+            $month === 5 => "Summer/Fall {$year} — advise students to confirm fall registration.",
+            default => '',
+        };
+
+        $dateContext = "TODAY: {$now->format('F j, Y')} | CURRENT SEMESTER: {$currentSemester} | NEXT SEMESTER: {$nextSemester}".
+            ($registrationNote ? " | {$registrationNote}" : '');
+
         $user = Auth::user()->load(['studentProfile', 'studentCourses']);
         $profile = $user->studentProfile;
 
         if (! $profile) {
-            return "\n\nSTUDENT PROFILE: Not yet set up. If the student asks about their personal course plan, encourage them to complete their academic profile setup at /onboarding first.";
+            return "\n\n{$dateContext}\n\nSTUDENT PROFILE: Not yet set up. If the student asks about their personal course plan, encourage them to complete their academic profile setup at /onboarding first.";
         }
 
         $completedCourses = $user->studentCourses->where('status', 'completed');
@@ -254,6 +281,7 @@ class ChatController extends Controller
         $exemptions = $this->buildExemptionsList($user->studentCourses);
 
         $lines = [
+            $dateContext,
             "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
             "Specializations: {$specList}",
             'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
