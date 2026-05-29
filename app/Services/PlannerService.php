@@ -276,13 +276,15 @@ class PlannerService
             'Math Requirement' => ['MATH 110', 'MATH 111', 'Level 1 or 2 Exempt', 'LEVEL 1 OR 2 EXEMPT', 'math_exempt', 'MATH_EXEMPT'],
         ];
 
+        $infoGatewayCodes = $this->requirements[$catalogYear]['business_core_options']['info_gateway'] ?? [];
+
         if ($isPost2024) {
             $groups['Applied Economics (SRES 290)'] = ['SRES 290'];
             $groups['Business Analytics (MGT 265)'] = ['MGT 265', 'ECON 223'];
-            $groups['Info Management Gateway'] = ['MGT 240', 'MGT 351', 'MGT 361', 'ECON 370', 'FIN 313', 'EAM 406', 'ENT 519', 'ACCT 425', 'DA 124', 'MGT 331'];
+            $groups['Info Management Gateway'] = $infoGatewayCodes;
         } else {
             $groups['Statistics (MGT 365)'] = ['MGT 365', 'ECON 223', 'MGT 265'];
-            $groups['Info Management Gateway'] = ['MGT 240', 'MGT 351', 'MGT 361', 'ECON 370', 'FIN 313', 'EAM 406'];
+            $groups['Info Management Gateway'] = $infoGatewayCodes;
         }
 
         if ($isAccounting) {
@@ -575,7 +577,7 @@ class PlannerService
             $catalogYear === 'post_2024'
                 ? ['MGT 265', 'ECON 223']
                 : ['MGT 365', 'ECON 223', 'MGT 265'],
-            ['MGT 240', 'MGT 351', 'MGT 361', 'ECON 370', 'FIN 313', 'EAM 406', 'ENT 519', 'ACCT 425', 'DA 124', 'MGT 331'],
+            $this->requirements[$catalogYear]['business_core_options']['info_gateway'] ?? [],
         ];
 
         foreach ($coreGroups as $group) {
