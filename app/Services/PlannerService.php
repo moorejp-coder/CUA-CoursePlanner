@@ -273,7 +273,7 @@ class PlannerService
             'Business Communications (MGT 250)' => ['MGT 250'],
             'Business Strategy (MGT 475)' => ['MGT 475'],
             'Comprehensive Assessment (BUS 498)' => ['BUS 498', 'ACCT 498'],
-            'Math Requirement' => ['MATH 110', 'MATH 111'],
+            'Math Requirement' => ['MATH 110', 'MATH 111', 'Level 1 or 2 Exempt', 'LEVEL 1 OR 2 EXEMPT', 'math_exempt', 'MATH_EXEMPT'],
         ];
 
         if ($isPost2024) {
@@ -568,7 +568,7 @@ class PlannerService
             ['MGT 250'],
             ['MGT 475'],
             ['BUS 498', 'ACCT 498'],
-            ['MATH 110', 'MATH 111'],
+            ['MATH 110', 'MATH 111', 'Level 1 or 2 Exempt', 'LEVEL 1 OR 2 EXEMPT', 'math_exempt', 'MATH_EXEMPT'],
             $catalogYear === 'post_2024'
                 ? ['SRES 290']
                 : [],

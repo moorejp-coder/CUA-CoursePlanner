@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\StudentProfile;
 use App\Services\PlannerService;
 use App\Services\PrerequisiteService;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -115,7 +116,7 @@ class ChatController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => config('services.groq.model'),
                     'messages' => $messages,
-                    'max_tokens' => 1500,
+                    'max_tokens' => 4096,
                 ]);
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
@@ -179,6 +180,45 @@ class ChatController extends Controller
         ]);
     }
 
+    /**
+     * Build a plain-English EXEMPTIONS string from the student's saved course records.
+     * Only includes exemptions that are explicitly stored (not inferred).
+     *
+     * @param  Collection  $courses
+     */
+    private function buildExemptionsList($courses): string
+    {
+        $parts = [];
+
+        // Business Core Math: Level 1 or 2 placement exempt
+        $mathCore = $courses->where('requirement_category', 'business_core')
+            ->where('course_name', 'Math Requirement')
+            ->first();
+        if ($mathCore && in_array(strtolower($mathCore->course_code ?? ''), ['level 1 or 2 exempt', 'math_exempt', 'math exempt'], true)) {
+            $parts[] = 'Business Core Math Requirement — Level 1 or 2 Placement Exempt (counts as satisfied; do NOT say they still need MATH 110 or MATH 111 for this requirement)';
+        }
+
+        // LA Math Thinking: math placement exempt
+        $mathLa = $courses->where('requirement_category', 'liberal_arts')
+            ->where('course_name', 'Math Thinking')
+            ->first();
+        if ($mathLa && strtolower($mathLa->course_code ?? '') === 'math_exempt') {
+            $parts[] = 'Liberal Arts Math Thinking — Exempt via math placement (requirement satisfied)';
+        }
+
+        // Language II: exempt because SPAN 113 (or SPAN 111) satisfies both Language I and II
+        $lang1 = $courses->where('requirement_category', 'liberal_arts')
+            ->where('course_name', 'Language I')
+            ->whereIn('course_code', ['SPAN 111', 'SPAN 113', 'span 111', 'span 113'])
+            ->first();
+        if ($lang1) {
+            $code = strtoupper($lang1->course_code);
+            $parts[] = "Language II — Exempt ({$code} satisfies both Language I and Language II in a single course)";
+        }
+
+        return implode('; ', $parts);
+    }
+
     private function buildProfileContext(): string
     {
         $user = Auth::user()->load(['studentProfile', 'studentCourses']);
@@ -209,12 +249,20 @@ class ChatController extends Controller
         };
         $specList = implode(', ', $specs) ?: 'None selected';
 
+        // Detect structured exemptions from course records so the bot never tells
+        // an exempt student they still need a requirement.
+        $exemptions = $this->buildExemptionsList($user->studentCourses);
+
         $lines = [
             "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
             "Specializations: {$specList}",
             'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
             'IN PROGRESS: '.(implode(', ', $inProgressCodes) ?: 'None'),
         ];
+
+        if ($exemptions) {
+            $lines[] = 'EXEMPTIONS (do NOT list these as requirements the student still needs): '.$exemptions;
+        }
 
         if ($profile->degree === 'bs_accounting') {
             $acctCourses = $user->studentCourses->where('requirement_category', 'accounting');
