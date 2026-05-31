@@ -18,7 +18,7 @@ class AcademicProfileController extends Controller
     private const ADMIT_TERMS = [
         'Fall 2020', 'Spring 2021', 'Fall 2021', 'Spring 2022', 'Fall 2022',
         'Spring 2023', 'Fall 2023', 'Spring 2024', 'Fall 2024', 'Spring 2025',
-        'Fall 2025', 'Spring 2026',
+        'Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2027',
     ];
 
     private const GRADUATION_TERMS = [
@@ -288,15 +288,20 @@ class AcademicProfileController extends Controller
             'specialization_3' => ['nullable', 'string', Rule::in(array_merge([''], $validSpecs))],
         ]);
 
-        // BS Accounting has no specializations
         if ($validated['degree'] === 'bs_accounting') {
+            // Accounting has no specializations
             $validated['specialization_1'] = null;
             $validated['specialization_2'] = null;
             $validated['specialization_3'] = null;
-        } else {
+        } elseif ($validated['degree'] === 'bsba') {
+            // BSBA: apply the spec values the user submitted
             $validated['specialization_1'] = $validated['specialization_1'] ?: null;
             $validated['specialization_2'] = $validated['specialization_2'] ?: null;
             $validated['specialization_3'] = $validated['specialization_3'] ?: null;
+        } else {
+            // double_major and business_minor: specs are set during onboarding and
+            // not shown on this form — remove them from validated so fill() leaves them intact
+            unset($validated['specialization_1'], $validated['specialization_2'], $validated['specialization_3']);
         }
 
         // Derive standing from credits
@@ -790,15 +795,16 @@ class AcademicProfileController extends Controller
         $field = $validated['field'];
         $value = $validated['value'] ?? null;
 
+        $profile = $request->user()->studentProfile;
+
         match ($field) {
             'degree' => $this->validateEnum($value, ['bsba', 'bs_accounting', 'double_major', 'business_minor']),
             'catalog_year' => $this->validateEnum($value, ['pre_2024', 'post_2024']),
             'projected_standing' => $this->validateEnum($value, ['freshman', 'sophomore', 'junior', 'senior']),
             'credits_completed' => $this->validateCredits($value),
+            'specialization_1', 'specialization_2', 'specialization_3' => $this->validateSpecialization($value, $profile),
             default => null,
         };
-
-        $profile = $request->user()->studentProfile;
         $profile->$field = ($field === 'credits_completed') ? (int) $value : ($value ?: null);
         $profile->last_updated_at = now();
         $profile->save();
@@ -817,6 +823,19 @@ class AcademicProfileController extends Controller
     {
         if (! is_numeric($value) || (int) $value < 0 || (int) $value > 250) {
             abort(422, 'credits_completed must be a number between 0 and 250.');
+        }
+    }
+
+    private function validateSpecialization(?string $value, mixed $profile): void
+    {
+        if ($value === null) {
+            return;
+        }
+        $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
+        $catalogYear = $profile?->catalog_year ?? 'post_2024';
+        $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
+        if (! in_array($value, $validSpecs, true)) {
+            abort(422, 'Invalid specialization key for '.$catalogYear.'. Valid: '.implode(', ', $validSpecs));
         }
     }
 

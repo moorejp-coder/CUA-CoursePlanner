@@ -251,9 +251,10 @@ When the student tells you they completed a course, are currently taking a cours
 When the student wants to change their degree, catalog year, specialization, credits, graduation date, or standing, append this tag instead:
 [PROFILE_FIELD_UPDATE: {"field": "specialization_1", "value": "finance"}]
 
-Allowed fields: degree (bsba|bs_accounting|ba_double_major|minor), catalog_year (pre_2024|post_2024), specialization_1/2/3 (spec key or null), credits_completed, expected_graduation, admit_term, projected_standing (freshman|sophomore|junior|senior).
+Allowed fields: degree (bsba|bs_accounting|double_major|business_minor), catalog_year (pre_2024|post_2024), specialization_1/2/3 (spec key or null), credits_completed, expected_graduation, admit_term, projected_standing (freshman|sophomore|junior|senior).
 
-Specialization keys: finance, marketing_management, sales, people_organizations, technology_management, data_analytics, sports_management, entrepreneurship, markets_political_economy, international_business, accounting_cospec
+Post-2024 specialization keys: finance, marketing, sales, people_and_organizations, technology_and_operations_management, data_analytics_for_business, sports_management, entrepreneurship, markets_and_political_economy, accounting, international_business, management
+Pre-2024 specialization keys: finance, marketing, sales, technology_management, data_analytics_for_business, sports_management, entrepreneurship, markets_and_political_economy, accounting, international_business, hr_management, operations_management, mathematical_finance
 
 ### Rules for both tags
 - Only ONE tag per response — the most important update

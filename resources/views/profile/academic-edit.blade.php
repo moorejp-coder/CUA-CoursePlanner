@@ -1088,7 +1088,7 @@
         </div>
 
         <datalist id="semester-options">
-            @foreach(['Fall 2020','Spring 2021','Fall 2021','Spring 2022','Fall 2022','Spring 2023','Fall 2023','Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026'] as $t)
+            @foreach(['Fall 2020','Spring 2021','Fall 2021','Spring 2022','Fall 2022','Spring 2023','Fall 2023','Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026','Fall 2026','Spring 2027'] as $t)
             <option value="{{ $t }}">
             @endforeach
         </datalist>

@@ -256,7 +256,7 @@
             <div class="form-group" x-data="{
                     admitTerm: '{{ old('admit_term', $data['admit_term'] ?? '') }}',
                     get catalogYear() {
-                        const post2024 = ['Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026'];
+                        const post2024 = ['Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026','Fall 2026','Spring 2027'];
                         if (!this.admitTerm) return null;
                         return post2024.includes(this.admitTerm) ? 'post_2024' : 'pre_2024';
                     }
@@ -264,7 +264,7 @@
                 <label class="field-label" for="admit_term">Admit Term</label>
                 <select id="admit_term" name="admit_term" x-model="admitTerm" required>
                     <option value="">— Select your admit term —</option>
-                    @foreach(['Fall 2020','Spring 2021','Fall 2021','Spring 2022','Fall 2022','Spring 2023','Fall 2023','Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026'] as $term)
+                    @foreach(['Fall 2020','Spring 2021','Fall 2021','Spring 2022','Fall 2022','Spring 2023','Fall 2023','Spring 2024','Fall 2024','Spring 2025','Fall 2025','Spring 2026','Fall 2026','Spring 2027'] as $term)
                         <option value="{{ $term }}" {{ old('admit_term', $data['admit_term'] ?? '') === $term ? 'selected' : '' }}>{{ $term }}</option>
                     @endforeach
                 </select>

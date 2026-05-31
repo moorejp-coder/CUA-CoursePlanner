@@ -17,7 +17,7 @@ class OnboardingController extends Controller
     private const ADMIT_TERMS = [
         'Fall 2020', 'Spring 2021', 'Fall 2021', 'Spring 2022', 'Fall 2022',
         'Spring 2023', 'Fall 2023', 'Spring 2024', 'Fall 2024', 'Spring 2025',
-        'Fall 2025', 'Spring 2026',
+        'Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2027',
     ];
 
     private const GRADUATION_TERMS = [
@@ -590,10 +590,10 @@ class OnboardingController extends Controller
     private function calculateStanding(int $credits): string
     {
         return match (true) {
-            $credits >= 90 => 'Senior',
-            $credits >= 60 => 'Junior',
-            $credits >= 30 => 'Sophomore',
-            default => 'Freshman',
+            $credits >= 90 => 'senior',
+            $credits >= 60 => 'junior',
+            $credits >= 30 => 'sophomore',
+            default => 'freshman',
         };
     }
 
