@@ -382,6 +382,7 @@ class ChatController extends Controller
                 $profile->specialization_1,
                 $profile->specialization_2,
                 $profile->specialization_3,
+                $profile->expected_graduation ?? '',
             );
 
             if ($fastestPath) {

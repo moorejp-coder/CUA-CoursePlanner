@@ -137,7 +137,8 @@ class PlannerService
         int $creditsCompleted,
         ?string $spec1,
         ?string $spec2,
-        ?string $spec3
+        ?string $spec3,
+        string $expectedGraduation = ''
     ): string {
         $taken = array_merge($completedCodes, $inProgressCodes);
         $lines = [];
@@ -247,6 +248,25 @@ class PlannerService
 
         if ($minSemesters > 0) {
             $lines[] = "Minimum semesters to graduation: ~{$minSemesters} (based on credits + critical chains).";
+        }
+
+        // Compare minimum semesters needed against the student's stated graduation target
+        if ($expectedGraduation && preg_match('/^(Spring|Fall)\s+(\d{4})$/', $expectedGraduation, $gm)) {
+            $month = (int) now()->month;
+            $curYear = (int) now()->year;
+            $curTerm = $month <= 7 ? 'Spring' : 'Fall';
+            $toIdx = fn (string $t, int $y): float => $y + ($t === 'Fall' ? 0.5 : 0.0);
+            $gradSemesters = (int) round(($toIdx($gm[1], (int) $gm[2]) - $toIdx($curTerm, $curYear)) * 2);
+
+            if ($gradSemesters <= 0) {
+                $lines[] = "Grad target: {$expectedGraduation} (this semester or already past).";
+            } elseif ($minSemesters > $gradSemesters) {
+                $deficit = $minSemesters - $gradSemesters;
+                $lines[] = "Grad target: {$expectedGraduation} ({$gradSemesters} semester(s) away). WARNING: need ~{$minSemesters} semesters but only {$gradSemesters} available — {$deficit} short. Flag summer courses or heavier load.";
+            } else {
+                $buffer = $gradSemesters - $minSemesters;
+                $lines[] = "Grad target: {$expectedGraduation} ({$gradSemesters} semester(s) away). On track — {$minSemesters} semesters needed, {$buffer} semester(s) of buffer.";
+            }
         }
 
         return $lines ? implode("\n", $lines) : '';
