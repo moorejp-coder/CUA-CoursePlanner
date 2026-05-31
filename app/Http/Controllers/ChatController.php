@@ -95,8 +95,7 @@ class ChatController extends Controller
 
         $systemPrompt = file_get_contents(storage_path('app/system_prompt.txt'));
 
-        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only.";
-
+        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences or a short list unless the student asks for a full plan. Never repeat information already shown in the student profile.";
         $profileContext = $this->buildProfileContext($cleanMessage);
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
