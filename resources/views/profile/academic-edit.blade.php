@@ -266,6 +266,20 @@
               get showSpecs() {
                   return this.degree === 'bsba';
               },
+              init() {
+                  // x-for renders options asynchronously; force-sync select values after first tick
+                  this.$nextTick(() => {
+                      if (this.$refs.spec1El) this.$refs.spec1El.value = this.spec1;
+                      if (this.$refs.spec2El) this.$refs.spec2El.value = this.spec2;
+                      if (this.$refs.spec3El) this.$refs.spec3El.value = this.spec3;
+                  });
+                  // When catalog year changes, reset spec selections (options change)
+                  this.$watch('catalogYear', () => {
+                      this.spec1 = '';
+                      this.spec2 = '';
+                      this.spec3 = '';
+                  });
+              },
           }">
         @csrf
 
@@ -285,10 +299,10 @@
                     <label class="field-label">Degree Program</label>
                     <div class="radio-group">
                         @foreach([
-                            ['bsba',         'B.S.B.A.',                   'Bachelor of Science in Business Administration'],
-                            ['bs_accounting', 'B.S. in Accounting',         'Standalone accounting degree'],
-                            ['ba_double_major','B.A. Double Major',         'Business as a second major'],
-                            ['business_minor','Business Minor',             'Non-business students adding a minor'],
+                            ['bsba',           'B.S.B.A.',                   'Bachelor of Science in Business Administration'],
+                            ['bs_accounting',  'B.S. in Accounting',         'Standalone accounting degree'],
+                            ['double_major',   'B.A. Double Major',          'Business as a second major'],
+                            ['business_minor', 'Business Minor',             'Non-business students adding a minor'],
                         ] as [$val, $title, $sub])
                         <label class="radio-card">
                             <input type="radio" name="degree" value="{{ $val }}" x-model="degree">
@@ -411,7 +425,7 @@
                 {{-- Primary specialization --}}
                 <div class="mb-4">
                     <label for="specialization_1" class="field-label">Primary Specialization</label>
-                    <select id="specialization_1" name="specialization_1" x-model="spec1"
+                    <select id="specialization_1" name="specialization_1" x-model="spec1" x-ref="spec1El"
                             class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}">
                         <option value="">— Select specialization —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
@@ -424,7 +438,7 @@
                 {{-- Second specialization --}}
                 <div class="mb-4">
                     <label for="specialization_2" class="field-label">Second Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
-                    <select id="specialization_2" name="specialization_2" x-model="spec2"
+                    <select id="specialization_2" name="specialization_2" x-model="spec2" x-ref="spec2El"
                             class="field-input {{ $errors->has('specialization_2') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
@@ -437,7 +451,7 @@
                 {{-- Third specialization --}}
                 <div>
                     <label for="specialization_3" class="field-label">Third Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
-                    <select id="specialization_3" name="specialization_3" x-model="spec3"
+                    <select id="specialization_3" name="specialization_3" x-model="spec3" x-ref="spec3El"
                             class="field-input {{ $errors->has('specialization_3') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">

@@ -43,8 +43,8 @@ class ChatController extends Controller
         $degreeLabels = [
             'bsba' => 'B.S.B.A.',
             'bs_accounting' => 'B.S. in Accounting',
-            'ba_double_major' => 'B.A. in Business (Double Major)',
-            'minor' => 'Business Minor',
+            'double_major' => 'B.A. in Business (Double Major)',
+            'business_minor' => 'Business Minor',
         ];
 
         $firstName = explode(' ', trim($profile->full_name ?? ''))[0] ?: 'there';

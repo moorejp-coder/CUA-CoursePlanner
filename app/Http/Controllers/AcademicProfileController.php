@@ -275,7 +275,7 @@ class AcademicProfileController extends Controller
         $degree = $request->input('degree', $profile->degree);
 
         $validated = $request->validate([
-            'degree' => ['required', Rule::in(['bsba', 'bs_accounting', 'ba_double_major', 'business_minor'])],
+            'degree' => ['required', Rule::in(['bsba', 'bs_accounting', 'double_major', 'business_minor'])],
             'catalog_year' => ['required', Rule::in(['pre_2024', 'post_2024'])],
             'admit_term' => ['required', Rule::in(self::ADMIT_TERMS)],
             'expected_graduation' => ['required', Rule::in(self::GRADUATION_TERMS)],
@@ -791,7 +791,7 @@ class AcademicProfileController extends Controller
         $value = $validated['value'] ?? null;
 
         match ($field) {
-            'degree' => $this->validateEnum($value, ['bsba', 'bs_accounting', 'ba_double_major', 'minor']),
+            'degree' => $this->validateEnum($value, ['bsba', 'bs_accounting', 'double_major', 'business_minor']),
             'catalog_year' => $this->validateEnum($value, ['pre_2024', 'post_2024']),
             'projected_standing' => $this->validateEnum($value, ['freshman', 'sophomore', 'junior', 'senior']),
             'credits_completed' => $this->validateCredits($value),
