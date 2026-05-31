@@ -643,7 +643,7 @@
                     <div class="compose-ring">
                         <textarea
                             x-model="input"
-                            @keydown.enter.exact.prevent="send()"
+                            @keydown.enter="if (!$event.shiftKey) { $event.preventDefault(); send(); }"
                             x-ref="input"
                             :disabled="loading"
                             placeholder="Ask about your degree, courses, specializations, or graduation requirements…"
