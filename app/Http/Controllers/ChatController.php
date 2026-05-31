@@ -101,7 +101,7 @@ class ChatController extends Controller
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
         // Keep only the most recent 10 history turns to stay within token limits.
-        $history = array_slice($validated['history'] ?? [], -10);
+        $history = array_slice($validated['history'] ?? [], -6);
 
         foreach ($history as $turn) {
             $messages[] = ['role' => $turn['role'], 'content' => strip_tags($turn['content'])];
