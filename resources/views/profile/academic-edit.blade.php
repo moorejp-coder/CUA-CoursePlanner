@@ -248,6 +248,9 @@
               degree: '{{ old('degree', $profile->degree) }}',
               catalogYear: '{{ old('catalog_year', $profile->catalog_year) }}',
               credits: {{ old('credits_completed', $profile->credits_completed ?? 0) }},
+              spec1: '{{ old('specialization_1', $profile->specialization_1) }}',
+              spec2: '{{ old('specialization_2', $profile->specialization_2) }}',
+              spec3: '{{ old('specialization_3', $profile->specialization_3) }}',
               specsPost: {{ Js::from($specsPost) }},
               specsPre:  {{ Js::from($specsPre) }},
               get specs() {
@@ -408,14 +411,11 @@
                 {{-- Primary specialization --}}
                 <div class="mb-4">
                     <label for="specialization_1" class="field-label">Primary Specialization</label>
-                    <select id="specialization_1" name="specialization_1"
+                    <select id="specialization_1" name="specialization_1" x-model="spec1"
                             class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}">
                         <option value="">— Select specialization —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
-                            <option :value="key"
-                                    :selected="key === '{{ old('specialization_1', $profile->specialization_1) }}'">
-                                <span x-text="label"></span>
-                            </option>
+                            <option :value="key" x-text="label"></option>
                         </template>
                     </select>
                     @error('specialization_1')<p class="field-error">{{ $message }}</p>@enderror
@@ -424,14 +424,11 @@
                 {{-- Second specialization --}}
                 <div class="mb-4">
                     <label for="specialization_2" class="field-label">Second Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
-                    <select id="specialization_2" name="specialization_2"
+                    <select id="specialization_2" name="specialization_2" x-model="spec2"
                             class="field-input {{ $errors->has('specialization_2') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
-                            <option :value="key"
-                                    :selected="key === '{{ old('specialization_2', $profile->specialization_2) }}'">
-                                <span x-text="label"></span>
-                            </option>
+                            <option :value="key" x-text="label"></option>
                         </template>
                     </select>
                     @error('specialization_2')<p class="field-error">{{ $message }}</p>@enderror
@@ -440,14 +437,11 @@
                 {{-- Third specialization --}}
                 <div>
                     <label for="specialization_3" class="field-label">Third Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
-                    <select id="specialization_3" name="specialization_3"
+                    <select id="specialization_3" name="specialization_3" x-model="spec3"
                             class="field-input {{ $errors->has('specialization_3') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
-                            <option :value="key"
-                                    :selected="key === '{{ old('specialization_3', $profile->specialization_3) }}'">
-                                <span x-text="label"></span>
-                            </option>
+                            <option :value="key" x-text="label"></option>
                         </template>
                     </select>
                     @error('specialization_3')<p class="field-error">{{ $message }}</p>@enderror
