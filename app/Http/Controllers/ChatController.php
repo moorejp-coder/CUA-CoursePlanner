@@ -124,7 +124,8 @@ class ChatController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => config('services.groq.model'),
                     'messages' => $messages,
-                    'max_tokens' => 4096,
+                    'max_tokens' => 600,
+                    'temperature' => 0.3,
                 ]);
         } catch (\Throwable $e) {
             $msg = $e->getMessage();
