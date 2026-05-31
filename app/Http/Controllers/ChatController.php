@@ -1,3 +1,4 @@
+use Illuminate\Support\Facades\Cache;
 <?php
 
 namespace App\Http\Controllers;
