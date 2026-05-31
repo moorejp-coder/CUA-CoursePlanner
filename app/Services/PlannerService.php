@@ -38,7 +38,7 @@ class PlannerService
         $inProgressCodes = $courses->where('status', 'in_progress')->pluck('course_code')->all();
         $takenCodes = array_merge($completedCodes, $inProgressCodes);
 
-        $lines = ['REMAINING REQUIREMENTS:'];
+        $lines = ['REMAINING:'];
 
         if ($degree === 'business_minor') {
             $lines = array_merge($lines, $this->remainingMinor($spec1, $takenCodes));
@@ -55,7 +55,7 @@ class PlannerService
         $creditEstimate = $this->estimateCreditsRemaining(
             $degree, $catalogYear, $creditsCompleted, $takenCodes, $courses, $spec1, $spec2, $spec3
         );
-        $lines[] = "Estimated credits remaining to graduation: ~{$creditEstimate} credits";
+        $lines[] = "Est. credits remaining: ~{$creditEstimate}";
 
         return implode("\n", $lines);
     }

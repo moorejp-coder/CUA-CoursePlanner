@@ -100,8 +100,8 @@ class ChatController extends Controller
         $profileContext = $this->buildProfileContext();
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
-        // Keep only the most recent 20 history turns to stay within token limits.
-        $history = array_slice($validated['history'] ?? [], -20);
+        // Keep only the most recent 10 history turns to stay within token limits.
+        $history = array_slice($validated['history'] ?? [], -10);
 
         foreach ($history as $turn) {
             $messages[] = ['role' => $turn['role'], 'content' => strip_tags($turn['content'])];
@@ -253,7 +253,7 @@ class ChatController extends Controller
             default => '',
         };
 
-        $dateContext = "TODAY: {$now->format('F j, Y')} | CURRENT SEMESTER: {$currentSemester} | NEXT SEMESTER: {$nextSemester}".
+        $dateContext = "DATE: {$now->format('M j Y')} | SEM: {$currentSemester} | NEXT: {$nextSemester}".
             ($registrationNote ? " | {$registrationNote}" : '');
 
         $user = Auth::user()->load(['studentProfile', 'studentCourses']);
@@ -290,14 +290,13 @@ class ChatController extends Controller
 
         $lines = [
             $dateContext,
-            "STUDENT PROFILE: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} Catalog | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation}",
-            "Specializations: {$specList}",
-            'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
-            'IN PROGRESS: '.(implode(', ', $inProgressCodes) ?: 'None'),
+            "STUDENT: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation} | Specs: {$specList}",
+            'DONE: '.(implode(', ', $completedCodes) ?: 'None'),
+            'IP: '.(implode(', ', $inProgressCodes) ?: 'None'),
         ];
 
         if ($exemptions) {
-            $lines[] = 'EXEMPTIONS (do NOT list these as requirements the student still needs): '.$exemptions;
+            $lines[] = 'EXEMPT (satisfied — do NOT list as needed): '.$exemptions;
         }
 
         if ($profile->degree === 'bs_accounting') {
@@ -311,7 +310,7 @@ class ChatController extends Controller
 
                 return "{$c->course_code}({$status})";
             })->join(' ');
-            $lines[] = 'ACCT REQUIREMENTS: '.($acctParts ?: 'Not yet entered');
+            $lines[] = 'ACCT: '.($acctParts ?: 'Not yet entered');
         }
 
         // Remaining degree requirements for 4-year plan generation
