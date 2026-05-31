@@ -1,4 +1,3 @@
-use Illuminate\Support\Facades\Cache;
 <?php
 
 namespace App\Http\Controllers;
@@ -11,6 +10,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
@@ -19,7 +19,7 @@ class ChatController extends Controller
 {
     public function index(): View
     {
-        $ = Auth::user()?->studentProfile;
+        $profile = Auth::user()?->studentProfile;
 
         $showSemesterBanner = false;
         if ($profile) {
@@ -94,15 +94,14 @@ class ChatController extends Controller
 
         $cleanMessage = strip_tags($validated['message']);
 
-        $systemPrompt = Cache::remember('system_prompt', 3600, function () {
-    return file_get_contents(storage_path('app/system_prompt.txt'));
-});
+        $systemPrompt = Cache::remember('system_prompt', 3600, fn () => file_get_contents(storage_path('app/system_prompt.txt')));
 
         $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences or a short list unless the student asks for a full plan. Never repeat information already shown in the student profile.";
+
         $profileContext = $this->buildProfileContext($cleanMessage);
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
-        // Keep only the most recent 10 history turns to stay within token limits.
+        // Keep only the most recent 6 history turns to stay within token limits.
         $history = array_slice($validated['history'] ?? [], -6);
 
         foreach ($history as $turn) {
@@ -230,7 +229,7 @@ class ChatController extends Controller
         return implode('; ', $parts);
     }
 
-    private function buildProfileContext(): string
+    private function buildProfileContext(string $userMessage = ''): string
     {
         $now = now();
         $month = (int) $now->month;
@@ -316,96 +315,80 @@ class ChatController extends Controller
             $lines[] = 'ACCT: '.($acctParts ?: 'Not yet entered');
         }
 
-        // Remaining degree requirements for 4-year plan generation
+        $planningKeywords = [
+            'plan', 'schedule', 'semester', 'remaining', 'graduate',
+            'prerequisite', 'register', 'take', 'recommend', 'course',
+            'credit', 'finish', 'sequence', 'requirement',
+        ];
+        $lowerMessage = strtolower($userMessage);
+        $isPlanningIntent = count(array_filter($planningKeywords, fn ($kw) => str_contains($lowerMessage, $kw))) > 0;
+
         $plannerService = new PlannerService;
-        $remainingContext = $plannerService->buildRemainingContext(
-            $profile->degree,
-            $profile->catalog_year,
-            strtolower($profile->projected_standing),
-            (int) $profile->credits_completed,
-            $profile->specialization_1,
-            $profile->specialization_2,
-            $profile->specialization_3,
-            $user->studentCourses,
-        );
-        $lines[] = $remainingContext;
 
-        // Prerequisite conflict detection + next-eligible analysis
-        $prereqService = new PrerequisiteService;
-        $prereqSummary = $prereqService->buildContextSummary(
-            $completedCodes,
-            $inProgressCodes,
-            strtolower($profile->projected_standing),
-            (int) $profile->credits_completed,
-            $profile->degree,
-            $profile->specialization_1,
-            $profile->specialization_2,
-            $profile->specialization_3,
-        );
+        if ($isPlanningIntent) {
+            // Remaining degree requirements for 4-year plan generation
+            $remainingContext = $plannerService->buildRemainingContext(
+                $profile->degree,
+                $profile->catalog_year,
+                strtolower($profile->projected_standing),
+                (int) $profile->credits_completed,
+                $profile->specialization_1,
+                $profile->specialization_2,
+                $profile->specialization_3,
+                $user->studentCourses,
+            );
+            $lines[] = $remainingContext;
 
-        if ($prereqSummary) {
-            $lines[] = $prereqSummary;
-        }
+            // Prerequisite conflict detection + next-eligible analysis
+            $prereqSummary = (new PrerequisiteService)->buildContextSummary(
+                $completedCodes,
+                $inProgressCodes,
+                strtolower($profile->projected_standing),
+                (int) $profile->credits_completed,
+                $profile->degree,
+                $profile->specialization_1,
+                $profile->specialization_2,
+                $profile->specialization_3,
+            );
 
-        // Eligible elective suggestions per specialization
-        $eligibleElectives = $plannerService->buildEligibleElectives(
-            $profile->catalog_year,
-            $completedCodes,
-            $inProgressCodes,
-            strtolower($profile->projected_standing),
-            (int) $profile->credits_completed,
-            $profile->specialization_1,
-            $profile->specialization_2,
-            $profile->specialization_3,
-        );
+            if ($prereqSummary) {
+                $lines[] = $prereqSummary;
+            }
 
-        if ($eligibleElectives) {
-            $lines[] = $eligibleElectives;
-        }
+            // Eligible elective suggestions per specialization
+            $eligibleElectives = $plannerService->buildEligibleElectives(
+                $profile->catalog_year,
+                $completedCodes,
+                $inProgressCodes,
+                strtolower($profile->projected_standing),
+                (int) $profile->credits_completed,
+                $profile->specialization_1,
+                $profile->specialization_2,
+                $profile->specialization_3,
+            );
 
-        // Fastest path to graduation — critical chains + minimum semesters
-        $fastestPath = $plannerService->buildFastestPathAnalysis(
-            $profile->degree,
-            $profile->catalog_year,
-            $completedCodes,
-            $inProgressCodes,
-            strtolower($profile->projected_standing),
-            (int) $profile->credits_completed,
-            $profile->specialization_1,
-            $profile->specialization_2,
-            $profile->specialization_3,
-        );
+            if ($eligibleElectives) {
+                $lines[] = $eligibleElectives;
+            }
 
-        if ($fastestPath) {
-            $lines[] = $fastestPath;
+            // Fastest path to graduation — critical chains + minimum semesters
+            $fastestPath = $plannerService->buildFastestPathAnalysis(
+                $profile->degree,
+                $profile->catalog_year,
+                $completedCodes,
+                $inProgressCodes,
+                strtolower($profile->projected_standing),
+                (int) $profile->credits_completed,
+                $profile->specialization_1,
+                $profile->specialization_2,
+                $profile->specialization_3,
+            );
+
+            if ($fastestPath) {
+                $lines[] = $fastestPath;
+            }
         }
 
         return "\n\n".implode("\n", $lines);
     }
-}private function buildProfileContext(string $userMessage = ''): string
-{
-    // Detect if this message needs full planning context
-    $planningKeywords = [
-        'plan', 'schedule', 'semester', 'next', 'remaining', 'need', 'graduate',
-        'graduation', 'prerequisite', 'prereq', 'eligible', 'register', 'take',
-        'recommend', 'suggest', 'course', 'credit', 'standing', 'finish', 'path',
-        'sequence', 'left', 'still', 'complete', 'missing', 'requirement',
-    ];
-    
-    $messageLower = strtolower($userMessage);
-    $needsFullContext = false;
-    foreach ($planningKeywords as $kw) {
-        if (str_contains($messageLower, $kw)) {
-            $needsFullContext = true;
-            break;
-        }
-    }
-
-    // ... (rest of existing date/semester setup stays the same) ...
-    
-    // At the bottom, where the three service calls are, wrap them:
-    $remainingContext = $needsFullContext
-        ? $plannerService->buildRemainingContext(/* ...existing args... */)
-        : '';
-    
-    // ... same for buildEligibleElectives and buildFastestPathAnalysis ...
+}
