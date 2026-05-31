@@ -248,9 +248,11 @@
               degree: '{{ old('degree', $profile->degree) }}',
               catalogYear: '{{ old('catalog_year', $profile->catalog_year) }}',
               credits: {{ old('credits_completed', $profile->credits_completed ?? 0) }},
-              spec1: '{{ old('specialization_1', $profile->specialization_1) }}',
+              spec1: '{{ old('specialization_1', $profile->degree === 'bsba' ? ($profile->specialization_1 ?? '') : '') }}',
               spec2: '{{ old('specialization_2', $profile->specialization_2) }}',
               spec3: '{{ old('specialization_3', $profile->specialization_3) }}',
+              pairKey: '{{ old('specialization_1', $profile->degree === 'double_major' ? ($profile->specialization_1 ?? '') : '') }}',
+              doubleMajorPairs: {{ Js::from($doubleMajorPairs) }},
               specsPost: {{ Js::from($specsPost) }},
               specsPre:  {{ Js::from($specsPre) }},
               get specs() {
@@ -426,6 +428,7 @@
                 <div class="mb-4">
                     <label for="specialization_1" class="field-label">Primary Specialization</label>
                     <select id="specialization_1" name="specialization_1" x-model="spec1" x-ref="spec1El"
+                            :disabled="degree !== 'bsba'"
                             class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}">
                         <option value="">— Select specialization —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
@@ -439,6 +442,7 @@
                 <div class="mb-4">
                     <label for="specialization_2" class="field-label">Second Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
                     <select id="specialization_2" name="specialization_2" x-model="spec2" x-ref="spec2El"
+                            :disabled="degree !== 'bsba'"
                             class="field-input {{ $errors->has('specialization_2') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
@@ -452,6 +456,7 @@
                 <div>
                     <label for="specialization_3" class="field-label">Third Specialization <span style="font-weight:400; text-transform:none; letter-spacing:0;">(optional)</span></label>
                     <select id="specialization_3" name="specialization_3" x-model="spec3" x-ref="spec3El"
+                            :disabled="degree !== 'bsba'"
                             class="field-input {{ $errors->has('specialization_3') ? 'error' : '' }}">
                         <option value="">— None —</option>
                         <template x-for="[key, label] in Object.entries(specs)" :key="key">
@@ -464,14 +469,46 @@
             </div>
         </div>
 
-        {{-- Note for non-BSBA degrees --}}
-        <div x-show="!showSpecs" x-cloak class="mb-5">
+        {{-- Note for B.S. Accounting --}}
+        <div x-show="degree === 'bs_accounting'" x-cloak class="mb-5">
             <div class="alert-info">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0; margin-top:1px;">
                     <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.45-.083.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
                 </svg>
-                <span x-show="degree === 'bs_accounting'">B.S. in Accounting students do not declare specializations — the accounting major is the program.</span>
-                <span x-show="degree !== 'bs_accounting' && degree !== 'bsba'">Specializations apply to B.S.B.A. students. Double major and minor students follow a different course structure.</span>
+                <span>B.S. in Accounting students do not declare specializations — the accounting major is the program.</span>
+            </div>
+        </div>
+
+        {{-- Double Major: Business Pair Selector --}}
+        <div x-show="degree === 'double_major'" x-cloak class="section-card mb-5">
+            <div class="section-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="color:var(--cua-blue); flex-shrink:0;">
+                    <path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+                    <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                </svg>
+                <span class="section-title">Business Pair Selection</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Double major students choose one of nine business pairs — two upper-division courses that complement your primary major.</p>
+                <label for="pair_key" class="field-label">Business Pair</label>
+                <select id="pair_key" name="specialization_1" x-model="pairKey" :disabled="degree !== 'double_major'"
+                        class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}" style="max-width:420px;">
+                    <option value="">— Select your business pair —</option>
+                    @foreach($doubleMajorPairs as $key => $label)
+                        <option value="{{ $key }}" {{ old('specialization_1', $profile->degree === 'double_major' ? ($profile->specialization_1 ?? '') : '') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('specialization_1')<p class="field-error">{{ $message }}</p>@enderror
+            </div>
+        </div>
+
+        {{-- Note for Business Minor --}}
+        <div x-show="degree === 'business_minor'" x-cloak class="mb-5">
+            <div class="alert-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0; margin-top:1px;">
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.45-.083.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                </svg>
+                <span>Business Minor students follow a defined 6-course minor structure set during onboarding. Contact your advisor for course requirements.</span>
             </div>
         </div>
 
@@ -504,6 +541,7 @@
         $vs = fn(string $k) => old("spec_courses[{$k}]", $specData[$k] ?? 'not_yet');
         $coreOptions = $requirements[$catalogYear]['business_core_options'] ?? [];
         $sh = 'style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:1rem 0 .4rem;"';
+        $isDoubleMajor = $profile->degree === 'double_major';
     @endphp
 
     <form method="POST" action="{{ route('profile.academic.courses') }}"
@@ -715,6 +753,7 @@
                             <option value="ECON 102"  {{ $vc('core_sres101') === 'ECON 102'  ? 'selected':'' }}>ECON 102 (equivalent)</option>
                         </select>
                     </div>
+                    @if(!$isDoubleMajor)
                     <div>
                         <label class="field-label">SRES 102 — Markets &amp; Prosperity II</label>
                         <select name="core_sres102" class="field-input">
@@ -734,6 +773,7 @@
                         </select>
                     </div>
                     @endif
+                    @endif
                 </div>
 
                 <p {!! $sh !!}>3. Accounting</p>
@@ -746,6 +786,7 @@
                             <option value="Completed"   {{ $vc('core_acct205') === 'Completed'   ? 'selected':'' }}>Completed</option>
                         </select>
                     </div>
+                    @if(!$isDoubleMajor)
                     <div>
                         <label class="field-label">ACCT 206 — Managerial Accounting</label>
                         <select name="core_acct206" class="field-input">
@@ -754,9 +795,10 @@
                             <option value="Completed"   {{ $vc('core_acct206') === 'Completed'   ? 'selected':'' }}>Completed</option>
                         </select>
                     </div>
+                    @endif
                 </div>
 
-                <p {!! $sh !!}>4. Finance, Marketing &amp; Communications</p>
+                <p {!! $sh !!}>4. Finance{{ $isDoubleMajor ? ' &amp; Marketing' : ', Marketing &amp; Communications' }}</p>
                 <div class="field-grid mb-4">
                     <div>
                         <label class="field-label">FIN 226 — Introduction to Finance</label>
@@ -766,6 +808,7 @@
                             <option value="Completed"   {{ $vc('core_fin226') === 'Completed'   ? 'selected':'' }}>Completed</option>
                         </select>
                     </div>
+                    @if(!$isDoubleMajor)
                     <div>
                         <label class="field-label">MGT 250 — Business Communications</label>
                         <select name="core_mgt250" class="field-input">
@@ -774,6 +817,7 @@
                             <option value="Completed"   {{ $vc('core_mgt250') === 'Completed'   ? 'selected':'' }}>Completed</option>
                         </select>
                     </div>
+                    @endif
                     <div>
                         <label class="field-label">MKT 345 — Marketing Management</label>
                         <select name="core_mkt345" class="field-input">
@@ -784,7 +828,7 @@
                     </div>
                 </div>
 
-                <p {!! $sh !!}>5. Mathematics &amp; Statistics</p>
+                <p {!! $sh !!}>5. Mathematics{{ $isDoubleMajor ? '' : ' &amp; Statistics' }}</p>
                 <div class="field-grid mb-4">
                     <div>
                         <label class="field-label">Mathematics</label>
@@ -795,6 +839,7 @@
                             <option value="Level 1 or 2 Exempt" {{ $vc('core_math') === 'Level 1 or 2 Exempt' ? 'selected':'' }}>Level 1 or 2 Placement Exempt</option>
                         </select>
                     </div>
+                    @if(!$isDoubleMajor)
                     <div>
                         <label class="field-label">Statistics for Business</label>
                         <select name="core_stats" class="field-input">
@@ -816,8 +861,10 @@
                         </select>
                     </div>
                     @endif
+                    @endif
                 </div>
 
+                @if(!$isDoubleMajor)
                 <p {!! $sh !!}>6. Information Management Gateway</p>
                 <div class="mb-4" style="max-width:340px;">
                     <label class="field-label">Info Management Course</label>
@@ -828,7 +875,18 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
 
+                @if($isDoubleMajor)
+                <p {!! $sh !!}>6. Business Ethics</p>
+                <div class="mb-4" style="max-width:340px;">
+                    <label class="field-label">MGT 301 — Business Ethics</label>
+                    <select name="core_ethics" class="field-input">
+                        <option value="not_yet" {{ $vc('core_ethics') === 'not_yet' ? 'selected':'' }}>Not yet completed</option>
+                        <option value="MGT 301" {{ $vc('core_ethics') === 'MGT 301' ? 'selected':'' }}>MGT 301 (completed)</option>
+                    </select>
+                </div>
+                @else
                 <p {!! $sh !!}>7. Ethics &amp; Law</p>
                 <div class="field-grid mb-4">
                     <div>
@@ -851,9 +909,11 @@
                         </select>
                     </div>
                 </div>
+                @endif
 
-                <p {!! $sh !!}>8. Career Discernment</p>
+                <p {!! $sh !!}>{{ $isDoubleMajor ? '7' : '8' }}. Career Discernment</p>
                 <div class="field-grid mb-4">
+                    @if(!$isDoubleMajor)
                     <div>
                         <label class="field-label">BUS 199 — Career Discernment I <span style="font-weight:400;text-transform:none;letter-spacing:0;">(Fall only)</span></label>
                         <select name="core_bus199" class="field-input">
@@ -873,6 +933,7 @@
                             @endif
                         </select>
                     </div>
+                    @endif
                     <div>
                         <label class="field-label">Career Discernment III{{ $isSales ? ' — BUS 399A / MKT 399' : ' — BUS 399A' }}</label>
                         <select name="core_bus399a" class="field-input">
@@ -897,7 +958,7 @@
                     </div>
                 </div>
 
-                <p {!! $sh !!}>9. Strategy &amp; Assessment</p>
+                <p {!! $sh !!}>{{ $isDoubleMajor ? '8' : '9' }}. Strategy &amp; Assessment</p>
                 <div class="field-grid mb-4">
                     <div>
                         <label class="field-label">MGT 475 — Business Strategy</label>
@@ -917,7 +978,7 @@
                     </div>
                 </div>
 
-                @if(!$isPost2024 && $isSingleSpec)
+                @if(!$isDoubleMajor && !$isPost2024 && $isSingleSpec)
                 <p {!! $sh !!}>10. Business Electives <span style="font-weight:400;text-transform:none;letter-spacing:0;">(Pre-2024 single-spec only)</span></p>
                 <div class="field-grid mb-2">
                     <div>
@@ -937,6 +998,31 @@
 
             </div>
         </div>
+
+        {{-- ============================================================ --}}
+        {{-- DOUBLE MAJOR: PAIR COURSES                                    --}}
+        {{-- ============================================================ --}}
+        @if($profile->degree === 'double_major' && !empty($currentPairCourses))
+        <div class="section-card mt-6">
+            <div class="section-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="color:var(--cua-blue);flex-shrink:0;"><path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/><path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+                <span class="section-title">{{ $currentPairLabel }} — Pair Courses</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">These two upper-division courses are required for your selected business pair.</p>
+                @foreach($currentPairCourses as $code)
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #f5f5f5;gap:1rem;">
+                    <span style="font-weight:600;font-size:.9rem;color:#1a1a1a;min-width:90px;flex-shrink:0;">{{ $code }}</span>
+                    <select name="spec_courses[{{ $code }}]" style="width:200px;flex-shrink:0;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:6px;font-size:.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                        <option value="not_yet"     {{ $vs($code) === 'not_yet'     ? 'selected':'' }}>Not yet completed</option>
+                        <option value="in_progress" {{ $vs($code) === 'in_progress' ? 'selected':'' }}>In Progress</option>
+                        <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
+                    </select>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
 
         {{-- ============================================================ --}}
         {{-- SPECIALIZATION COURSES                                        --}}
