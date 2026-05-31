@@ -39,14 +39,14 @@ Normal load: 15-17cr | Overelect 18-20cr (needs 3.0 GPA) | Superelect 21+ (needs
 5. Rhetoric & Composition (C- required): ENG 101, ENG 101H, ENG 101C
 6. Natural Science: ANTH 105/108/204/206/352/354; BIOL 103/109; CHEM 10/110/125/126/127/128R/130; PHYS 101/103/122/206/215H; PSY 204; SAS 225; HSEV 101
 7. Literature: ENG 206/212/231/232/235/236/278/305/306/341/345/347/351/356/364/376; SPAN 224/225/240/321; FREN 220/230/242; GER 220/225/230; CLAS 105/106/211/244; ARAB 279; ITAL 212/220/232; HUM 101/124; MDIA 225; GS 220
-8. Fine Arts: ART 201/211/212/213/222/251/252/272/308/317/318/320/335; MUS 110/112/131/134/135/276/327/328; DR 105/106/110/201/202/207/305; DNCE 101; ARPL 211; CLAS 214/221/317/318; MDIA 201/343; ENG 300/302
+8. Fine Arts: ART 201/211/212/213/222/251/252/272/302/308/317/318/319/320/335; MUS 110/112/131/134/135/178/276/304/327/328/328H; DR 105/106/110/201/202/207/305/403; DNCE 101; ARPL 211; CLAS 214/221/251/261/317/318/318R; MDIA 201/343; ENG 300/302; ENGR 101; HIST 390A; ITAL 219-R; HSLS 352; HSAM 101
 9. Social Science: ANTH 101/110/201/203/211/226/240/260; PSY 201/226/261; SOC 101/102/202/206/210/281/330; ECON 101/102/103/104; GS 101; CEE 201; SRES 345; SSS 101/226
-10. Mathematical Thinking: MATH 111/112/114/121/122/168/175/187; or Math Placement Exempt
+10. Mathematical Thinking: MATH 111/112/114/121/122/168/175/187; HSMS 230/330; HSSS 203; or Math Placement Exempt
 
 Additional required:
 - Philosophy Elective: any PHIL course (Honors: HSPH 203/204)
 - Theology Elective: any TRS course (Honors: any HSTR or HSEV 102)
-- History or Politics: HIST 140/142/151/202/205/206/208/222/224/226/229/231A/231B/235/246/257/258/301/308B/309/312/315/316/334A/349/351/371D/380D/384A/385; POL 111/112/211/226; CLAS 205/206/207/220/226/260/304/308; EURO 203; ANTH 215; ECST 315; MDIA 202; ITAL 221; WASH 101
+- History or Politics: HIST 140/142/151/202/205/206/206R/208/222/224/226/229/231A/231B/235/246/257/258/301/308B/309/309B/312/315/316/334A/349/351/371D/380D/384A/385; POL 111/112/211/226; CLAS 205/206/206R/207/220/226/260/304/308; EURO 203; ANTH 215; ECST 315; MDIA 202; ITAL 221; WASH 101; HSHU 101/102/204; HSLS 205/351/354
 - Language I (C- to advance): ARAB/CHN/FREN/GER/GR/IRSH/ITAL/LAT/SPAN 103
 - Language II: same options at 104 level
 - SPAN 111 or 113 satisfies BOTH Language I and Language II in one course
@@ -80,8 +80,8 @@ Up to 2 courses may double-count between liberal arts and major.
 - MKT 345: Marketing Management
 
 ### Section 7 — Mathematics and Statistics
-- Stats: MGT 265 (Post-2024) or ECON 223/MGT 265 (Pre-2024); Pre-2024 also: MGT 365
-- Math: MATH 110, MATH 111, or Level 1/2 Placement Exempt. Finance/Accounting require MATH 111.
+- Stats: MGT 265 (Post-2024) or ECON 223/MGT 265 (Pre-2024); Pre-2024 also: MGT 365 (BUS 603 accepted equivalent)
+- Math: MATH 110, MATH 111, or Level 1/2 Placement Exempt. Finance/Accounting require MATH 111. Level 3 placement requires MATH 110 first.
 
 ### Section 8 — Information Management Gateway (choose 1; must not duplicate specialization)
 Pre-2024: MGT 240, MGT 331, MGT 351, MGT 361, ACCT 425, ECON 370, EAM 406, ENT 519
@@ -171,7 +171,7 @@ Variable: ENT 351, ENT 494, FIN 337, FIN 342, FIN 389, FIN 391, MKT 350, MKT 368
 ---
 
 ## 4-YEAR PLAN
-Use REMAINING REQUIREMENTS + STILL BLOCKED + NEXT ELIGIBLE from student profile context. Output: "Fall [Year]: Course 1, Course 2... (~15cr)" per semester; 4-5 courses/15-17cr typical. Only plan remaining semesters for non-freshmen.
+Use REMAINING + STILL BLOCKED + NOW ELIGIBLE from student profile context. Output: "Fall [Year]: Course 1, Course 2... (~15cr)" per semester; 4-5 courses/15-17cr typical. Only plan remaining semesters for non-freshmen.
 Rules: honor SEMESTER AVAILABILITY; ACCT 205 before ACCT 206/FIN 226; FIN 226 + MATH 111 before FIN 332/334; MGT 475 + BUS 498 same senior semester; BUS 199 Fall only; BUS 299A needs 24cr, BUS 399A needs 54cr, BUS 499A needs 85cr; spread LA courses; honor standing requirements; note grade requirements (ACCT 310 B+ → ACCT 312).
 
 ## ELECTIVE SUGGESTIONS

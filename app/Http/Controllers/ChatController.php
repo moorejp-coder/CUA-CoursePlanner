@@ -253,7 +253,7 @@ class ChatController extends Controller
             default => '',
         };
 
-        $dateContext = "DATE: {$now->format('M j Y')} | SEM: {$currentSemester} | NEXT: {$nextSemester}".
+        $dateContext = "DATE: {$now->format('M j, Y')} | SEM: {$currentSemester} | NEXT: {$nextSemester}".
             ($registrationNote ? " | {$registrationNote}" : '');
 
         $user = Auth::user()->load(['studentProfile', 'studentCourses']);
@@ -291,12 +291,12 @@ class ChatController extends Controller
         $lines = [
             $dateContext,
             "STUDENT: {$profile->full_name} | {$degreeLabel} | {$catalogLabel} | Admit: {$profile->admit_term} | Standing: {$profile->projected_standing} | Credits: {$profile->credits_completed} | Grad: {$profile->expected_graduation} | Specs: {$specList}",
-            'DONE: '.(implode(', ', $completedCodes) ?: 'None'),
-            'IP: '.(implode(', ', $inProgressCodes) ?: 'None'),
+            'COMPLETED: '.(implode(', ', $completedCodes) ?: 'None'),
+            'IN_PROGRESS: '.(implode(', ', $inProgressCodes) ?: 'None'),
         ];
 
         if ($exemptions) {
-            $lines[] = 'EXEMPT (satisfied — do NOT list as needed): '.$exemptions;
+            $lines[] = 'EXEMPTIONS (these requirements ARE satisfied — do NOT tell the student they still need them): '.$exemptions;
         }
 
         if ($profile->degree === 'bs_accounting') {
