@@ -262,7 +262,7 @@ class PlannerService
                 $lines[] = "Grad target: {$expectedGraduation} (this semester or already past).";
             } elseif ($minSemesters > $gradSemesters) {
                 $deficit = $minSemesters - $gradSemesters;
-                $lines[] = "Grad target: {$expectedGraduation} ({$gradSemesters} semester(s) away). WARNING: need ~{$minSemesters} semesters but only {$gradSemesters} available — {$deficit} short. Flag summer courses or heavier load.";
+                $lines[] = "Grad target: {$expectedGraduation} ({$gradSemesters} semester(s) away). WARNING: need ~{$minSemesters} semesters but only {$gradSemesters} available — {$deficit} short. Advise up to 19 credits/semester (overelect, 3.0 GPA required) or summer courses before suggesting superelect (21+, 3.7 GPA required).";
             } else {
                 $buffer = $gradSemesters - $minSemesters;
                 $lines[] = "Grad target: {$expectedGraduation} ({$gradSemesters} semester(s) away). On track — {$minSemesters} semesters needed, {$buffer} semester(s) of buffer.";
