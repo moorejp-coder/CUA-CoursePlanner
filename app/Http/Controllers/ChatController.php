@@ -18,7 +18,7 @@ class ChatController extends Controller
 {
     public function index(): View
     {
-        $profile = Auth::user()?->studentProfile;
+        $ = Auth::user()?->studentProfile;
 
         $showSemesterBanner = false;
         if ($profile) {
@@ -97,7 +97,7 @@ class ChatController extends Controller
 
         $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only.";
 
-        $profileContext = $this->buildProfileContext();
+        $profileContext = $this->buildProfileContext($cleanMessage);
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
 
         // Keep only the most recent 10 history turns to stay within token limits.
@@ -380,4 +380,30 @@ class ChatController extends Controller
 
         return "\n\n".implode("\n", $lines);
     }
-}
+}private function buildProfileContext(string $userMessage = ''): string
+{
+    // Detect if this message needs full planning context
+    $planningKeywords = [
+        'plan', 'schedule', 'semester', 'next', 'remaining', 'need', 'graduate',
+        'graduation', 'prerequisite', 'prereq', 'eligible', 'register', 'take',
+        'recommend', 'suggest', 'course', 'credit', 'standing', 'finish', 'path',
+        'sequence', 'left', 'still', 'complete', 'missing', 'requirement',
+    ];
+    
+    $messageLower = strtolower($userMessage);
+    $needsFullContext = false;
+    foreach ($planningKeywords as $kw) {
+        if (str_contains($messageLower, $kw)) {
+            $needsFullContext = true;
+            break;
+        }
+    }
+
+    // ... (rest of existing date/semester setup stays the same) ...
+    
+    // At the bottom, where the three service calls are, wrap them:
+    $remainingContext = $needsFullContext
+        ? $plannerService->buildRemainingContext(/* ...existing args... */)
+        : '';
+    
+    // ... same for buildEligibleElectives and buildFastestPathAnalysis ...
