@@ -371,14 +371,15 @@ class AcademicProfileController extends Controller
         $coreRows = [];
         foreach ($coreSlots as $slot) {
             $dbCourse = null;
+            $lookupName = $slot['db_name'] ?? $slot['name'];
             if ($slot['code']) {
                 $dbCourse = $coursesByCode->get($slot['code'])
                     ?? $courses->where('requirement_category', 'business_core')
-                        ->where('course_name', $slot['name'])
+                        ->where('course_name', $lookupName)
                         ->first();
             } else {
                 $dbCourse = $courses->where('requirement_category', 'business_core')
-                    ->where('course_name', $slot['name'])
+                    ->where('course_name', $lookupName)
                     ->first();
             }
             $coreRows[] = [
@@ -515,10 +516,10 @@ class AcademicProfileController extends Controller
     private function buildCoreSlots(bool $isPost2024, bool $isSingleSpec): array
     {
         $slots = [
-            ['name' => 'ENT 118 — Vocation of Business',       'code' => ''],
-            ['name' => 'MGT 123 — Foundations of Business',    'code' => ''],
-            ['name' => 'SRES 101 — Markets & Prosperity I',     'code' => ''],
-            ['name' => 'SRES 102 — Markets & Prosperity II',    'code' => ''],
+            ['name' => 'ENT 118 — Vocation of Business',       'code' => '', 'db_name' => 'ENT 118'],
+            ['name' => 'MGT 123 — Foundations of Business',    'code' => '', 'db_name' => 'MGT 123'],
+            ['name' => 'SRES 101 — Markets & Prosperity I',    'code' => '', 'db_name' => 'SRES 101/ECON'],
+            ['name' => 'SRES 102 — Markets & Prosperity II',   'code' => '', 'db_name' => 'SRES 102/ECON'],
             ['name' => 'Financial Accounting',                  'code' => 'ACCT 205'],
             ['name' => 'Managerial Accounting',                 'code' => 'ACCT 206'],
             ['name' => 'Financial Management',                  'code' => 'FIN 226'],
