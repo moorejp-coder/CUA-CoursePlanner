@@ -76,6 +76,19 @@ class AcademicProfileController extends Controller
             : [];
         $currentPairLabel = $doubleMajorPairs[$currentPairKey] ?? '';
 
+        // Business minor options: key → display label
+        $businessMinorOptions = [];
+        foreach ($requirements['business_minors'] ?? [] as $key => $minor) {
+            $businessMinorOptions[$key] = $minor['label'];
+        }
+
+        // Current minor's course data for the student's saved minor
+        $currentMinorKey = $profile->degree === 'business_minor' ? ($profile->specialization_1 ?? '') : '';
+        $currentMinorData = $currentMinorKey
+            ? ($requirements['business_minors'][$currentMinorKey] ?? [])
+            : [];
+        $currentMinorLabel = $businessMinorOptions[$currentMinorKey] ?? '';
+
         return view('profile.academic-edit', [
             'profile' => $profile,
             'courses' => $otherCourses,
@@ -97,6 +110,10 @@ class AcademicProfileController extends Controller
             'doubleMajorPairs' => $doubleMajorPairs,
             'currentPairCourses' => $currentPairCourses,
             'currentPairLabel' => $currentPairLabel,
+            'businessMinorOptions' => $businessMinorOptions,
+            'currentMinorKey' => $currentMinorKey,
+            'currentMinorData' => $currentMinorData,
+            'currentMinorLabel' => $currentMinorLabel,
         ]);
     }
 
@@ -289,6 +306,7 @@ class AcademicProfileController extends Controller
         $catalogYear = $request->input('catalog_year', $profile->catalog_year);
         $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
         $validPairKeys = array_keys($requirements['double_major']['pairs'] ?? []);
+        $validMinorKeys = array_keys($requirements['business_minors'] ?? []);
         $degree = $request->input('degree', $profile->degree);
 
         $validated = $request->validate([
@@ -298,8 +316,8 @@ class AcademicProfileController extends Controller
             'expected_graduation' => ['required', Rule::in(self::GRADUATION_TERMS)],
             'credits_completed' => ['required', 'integer', 'min:0', 'max:250'],
             'specialization_1' => [
-                Rule::requiredIf(in_array($degree, ['bsba', 'double_major'])),
-                'nullable', 'string', Rule::in(array_merge([''], $validSpecs, $validPairKeys)),
+                Rule::requiredIf(in_array($degree, ['bsba', 'double_major', 'business_minor'])),
+                'nullable', 'string', Rule::in(array_merge([''], $validSpecs, $validPairKeys, $validMinorKeys)),
             ],
             'specialization_2' => ['nullable', 'string', Rule::in(array_merge([''], $validSpecs))],
             'specialization_3' => ['nullable', 'string', Rule::in(array_merge([''], $validSpecs))],
@@ -320,8 +338,12 @@ class AcademicProfileController extends Controller
             $validated['specialization_1'] = $validated['specialization_1'] ?: null;
             $validated['specialization_2'] = null;
             $validated['specialization_3'] = null;
+        } elseif ($validated['degree'] === 'business_minor') {
+            // Save minor key as specialization_1; minors have no spec 2 or 3
+            $validated['specialization_1'] = $validated['specialization_1'] ?: null;
+            $validated['specialization_2'] = null;
+            $validated['specialization_3'] = null;
         } else {
-            // business_minor: leave spec fields unchanged in DB
             unset($validated['specialization_1'], $validated['specialization_2'], $validated['specialization_3']);
         }
 

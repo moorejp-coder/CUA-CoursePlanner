@@ -253,6 +253,8 @@
               spec3: '{{ old('specialization_3', $profile->specialization_3) }}',
               pairKey: '{{ old('specialization_1', $profile->degree === 'double_major' ? ($profile->specialization_1 ?? '') : '') }}',
               doubleMajorPairs: {{ Js::from($doubleMajorPairs) }},
+              minorKey: '{{ old('specialization_1', $profile->degree === 'business_minor' ? ($profile->specialization_1 ?? '') : '') }}',
+              businessMinorOptions: {{ Js::from($businessMinorOptions) }},
               specsPost: {{ Js::from($specsPost) }},
               specsPre:  {{ Js::from($specsPre) }},
               get specs() {
@@ -502,13 +504,26 @@
             </div>
         </div>
 
-        {{-- Note for Business Minor --}}
-        <div x-show="degree === 'business_minor'" x-cloak class="mb-5">
-            <div class="alert-info">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="flex-shrink:0; margin-top:1px;">
-                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.45-.083.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+        {{-- Business Minor: Minor Selector --}}
+        <div x-show="degree === 'business_minor'" x-cloak class="section-card mb-5">
+            <div class="section-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="color:var(--cua-blue); flex-shrink:0;">
+                    <path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/>
+                    <path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                 </svg>
-                <span>Business Minor students follow a defined 6-course minor structure set during onboarding. Contact your advisor for course requirements.</span>
+                <span class="section-title">Business Minor Selection</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Select the Busch School minor you are completing. Your minor's specific course requirements will appear in the courses section below.</p>
+                <label for="minor_key" class="field-label">Business Minor</label>
+                <select id="minor_key" name="specialization_1" x-model="minorKey" :disabled="degree !== 'business_minor'"
+                        class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}" style="max-width:420px;">
+                    <option value="">— Select your minor —</option>
+                    @foreach($businessMinorOptions as $key => $label)
+                        <option value="{{ $key }}" {{ old('specialization_1', $profile->degree === 'business_minor' ? ($profile->specialization_1 ?? '') : '') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @endforeach
+                </select>
+                @error('specialization_1')<p class="field-error">{{ $message }}</p>@enderror
             </div>
         </div>
 
@@ -542,6 +557,7 @@
         $coreOptions = $requirements[$catalogYear]['business_core_options'] ?? [];
         $sh = 'style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:1rem 0 .4rem;"';
         $isDoubleMajor = $profile->degree === 'double_major';
+        $isBusinessMinor = $profile->degree === 'business_minor';
     @endphp
 
     <form method="POST" action="{{ route('profile.academic.courses') }}"
@@ -714,6 +730,7 @@
         {{-- ============================================================ --}}
         {{-- BUSINESS CORE                                                 --}}
         {{-- ============================================================ --}}
+        @if(!$isBusinessMinor)
         <div class="section-card mt-6">
             <div class="section-header">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="color:var(--cua-blue);flex-shrink:0;"><path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 3h16v5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V7zm3 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1H3zm2.5 0a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1h-5z"/></svg>
@@ -998,6 +1015,7 @@
 
             </div>
         </div>
+        @endif
 
         {{-- ============================================================ --}}
         {{-- DOUBLE MAJOR: PAIR COURSES                                    --}}
@@ -1019,6 +1037,87 @@
                         <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
                     </select>
                 </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
+        {{-- ============================================================ --}}
+        {{-- BUSINESS MINOR: MINOR COURSES                                 --}}
+        {{-- ============================================================ --}}
+        @if($isBusinessMinor && !empty($currentMinorData))
+        <div class="section-card mt-6">
+            <div class="section-header">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="color:var(--cua-blue);flex-shrink:0;"><path d="M5.5 2A3.5 3.5 0 0 0 2 5.5v5A3.5 3.5 0 0 0 5.5 14h5a3.5 3.5 0 0 0 3.5-3.5V8a.5.5 0 0 1 1 0v2.5a4.5 4.5 0 0 1-4.5 4.5h-5A4.5 4.5 0 0 1 1 10.5v-5A4.5 4.5 0 0 1 5.5 1H8a.5.5 0 0 1 0 1H5.5z"/><path d="M16 3a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/></svg>
+                <span class="section-title">{{ $currentMinorLabel }}</span>
+            </div>
+            <div class="section-body">
+                @if(!empty($currentMinorData['note']))
+                <div class="alert-info mb-4" style="font-size:13px;">{{ $currentMinorData['note'] }}</div>
+                @endif
+
+                {{-- Double-count courses (Finance/Economics minor only) --}}
+                @if(!empty($currentMinorData['double_count']))
+                <p {!! $sh !!}>Double-Count Courses (from your Economics major)</p>
+                @foreach($currentMinorData['double_count'] as $slot)
+                    @foreach($slot['options'] as $code)
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #f5f5f5;gap:1rem;">
+                        <span style="font-weight:600;font-size:.9rem;color:#1a1a1a;min-width:90px;flex-shrink:0;">{{ $code }}</span>
+                        <span style="font-size:.8rem;color:var(--text-muted);flex:1;">{{ $slot['label'] }}</span>
+                        <select name="spec_courses[{{ $code }}]" style="width:180px;flex-shrink:0;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:6px;font-size:.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                            <option value="not_yet"     {{ $vs($code) === 'not_yet'     ? 'selected':'' }}>Not yet</option>
+                            <option value="in_progress" {{ $vs($code) === 'in_progress' ? 'selected':'' }}>In Progress</option>
+                            <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
+                        </select>
+                    </div>
+                    @endforeach
+                @endforeach
+                @endif
+
+                {{-- Required courses --}}
+                @if(!empty($currentMinorData['required']))
+                <p {!! $sh !!}>Required Courses</p>
+                @foreach($currentMinorData['required'] as $slot)
+                    @if(count($slot['options']) === 1)
+                    @php $code = $slot['options'][0]; @endphp
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #f5f5f5;gap:1rem;">
+                        <span style="font-weight:600;font-size:.9rem;color:#1a1a1a;min-width:90px;flex-shrink:0;">{{ $code }}</span>
+                        <span style="font-size:.8rem;color:var(--text-muted);flex:1;">{{ $slot['label'] }}</span>
+                        <select name="spec_courses[{{ $code }}]" style="width:180px;flex-shrink:0;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:6px;font-size:.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                            <option value="not_yet"     {{ $vs($code) === 'not_yet'     ? 'selected':'' }}>Not yet</option>
+                            <option value="in_progress" {{ $vs($code) === 'in_progress' ? 'selected':'' }}>In Progress</option>
+                            <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
+                        </select>
+                    </div>
+                    @else
+                    <p style="font-size:12px;font-weight:600;color:#374151;margin:.75rem 0 .25rem;">{{ $slot['label'] }} — mark which you completed:</p>
+                    @foreach($slot['options'] as $code)
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0 .4rem 1rem;border-bottom:1px solid #f5f5f5;gap:1rem;">
+                        <span style="font-weight:600;font-size:.9rem;color:#1a1a1a;min-width:90px;flex-shrink:0;">{{ $code }}</span>
+                        <select name="spec_courses[{{ $code }}]" style="width:180px;flex-shrink:0;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:6px;font-size:.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                            <option value="not_yet"     {{ $vs($code) === 'not_yet'     ? 'selected':'' }}>Not yet</option>
+                            <option value="in_progress" {{ $vs($code) === 'in_progress' ? 'selected':'' }}>In Progress</option>
+                            <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
+                        </select>
+                    </div>
+                    @endforeach
+                    @endif
+                @endforeach
+                @endif
+
+                {{-- Elective groups --}}
+                @foreach($currentMinorData['electives'] ?? [] as $group)
+                <p {!! $sh !!}>{{ $group['label'] }} (choose {{ $group['choose'] }})</p>
+                @foreach($group['options'] as $code)
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid #f5f5f5;gap:1rem;">
+                    <span style="font-weight:600;font-size:.9rem;color:#1a1a1a;min-width:90px;flex-shrink:0;">{{ $code }}</span>
+                    <select name="spec_courses[{{ $code }}]" style="width:180px;flex-shrink:0;padding:.4rem .7rem;border:1.5px solid var(--border);border-radius:6px;font-size:.88rem;font-family:'Roboto',sans-serif;background:#fff;">
+                        <option value="not_yet"     {{ $vs($code) === 'not_yet'     ? 'selected':'' }}>Not yet</option>
+                        <option value="in_progress" {{ $vs($code) === 'in_progress' ? 'selected':'' }}>In Progress</option>
+                        <option value="completed"   {{ $vs($code) === 'completed'   ? 'selected':'' }}>Completed</option>
+                    </select>
+                </div>
+                @endforeach
                 @endforeach
             </div>
         </div>
