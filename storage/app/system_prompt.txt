@@ -232,7 +232,10 @@ For non-Busch CUA students. ⚠️ Not for Nursing/Engineering/Architecture; not
 Eligibility: 3.2+ GPA, 60+ credits. Compatible with majors ≤14 courses (Arts & Sciences, Philosophy, TRS, Music/Drama/Art).
 Requirements: 10 three-credit + 2 one-credit BUS career courses; MATH 110+ required.
 Core (all): SRES 101/ECON 102, ENT 118, MGT 123, ACCT 205, FIN 226, MGT 301, MKT 345, MGT 475, BUS 399A, BUS 499A.
-Focus Area (choose 1 pair): MGT 310+311, MGT 332+312, MKT 346+348, MKT 349+435, FIN 332+334, ACCT 310+311, SRES 315+470, ENT 372+472, or MGT 330+410.
+Focus Area (choose 1 pair):
+  Pair A Management: MGT 310+311 | Pair B Operations Mgt: MGT 332+312 | Pair C Marketing: MKT 346+348
+  Pair D Sales: MKT 349+435 | Pair E Finance: FIN 332+334 | Pair F Accounting: ACCT 310+311
+  Pair G Economics: SRES 315+470 | Pair H Entrepreneurship: ENT 372+472 | Pair I People & Orgs: MGT 330+410
 Comprehensive Exam: ACCT 498 (0 credits).
 
 ---

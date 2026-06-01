@@ -1,69 +1,69 @@
 {
   "liberal_arts": [
-    "Classical Philosophy \u2014 PHIL 201, PHIL 211, or HSPH 101",
-    "Modern Philosophy \u2014 PHIL 202, PHIL 212, or HSPH 102",
-    "Philosophy Elective \u2014 any non-major PHIL course (e.g. PHIL 301); Honors: HSPH 203 or HSPH 204",
-    "Theology I \u2014 TRS 201 or HSTR 101",
-    "Theology II \u2014 TRS 202A, TRS 202B, or any HSTR course",
-    "Theology Elective \u2014 any non-major TRS course; Honors: any HSTR course or HSEV 102",
-    "Rhetoric & Composition \u2014 ENG 101, ENG 101H (Honors), or ENG 101C (Cornerstone)",
-    "Explorations in Literature \u2014 approved course (e.g. CLAS 105/106/211, ENG 212/231/232/235/236/278/312/341/347/351/352/356/364/369/376/378/379, FREN 220, GER 220, ITAL 220, SPAN 224/225/240)",
-    "Explorations in Fine Arts \u2014 approved course (e.g. ART 201/211/212/222/251/318, DR 105/106/110/202/403, MUS 110/112/131/134/135/276/304/328)",
-    "Foundations in Social Science \u2014 ANTH 101, ANTH 201, ECON 101, ECON 102, ECON 104, GS 101, PSY 201, PSY 226, SOC 101, SOC 202, SOC 206, SRES 345, HSSS 101, or equivalent",
-    "Foundations in History or Politics \u2014 approved HIST or POL course (e.g. HIST 140/142/151/202/205/206/222/224/229/235/246/257/258/309/312/315, POL 111/112/211/226, ANTH 215, CLAS 205/206)",
-    "Foundations in Natural Science \u2014 ANTH 108, ANTH 206, BIOL 109, CHEM 110, PHYS 101, PHYS 103, PHYS 122, PSY 204, SAS 225, or equivalent",
-    "Foundations in Mathematical Thinking \u2014 MATH 111, 112, 114, 121, 122, 168, 175, or 187; HSMS 230 or 330; HSSS 203; or Math Placement Exempt",
-    "Intermediate Language I \u2014 ARAB, CHN, FREN, GER, ITAL, LAT, or SPAN 103 (SPAN 111 or SPAN 113 fulfills both Language I and II)",
-    "Intermediate Language II \u2014 ARAB, CHN, FREN, GER, ITAL, LAT, or SPAN 104"
+    "Classical Philosophy — PHIL 201, PHIL 211, or HSPH 101",
+    "Modern Philosophy — PHIL 202, PHIL 212, or HSPH 102",
+    "Philosophy Elective — any non-major PHIL course (e.g. PHIL 301); Honors: HSPH 203 or HSPH 204",
+    "Theology I — TRS 201 or HSTR 101",
+    "Theology II — TRS 202A, TRS 202B, or any HSTR course",
+    "Theology Elective — any non-major TRS course; Honors: any HSTR course or HSEV 102",
+    "Rhetoric & Composition — ENG 101, ENG 101H (Honors), or ENG 101C (Cornerstone)",
+    "Explorations in Literature — approved course (e.g. CLAS 105/106/211, ENG 212/231/232/235/236/278/312/341/347/351/352/356/364/369/376/378/379, FREN 220, GER 220, ITAL 220, SPAN 224/225/240)",
+    "Explorations in Fine Arts — approved course (e.g. ART 201/211/212/222/251/318, DR 105/106/110/202/403, MUS 110/112/131/134/135/276/304/328)",
+    "Foundations in Social Science — ANTH 101, ANTH 201, ECON 101, ECON 102, ECON 104, GS 101, PSY 201, PSY 226, SOC 101, SOC 202, SOC 206, SRES 345, HSSS 101, or equivalent",
+    "Foundations in History or Politics — approved HIST or POL course (e.g. HIST 140/142/151/202/205/206/222/224/229/235/246/257/258/309/312/315, POL 111/112/211/226, ANTH 215, CLAS 205/206)",
+    "Foundations in Natural Science — ANTH 108, ANTH 206, BIOL 109, CHEM 110, PHYS 101, PHYS 103, PHYS 122, PSY 204, SAS 225, or equivalent",
+    "Foundations in Mathematical Thinking — MATH 111, 112, 114, 121, 122, 168, 175, or 187; HSMS 230 or 330; HSSS 203; or Math Placement Exempt",
+    "Intermediate Language I — ARAB, CHN, FREN, GER, ITAL, LAT, or SPAN 103 (SPAN 111 or SPAN 113 fulfills both Language I and II)",
+    "Intermediate Language II — ARAB, CHN, FREN, GER, ITAL, LAT, or SPAN 104"
   ],
   "pre_2024": {
     "business_core": [
-      "ENT 118 \u2014 Vocation of Business",
-      "MGT 123A or MGT 123B \u2014 Foundations of Business",
-      "SRES 101 \u2014 Markets & Prosperity I (Economic Thought I)",
-      "SRES 102 \u2014 Markets & Prosperity II (Economic Thought II)",
-      "ACCT 205 \u2014 Financial Accounting",
-      "ACCT 206 \u2014 Managerial Accounting (prereq: ACCT 205)",
-      "FIN 226 \u2014 Financial Management (prereq: ACCT 205, MATH 111)",
+      "ENT 118 — Vocation of Business",
+      "MGT 123A or MGT 123B — Foundations of Business",
+      "SRES 101 — Markets & Prosperity I (Economic Thought I)",
+      "SRES 102 — Markets & Prosperity II (Economic Thought II)",
+      "ACCT 205 — Financial Accounting",
+      "ACCT 206 — Managerial Accounting (prereq: ACCT 205)",
+      "FIN 226 — Financial Management (prereq: ACCT 205, MATH 111)",
       "MATH 110 or MATH 111 or Level 1/2 Placement Exempt",
-      "BUS 199 \u2014 Career Discernment I",
-      "BUS 299A \u2014 Career Discernment II (gate: 24 credits)",
-      "MGT 250 \u2014 Business Communications (gate: 27 credits)",
-      "Info Management Gateway \u2014 choose 1 (may not duplicate specialization)",
-      "Statistics \u2014 choose 1",
-      "MKT 345 \u2014 Marketing Management",
-      "Business Ethics \u2014 choose 1",
-      "Business Law \u2014 choose 1",
-      "ECON 223 \u2014 Economics for Business  OR  MGT 265 (Pre-2024 catalog)",
-      "MGT 365 \u2014 Social Enterprise (Pre-2024 only)",
-      "Quantitative Methods \u2014 choose 1 (Pre-2024 single-spec students only)",
-      "BUS 399A \u2014 Career Discernment III (gate: 54 credits)",
-      "BUS 499A \u2014 Career Discernment IV (gate: 85 credits)",
-      "MGT 475 \u2014 Business Strategy  \u26a0 MUST take same semester as BUS 498",
-      "BUS 498 \u2014 Comprehensive Business Assessment  \u26a0 MUST take same semester as MGT 475"
+      "BUS 199 — Career Discernment I",
+      "BUS 299A — Career Discernment II (gate: 24 credits)",
+      "MGT 250 — Business Communications (gate: 27 credits)",
+      "Info Management Gateway — choose 1 (may not duplicate specialization)",
+      "Statistics — choose 1",
+      "MKT 345 — Marketing Management",
+      "Business Ethics — choose 1",
+      "Business Law — choose 1",
+      "ECON 223 — Economics for Business  OR  MGT 265 (Pre-2024 catalog)",
+      "MGT 365 — Social Enterprise (Pre-2024 only)",
+      "Quantitative Methods — choose 1 (Pre-2024 single-spec students only)",
+      "BUS 399A — Career Discernment III (gate: 54 credits)",
+      "BUS 499A — Career Discernment IV (gate: 85 credits)",
+      "MGT 475 — Business Strategy  ⚠ MUST take same semester as BUS 498",
+      "BUS 498 — Comprehensive Business Assessment  ⚠ MUST take same semester as MGT 475"
     ],
     "bs_accounting": [
-      "ACCT 310 \u2014 Intermediate Accounting I (prereq: ACCT 206)",
-      "ACCT 311 \u2014 Intermediate Accounting II (prereq: ACCT 310)",
-      "ACCT 312 \u2014 Intermediate Accounting III (prereq: ACCT 311)  [Pre-2024 only]",
-      "ACCT 412 \u2014 Auditing (prereq: ACCT 311)",
-      "ACCT 417 \u2014 Government and Non-Profit Accounting",
-      "ACCT 418 \u2014 Advanced Accounting (prereq: ACCT 311)",
-      "ACCT 419 \u2014 Federal Income Taxation",
-      "ACCT 422 \u2014 Accounting Analytics (prereq: ACCT 311)",
-      "ACCT 442 \u2014 Accounting Ethics  (or MGT 301 as substitute)",
-      "ACCT 480 \u2014 Advanced Tax Topics",
-      "MGT 365 \u2014 Quantitative Methods in Decision Making  [Pre-2024 only]",
-      "MGT 475 \u2014 Business Strategy  \u26a0 MUST take same semester as ACCT 498",
-      "ACCT 498 \u2014 Comprehensive Assessment (0 credits)  \u26a0 MUST take same semester as MGT 475"
+      "ACCT 310 — Intermediate Accounting I (prereq: ACCT 206)",
+      "ACCT 311 — Intermediate Accounting II (prereq: ACCT 310)",
+      "ACCT 312 — Intermediate Accounting III (prereq: ACCT 311)  [Pre-2024 only]",
+      "ACCT 412 — Auditing (prereq: ACCT 311)",
+      "ACCT 417 — Government and Non-Profit Accounting",
+      "ACCT 418 — Advanced Accounting (prereq: ACCT 311)",
+      "ACCT 419 — Federal Income Taxation",
+      "ACCT 422 — Accounting Analytics (prereq: ACCT 311)",
+      "ACCT 442 — Accounting Ethics  (or MGT 301 as substitute)",
+      "ACCT 480 — Advanced Tax Topics",
+      "MGT 365 — Quantitative Methods in Decision Making  [Pre-2024 only]",
+      "MGT 475 — Business Strategy  ⚠ MUST take same semester as ACCT 498",
+      "ACCT 498 — Comprehensive Assessment (0 credits)  ⚠ MUST take same semester as MGT 475"
     ],
     "specializations": {
       "hr_management": {
         "label": "HR Management",
         "courses": [
           "REQUIRED:",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 330 \u2014 Human Resource Management",
+          "MGT 311 — Organizational Behavior",
+          "MGT 330 — Human Resource Management",
           "ELECTIVES (choose 2):",
           "MGT 302, MGT 410, SRES 408, SRES 411"
         ],
@@ -84,10 +84,10 @@
         "label": "Operations Management",
         "courses": [
           "REQUIRED:",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 312 \u2014 Operations Management",
-          "MGT 332 \u2014 Supply Chain Management",
-          "MGT 361 \u2014 Project Management"
+          "MGT 311 — Organizational Behavior",
+          "MGT 312 — Operations Management",
+          "MGT 332 — Supply Chain Management",
+          "MGT 361 — Project Management"
         ],
         "name": "Operations Management",
         "required": [
@@ -103,10 +103,10 @@
         "label": "Data Analytics for Business",
         "courses": [
           "REQUIRED:",
-          "DA 314 \u2014 Data Analytics (Pre-2024)",
-          "MGT 331 \u2014 Business Analytics",
-          "MGT 351 \u2014 Business Intelligence",
-          "MGT 361 \u2014 Project Management"
+          "DA 314 — Data Analytics (Pre-2024)",
+          "MGT 331 — Business Analytics",
+          "MGT 351 — Business Intelligence",
+          "MGT 361 — Project Management"
         ],
         "name": "Data Analytics for Business",
         "required": [
@@ -119,13 +119,13 @@
         "choose_count": 0
       },
       "sports_management": {
-        "label": "Sports Management  \u26a0 MUST DOUBLE SPECIALIZE",
+        "label": "Sports Management  ⚠ MUST DOUBLE SPECIALIZE",
         "courses": [
           "REQUIRED (all 4):",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 324 \u2014 Sports Management",
-          "MGT 327 \u2014 Sports Law and Ethics",
-          "MKT 325 \u2014 Sports Marketing"
+          "MGT 311 — Organizational Behavior",
+          "MGT 324 — Sports Management",
+          "MGT 327 — Sports Law and Ethics",
+          "MKT 325 — Sports Marketing"
         ],
         "name": "Sports Management",
         "required": [
@@ -142,10 +142,10 @@
         "label": "Technology Management",
         "courses": [
           "REQUIRED:",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 347 \u2014 Technology and Innovation Management",
-          "MGT 351 \u2014 Business Intelligence",
-          "MGT 440 \u2014 Management of Technology"
+          "MGT 311 — Organizational Behavior",
+          "MGT 347 — Technology and Innovation Management",
+          "MGT 351 — Business Intelligence",
+          "MGT 440 — Management of Technology"
         ],
         "name": "Technology Management",
         "required": [
@@ -158,13 +158,13 @@
         "choose_count": 0
       },
       "entrepreneurship": {
-        "label": "Entrepreneurship Co-Specialization  \u26a0 MUST DOUBLE SPECIALIZE",
+        "label": "Entrepreneurship Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE",
         "courses": [
           "REQUIRED (all 4):",
-          "ENT 372 \u2014 New Venture Creation",
-          "ENT 455 \u2014 Entrepreneurial Strategy",
-          "ENT 472 \u2014 Entrepreneurial Finance",
-          "ENT 476 \u2014 Entrepreneurial Leadership"
+          "ENT 372 — New Venture Creation",
+          "ENT 455 — Entrepreneurial Strategy",
+          "ENT 472 — Entrepreneurial Finance",
+          "ENT 476 — Entrepreneurial Leadership"
         ],
         "name": "Entrepreneurship Co-Specialization",
         "required": [
@@ -178,12 +178,12 @@
         "must_double_specialize": true
       },
       "finance": {
-        "label": "Finance  \u26a0 Requires MATH 111",
+        "label": "Finance  ⚠ Requires MATH 111",
         "courses": [
           "REQUIRED:",
-          "FIN 332 \u2014 Corporate Finance",
-          "FIN 334 \u2014 Investments",
-          "FIN 436 \u2014 Advanced Corporate Finance",
+          "FIN 332 — Corporate Finance",
+          "FIN 334 — Investments",
+          "FIN 436 — Advanced Corporate Finance",
           "ELECTIVE (choose 1):",
           "FIN 227, FIN 313, FIN 337, FIN 342, FIN 389, FIN 391, FIN 425, FIN 450, FIN 451, FIN 491, MGT 389, ECON 338"
         ],
@@ -213,12 +213,12 @@
         ]
       },
       "mathematical_finance": {
-        "label": "Mathematical Finance  \u26a0 Requires MATH 111",
+        "label": "Mathematical Finance  ⚠ Requires MATH 111",
         "courses": [
           "REQUIRED:",
-          "FIN 332 \u2014 Corporate Finance",
-          "MATH 431 \u2014 Mathematical Finance I",
-          "MATH 434 \u2014 Mathematical Finance II",
+          "FIN 332 — Corporate Finance",
+          "MATH 431 — Mathematical Finance I",
+          "MATH 434 — Mathematical Finance II",
           "ELECTIVE (choose 1):",
           "FIN 313, FIN 337, FIN 450, FIN 451, ECON 338"
         ],
@@ -244,9 +244,9 @@
         "label": "Marketing",
         "courses": [
           "REQUIRED:",
-          "MKT 346 \u2014 Consumer Behavior",
-          "MKT 348 \u2014 Marketing Research",
-          "MKT 457 \u2014 Strategic Marketing",
+          "MKT 346 — Consumer Behavior",
+          "MKT 348 — Marketing Research",
+          "MKT 457 — Strategic Marketing",
           "ELECTIVE (choose 1):",
           "MKT 325, MKT 349, MKT 350, MKT 359, MKT 362, MKT 422, MKT 494, MKT 495A"
         ],
@@ -272,9 +272,9 @@
         "label": "Sales",
         "courses": [
           "REQUIRED:",
-          "MKT 349 \u2014 Professional Selling",
-          "MKT 422 \u2014 Sales Management",
-          "MKT 435 \u2014 Advanced Selling",
+          "MKT 349 — Professional Selling",
+          "MKT 422 — Sales Management",
+          "MKT 435 — Advanced Selling",
           "ELECTIVE (choose 1):",
           "DR 403, MKT 348, MGT 311, FIN 425, MKT 495A",
           "NOTE: May substitute MKT 299/399/499 for BUS 299A/399A/499A"
@@ -298,9 +298,9 @@
         "label": "Markets and Political Economy",
         "courses": [
           "REQUIRED:",
-          "SRES 315 \u2014 Political Economy I",
-          "SRES 325 \u2014 Political Economy II",
-          "SRES 470 \u2014 Senior Seminar in Political Economy",
+          "SRES 315 — Political Economy I",
+          "SRES 325 — Political Economy II",
+          "SRES 470 — Senior Seminar in Political Economy",
           "ELECTIVE (choose 1):",
           "SRES 260, SRES 345, SRES 350, SRES 408, SRES 411"
         ],
@@ -320,12 +320,12 @@
         "choose_count": 1
       },
       "accounting": {
-        "label": "Accounting Co-Specialization  \u26a0 MUST DOUBLE SPECIALIZE + MATH 111",
+        "label": "Accounting Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE + MATH 111",
         "courses": [
           "REQUIRED:",
-          "ACCT 310 \u2014 Intermediate Accounting I",
-          "ACCT 311 \u2014 Intermediate Accounting II",
-          "ACCT 312 \u2014 Intermediate Accounting III (Pre-2024)",
+          "ACCT 310 — Intermediate Accounting I",
+          "ACCT 311 — Intermediate Accounting II",
+          "ACCT 312 — Intermediate Accounting III (Pre-2024)",
           "ELECTIVE (choose 1):",
           "ACCT 412, ACCT 417, ACCT 418"
         ],
@@ -350,8 +350,8 @@
         "label": "International Business",
         "courses": [
           "REQUIRED:",
-          "MKT 362 \u2014 International Marketing",
-          "MGT 390 \u2014 International Management",
+          "MKT 362 — International Marketing",
+          "MGT 390 — International Management",
           "ELECTIVE GROUP 1 (choose 1):",
           "FIN 389, MGT 389",
           "ELECTIVE GROUP 2 (choose 1):",
@@ -443,13 +443,13 @@
         "code": "ACCT 442",
         "name": "Accounting Ethics (or MGT 301)",
         "pre": null,
-        "sem": "\u2014"
+        "sem": "—"
       },
       {
         "code": "ACCT 480",
         "name": "Advanced Tax Topics",
         "pre": null,
-        "sem": "\u2014"
+        "sem": "—"
       }
     ],
     "accounting_electives": [],
@@ -494,54 +494,54 @@
   },
   "post_2024": {
     "business_core": [
-      "ENT 118 \u2014 Vocation of Business",
-      "MGT 123A or MGT 123B \u2014 Foundations of Business",
-      "SRES 101 \u2014 Markets & Prosperity I (Economic Thought I)",
-      "SRES 102 \u2014 Markets & Prosperity II (Economic Thought II)",
-      "SRES 290 \u2014 Applied Economics (Post-2024 only)",
-      "ACCT 205 \u2014 Financial Accounting",
-      "ACCT 206 \u2014 Managerial Accounting (prereq: ACCT 205)",
-      "FIN 226 \u2014 Financial Management (prereq: ACCT 205, MATH 111)",
+      "ENT 118 — Vocation of Business",
+      "MGT 123A or MGT 123B — Foundations of Business",
+      "SRES 101 — Markets & Prosperity I (Economic Thought I)",
+      "SRES 102 — Markets & Prosperity II (Economic Thought II)",
+      "SRES 290 — Applied Economics (Post-2024 only)",
+      "ACCT 205 — Financial Accounting",
+      "ACCT 206 — Managerial Accounting (prereq: ACCT 205)",
+      "FIN 226 — Financial Management (prereq: ACCT 205, MATH 111)",
       "MATH 110 or MATH 111 or Level 1/2 Placement Exempt",
-      "BUS 199 \u2014 Career Discernment I",
-      "BUS 299A \u2014 Career Discernment II (gate: 24 credits)",
-      "MGT 250 \u2014 Business Communications (gate: 27 credits)",
-      "Info Management Gateway \u2014 choose 1 (may not duplicate specialization)",
-      "Statistics \u2014 choose 1",
-      "MKT 345 \u2014 Marketing Management",
-      "Business Ethics \u2014 choose 1",
-      "Business Law \u2014 choose 1",
-      "MGT 265 \u2014 Managerial Economics (Post-2024 catalog)",
-      "BUS 399A \u2014 Career Discernment III (gate: 54 credits)",
-      "BUS 499A \u2014 Career Discernment IV (gate: 85 credits)",
-      "MGT 475 \u2014 Business Strategy  \u26a0 MUST take same semester as BUS 498",
-      "BUS 498 \u2014 Comprehensive Business Assessment  \u26a0 MUST take same semester as MGT 475"
+      "BUS 199 — Career Discernment I",
+      "BUS 299A — Career Discernment II (gate: 24 credits)",
+      "MGT 250 — Business Communications (gate: 27 credits)",
+      "Info Management Gateway — choose 1 (may not duplicate specialization)",
+      "Statistics — choose 1",
+      "MKT 345 — Marketing Management",
+      "Business Ethics — choose 1",
+      "Business Law — choose 1",
+      "MGT 265 — Managerial Economics (Post-2024 catalog)",
+      "BUS 399A — Career Discernment III (gate: 54 credits)",
+      "BUS 499A — Career Discernment IV (gate: 85 credits)",
+      "MGT 475 — Business Strategy  ⚠ MUST take same semester as BUS 498",
+      "BUS 498 — Comprehensive Business Assessment  ⚠ MUST take same semester as MGT 475"
     ],
     "bs_accounting": [
-      "ACCT 310 \u2014 Intermediate Accounting I (prereq: ACCT 206)",
-      "ACCT 311 \u2014 Intermediate Accounting II (prereq: ACCT 310)",
-      "ACCT 315 \u2014 Cost Accounting (prereq: ACCT 206)",
-      "ACCT 412 \u2014 Auditing (prereq: ACCT 311)",
-      "ACCT 417 \u2014 Government and Non-Profit Accounting",
-      "ACCT 418 \u2014 Advanced Accounting (prereq: ACCT 311)",
-      "ACCT 419 \u2014 Federal Income Taxation",
-      "ACCT 422 \u2014 Accounting Analytics (prereq: ACCT 311)",
-      "ACCT 442 \u2014 Accounting Ethics",
-      "FIN 332 \u2014 Corporate Finance (prereq: FIN 226, MATH 111)",
-      "FIN 334 \u2014 Investments (prereq: FIN 332)",
-      "ACCOUNTING ELECTIVE (choose 1 \u2014 Post-2024 only):",
-      "ACCT 480 \u2014 Advanced Tax Topics",
-      "ACCT 491 \u2014 Accounting Internship",
-      "ECON 370 \u2014 Econometrics"
+      "ACCT 310 — Intermediate Accounting I (prereq: ACCT 206)",
+      "ACCT 311 — Intermediate Accounting II (prereq: ACCT 310)",
+      "ACCT 315 — Cost Accounting (prereq: ACCT 206)",
+      "ACCT 412 — Auditing (prereq: ACCT 311)",
+      "ACCT 417 — Government and Non-Profit Accounting",
+      "ACCT 418 — Advanced Accounting (prereq: ACCT 311)",
+      "ACCT 419 — Federal Income Taxation",
+      "ACCT 422 — Accounting Analytics (prereq: ACCT 311)",
+      "ACCT 442 — Accounting Ethics",
+      "FIN 332 — Corporate Finance (prereq: FIN 226, MATH 111)",
+      "FIN 334 — Investments (prereq: FIN 332)",
+      "ACCOUNTING ELECTIVE (choose 1 — Post-2024 only):",
+      "ACCT 480 — Advanced Tax Topics",
+      "ACCT 491 — Accounting Internship",
+      "ECON 370 — Econometrics"
     ],
     "specializations": {
       "people_and_organizations": {
         "label": "People and Organizations",
         "courses": [
           "REQUIRED:",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 330 \u2014 Human Resource Management",
-          "MGT 410 \u2014 Staffing and Talent Management",
+          "MGT 311 — Organizational Behavior",
+          "MGT 330 — Human Resource Management",
+          "MGT 410 — Staffing and Talent Management",
           "ELECTIVES (choose 2):",
           "MGT 302, MGT 310, MGT 327, ENT 351, SRES 408, SRES 411"
         ],
@@ -565,8 +565,8 @@
         "label": "Technology and Operations Management",
         "courses": [
           "REQUIRED:",
-          "MGT 332 \u2014 Supply Chain Management",
-          "MGT 347 \u2014 Technology and Innovation Management",
+          "MGT 332 — Supply Chain Management",
+          "MGT 347 — Technology and Innovation Management",
           "ELECTIVES (choose 3):",
           "MGT 312, MGT 351, MGT 440, MGT 465"
         ],
@@ -587,8 +587,8 @@
         "label": "Data Analytics for Business",
         "courses": [
           "REQUIRED:",
-          "DA 124 \u2014 Introduction to Data Analytics (Post-2024)",
-          "MGT 331 \u2014 Business Analytics",
+          "DA 124 — Introduction to Data Analytics (Post-2024)",
+          "MGT 331 — Business Analytics",
           "ELECTIVES (choose 2):",
           "MGT 351, MGT 361, DA 401, DA 423"
         ],
@@ -606,13 +606,13 @@
         "choose_count": 2
       },
       "sports_management": {
-        "label": "Sports Management  \u26a0 MUST DOUBLE SPECIALIZE",
+        "label": "Sports Management  ⚠ MUST DOUBLE SPECIALIZE",
         "courses": [
           "REQUIRED (all 4):",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 324 \u2014 Sports Management",
-          "MGT 327 \u2014 Sports Law and Ethics",
-          "MKT 325 \u2014 Sports Marketing"
+          "MGT 311 — Organizational Behavior",
+          "MGT 324 — Sports Management",
+          "MGT 327 — Sports Law and Ethics",
+          "MKT 325 — Sports Marketing"
         ],
         "name": "Sports Management",
         "required": [
@@ -626,13 +626,13 @@
         "must_double_specialize": true
       },
       "finance": {
-        "label": "Finance  \u26a0 Requires MATH 111",
+        "label": "Finance  ⚠ Requires MATH 111",
         "courses": [
           "REQUIRED:",
-          "FIN 227 \u2014 Financial Modeling (Post-2024)",
-          "FIN 332 \u2014 Corporate Finance",
-          "FIN 334 \u2014 Investments",
-          "FIN 436 \u2014 Advanced Corporate Finance",
+          "FIN 227 — Financial Modeling (Post-2024)",
+          "FIN 332 — Corporate Finance",
+          "FIN 334 — Investments",
+          "FIN 436 — Advanced Corporate Finance",
           "ELECTIVE (choose 1):",
           "FIN 313, FIN 337, FIN 342, FIN 389, FIN 391, FIN 425, FIN 450, FIN 451, FIN 491, MGT 389, ECON 338, MATH 434"
         ],
@@ -663,12 +663,12 @@
         ]
       },
       "entrepreneurship": {
-        "label": "Entrepreneurship  \u26a0 MUST DOUBLE SPECIALIZE",
+        "label": "Entrepreneurship  ⚠ MUST DOUBLE SPECIALIZE",
         "courses": [
           "REQUIRED:",
-          "ENT 372 \u2014 New Venture Creation",
-          "ENT 455 \u2014 Entrepreneurial Strategy",
-          "ENT 472 \u2014 Entrepreneurial Finance",
+          "ENT 372 — New Venture Creation",
+          "ENT 455 — Entrepreneurial Strategy",
+          "ENT 472 — Entrepreneurial Finance",
           "ELECTIVE (choose 1):",
           "ENT 351, ENT 476, ENT 494"
         ],
@@ -690,9 +690,9 @@
         "label": "Marketing",
         "courses": [
           "REQUIRED:",
-          "MKT 346 \u2014 Consumer Behavior",
-          "MKT 348 \u2014 Marketing Research",
-          "MKT 457 \u2014 Strategic Marketing",
+          "MKT 346 — Consumer Behavior",
+          "MKT 348 — Marketing Research",
+          "MKT 457 — Strategic Marketing",
           "ELECTIVES (choose 2):",
           "MKT 325, MGT 347, MKT 349, MKT 350, MKT 359, MKT 362, MKT 368, MKT 380, MKT 422, MKT 495A"
         ],
@@ -720,9 +720,9 @@
         "label": "Sales",
         "courses": [
           "REQUIRED:",
-          "MKT 349 \u2014 Professional Selling",
-          "MKT 422 \u2014 Sales Management",
-          "MKT 435 \u2014 Advanced Selling",
+          "MKT 349 — Professional Selling",
+          "MKT 422 — Sales Management",
+          "MKT 435 — Advanced Selling",
           "ELECTIVES (choose 2):",
           "MKT 348, MKT 368, MKT 495A, ENT 351, ENT 372, MGT 311, FIN 425, MGT 347, MGT 410, DR 403",
           "NOTE: May substitute MKT 299/399/499 for BUS 299A/399A/499A"
@@ -751,10 +751,10 @@
         "label": "Markets and Political Economy",
         "courses": [
           "REQUIRED:",
-          "SRES 315 \u2014 Political Economy I",
-          "SRES 325 \u2014 Political Economy II",
-          "SRES 345 \u2014 Applied Political Economy (Post-2024)",
-          "SRES 470 \u2014 Senior Seminar in Political Economy",
+          "SRES 315 — Political Economy I",
+          "SRES 325 — Political Economy II",
+          "SRES 345 — Applied Political Economy (Post-2024)",
+          "SRES 470 — Senior Seminar in Political Economy",
           "ELECTIVE (choose 1):",
           "SRES 260, SRES 350, SRES 408, SRES 411, SRES 476"
         ],
@@ -775,12 +775,12 @@
         "choose_count": 1
       },
       "accounting": {
-        "label": "Accounting Co-Specialization  \u26a0 MUST DOUBLE SPECIALIZE + MATH 111",
+        "label": "Accounting Co-Specialization  ⚠ MUST DOUBLE SPECIALIZE + MATH 111",
         "courses": [
           "REQUIRED:",
-          "ACCT 310 \u2014 Intermediate Accounting I",
-          "ACCT 311 \u2014 Intermediate Accounting II",
-          "ACCT 315 \u2014 Cost Accounting (Post-2024)",
+          "ACCT 310 — Intermediate Accounting I",
+          "ACCT 311 — Intermediate Accounting II",
+          "ACCT 315 — Cost Accounting (Post-2024)",
           "ELECTIVE (choose 1):",
           "ACCT 412, ACCT 417, ACCT 418"
         ],
@@ -805,8 +805,8 @@
         "label": "International Business",
         "courses": [
           "REQUIRED:",
-          "MKT 362 \u2014 International Marketing",
-          "MGT 390 \u2014 International Management",
+          "MKT 362 — International Marketing",
+          "MGT 390 — International Management",
           "ELECTIVE GROUP 1 (choose 1):",
           "FIN 389, MGT 389",
           "ELECTIVE GROUP 2 (choose 1):",
@@ -832,9 +832,9 @@
         "label": "Management",
         "courses": [
           "REQUIRED:",
-          "MGT 311 \u2014 Organizational Behavior",
-          "MGT 330 \u2014 Human Resource Management",
-          "MGT 332 \u2014 Supply Chain Management",
+          "MGT 311 — Organizational Behavior",
+          "MGT 330 — Human Resource Management",
+          "MGT 332 — Supply Chain Management",
           "ELECTIVES (choose 2):",
           "MGT 302, MGT 312, MGT 347, MGT 351, MGT 361, MGT 440, MGT 465"
         ],
@@ -873,7 +873,7 @@
         "code": "ACCT 315",
         "name": "Cost Accounting",
         "pre": "ACCT 206",
-        "sem": "\u2014"
+        "sem": "—"
       },
       {
         "code": "ACCT 412",
@@ -981,28 +981,28 @@
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "ACCT_206",
-          "label": "ACCT 206 \u2014 Managerial Accounting",
+          "label": "ACCT 206 — Managerial Accounting",
           "options": [
             "ACCT 206"
           ]
         },
         {
           "key": "ACCT_310",
-          "label": "ACCT 310 \u2014 Intermediate Accounting I",
+          "label": "ACCT 310 — Intermediate Accounting I",
           "options": [
             "ACCT 310"
           ]
         },
         {
           "key": "ACCT_311",
-          "label": "ACCT 311 \u2014 Intermediate Accounting II",
+          "label": "ACCT 311 — Intermediate Accounting II",
           "options": [
             "ACCT 311"
           ]
@@ -1033,21 +1033,21 @@
         },
         {
           "key": "ENT_118",
-          "label": "ENT 118 \u2014 Vocation of Business",
+          "label": "ENT 118 — Vocation of Business",
           "options": [
             "ENT 118"
           ]
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "mgt_123",
-          "label": "MGT 123A or MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123A or MGT 123B — Foundations of Business",
           "options": [
             "MGT 123A",
             "MGT 123B"
@@ -1055,7 +1055,7 @@
         },
         {
           "key": "MGT_310",
-          "label": "MGT 310 \u2014 Management Theory",
+          "label": "MGT 310 — Management Theory",
           "options": [
             "MGT 310"
           ]
@@ -1095,14 +1095,14 @@
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "mgt_123",
-          "label": "MGT 123A or MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123A or MGT 123B — Foundations of Business",
           "options": [
             "MGT 123A",
             "MGT 123B"
@@ -1110,14 +1110,14 @@
         },
         {
           "key": "MKT_345",
-          "label": "MKT 345 \u2014 Marketing Management",
+          "label": "MKT 345 — Marketing Management",
           "options": [
             "MKT 345"
           ]
         },
         {
           "key": "MKT_348",
-          "label": "MKT 348 \u2014 Consumer Behavior",
+          "label": "MKT 348 — Consumer Behavior",
           "options": [
             "MKT 348"
           ]
@@ -1152,35 +1152,35 @@
         },
         {
           "key": "ECON_223",
-          "label": "ECON 223 \u2014 Statistics for Business",
+          "label": "ECON 223 — Statistics for Business",
           "options": [
             "ECON 223"
           ]
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "FIN_226",
-          "label": "FIN 226 \u2014 Introduction to Finance",
+          "label": "FIN 226 — Introduction to Finance",
           "options": [
             "FIN 226"
           ]
         },
         {
           "key": "FIN_332",
-          "label": "FIN 332 \u2014 Corporate Finance",
+          "label": "FIN 332 — Corporate Finance",
           "options": [
             "FIN 332"
           ]
         },
         {
           "key": "FIN_334",
-          "label": "FIN 334 \u2014 Investments",
+          "label": "FIN 334 — Investments",
           "options": [
             "FIN 334"
           ]
@@ -1240,21 +1240,21 @@
       "required": [
         {
           "key": "FIN_332",
-          "label": "FIN 332 \u2014 Corporate Finance",
+          "label": "FIN 332 — Corporate Finance",
           "options": [
             "FIN 332"
           ]
         },
         {
           "key": "FIN_334",
-          "label": "FIN 334 \u2014 Investments",
+          "label": "FIN 334 — Investments",
           "options": [
             "FIN 334"
           ]
         },
         {
           "key": "FIN_436",
-          "label": "FIN 436 \u2014 Advanced Corporate Finance",
+          "label": "FIN 436 — Advanced Corporate Finance",
           "options": [
             "FIN 436"
           ]
@@ -1291,21 +1291,21 @@
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "MGT_123B",
-          "label": "MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123B — Foundations of Business",
           "options": [
             "MGT 123B"
           ]
         },
         {
           "key": "MKT_345",
-          "label": "MKT 345 \u2014 Marketing Management",
+          "label": "MKT 345 — Marketing Management",
           "options": [
             "MKT 345"
           ]
@@ -1363,7 +1363,7 @@
         },
         {
           "key": "mgt_123",
-          "label": "MGT 123A or MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123A or MGT 123B — Foundations of Business",
           "options": [
             "MGT 123A",
             "MGT 123B"
@@ -1371,14 +1371,14 @@
         },
         {
           "key": "MGT_324",
-          "label": "MGT 324 \u2014 Sports Business",
+          "label": "MGT 324 — Sports Business",
           "options": [
             "MGT 324"
           ]
         },
         {
           "key": "MKT_325",
-          "label": "MKT 325 \u2014 Sports Marketing",
+          "label": "MKT 325 — Sports Marketing",
           "options": [
             "MKT 325"
           ]
@@ -1412,14 +1412,14 @@
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "mgt_123",
-          "label": "MGT 123A or MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123A or MGT 123B — Foundations of Business",
           "options": [
             "MGT 123A",
             "MGT 123B"
@@ -1427,21 +1427,21 @@
         },
         {
           "key": "MGT_390",
-          "label": "MGT 390 \u2014 International Business",
+          "label": "MGT 390 — International Business",
           "options": [
             "MGT 390"
           ]
         },
         {
           "key": "MKT_345",
-          "label": "MKT 345 \u2014 Marketing Management",
+          "label": "MKT 345 — Marketing Management",
           "options": [
             "MKT 345"
           ]
         },
         {
           "key": "MKT_362",
-          "label": "MKT 362 \u2014 International Marketing",
+          "label": "MKT 362 — International Marketing",
           "options": [
             "MKT 362"
           ]
@@ -1454,28 +1454,28 @@
       "required": [
         {
           "key": "ECON_101",
-          "label": "ECON 101 \u2014 Principles of Microeconomics",
+          "label": "ECON 101 — Principles of Microeconomics",
           "options": [
             "ECON 101"
           ]
         },
         {
           "key": "ECON_223",
-          "label": "ECON 223 \u2014 Statistics for Business",
+          "label": "ECON 223 — Statistics for Business",
           "options": [
             "ECON 223"
           ]
         },
         {
           "key": "ACCT_205",
-          "label": "ACCT 205 \u2014 Financial Accounting",
+          "label": "ACCT 205 — Financial Accounting",
           "options": [
             "ACCT 205"
           ]
         },
         {
           "key": "mgt_123",
-          "label": "MGT 123A or MGT 123B \u2014 Foundations of Business",
+          "label": "MGT 123A or MGT 123B — Foundations of Business",
           "options": [
             "MGT 123A",
             "MGT 123B"
@@ -1483,21 +1483,21 @@
         },
         {
           "key": "MGT_390",
-          "label": "MGT 390 \u2014 International Business",
+          "label": "MGT 390 — International Business",
           "options": [
             "MGT 390"
           ]
         },
         {
           "key": "FIN_226",
-          "label": "FIN 226 \u2014 Introduction to Finance",
+          "label": "FIN 226 — Introduction to Finance",
           "options": [
             "FIN 226"
           ]
         },
         {
           "key": "fin_or_mgt_389",
-          "label": "FIN 389 or MGT 389 \u2014 International Finance",
+          "label": "FIN 389 or MGT 389 — International Finance",
           "options": [
             "FIN 389",
             "MGT 389"
@@ -1511,14 +1511,14 @@
       "required": [
         {
           "key": "SRES_101",
-          "label": "SRES 101 \u2014 Markets and Prosperity I",
+          "label": "SRES 101 — Markets and Prosperity I",
           "options": [
             "SRES 101"
           ]
         },
         {
           "key": "SRES_102",
-          "label": "SRES 102 \u2014 Markets and Prosperity II",
+          "label": "SRES 102 — Markets and Prosperity II",
           "options": [
             "SRES 102"
           ]
@@ -1563,28 +1563,28 @@
       "required": [
         {
           "key": "ENT_118",
-          "label": "ENT 118 \u2014 Vocation of Business",
+          "label": "ENT 118 — Vocation of Business",
           "options": [
             "ENT 118"
           ]
         },
         {
           "key": "ENT_372",
-          "label": "ENT 372 \u2014 New Venture Creation",
+          "label": "ENT 372 — New Venture Creation",
           "options": [
             "ENT 372"
           ]
         },
         {
           "key": "ENT_455",
-          "label": "ENT 455 \u2014 Venture Launch",
+          "label": "ENT 455 — Venture Launch",
           "options": [
             "ENT 455"
           ]
         },
         {
           "key": "ENT_472",
-          "label": "ENT 472 \u2014 Entrepreneurship Practicum",
+          "label": "ENT 472 — Entrepreneurship Practicum",
           "options": [
             "ENT 472"
           ]
@@ -1615,21 +1615,21 @@
       "required": [
         {
           "key": "MKT_349",
-          "label": "MKT 349 \u2014 Personal Selling",
+          "label": "MKT 349 — Personal Selling",
           "options": [
             "MKT 349"
           ]
         },
         {
           "key": "MKT_345",
-          "label": "MKT 345 \u2014 Marketing Management",
+          "label": "MKT 345 — Marketing Management",
           "options": [
             "MKT 345"
           ]
         },
         {
           "key": "MKT_422",
-          "label": "MKT 422 \u2014 Sales Management",
+          "label": "MKT 422 — Sales Management",
           "options": [
             "MKT 422"
           ]
@@ -1653,78 +1653,78 @@
   },
   "double_major": {
     "business_core": [
-      "ENT 118A or ENT 118B \u2014 Vocation of Business",
-      "MGT 123A or MGT 123B \u2014 Foundations of Business",
-      "SRES 101 / ECON 102 / ECON 104 \u2014 Economic Thought",
-      "ACCT 205 \u2014 Financial Accounting",
-      "FIN 226 \u2014 Financial Management (prereq: ACCT 205)",
-      "MGT 301 \u2014 Business Ethics",
-      "MKT 345 or BUS 604 \u2014 Marketing Management",
+      "ENT 118A or ENT 118B — Vocation of Business",
+      "MGT 123A or MGT 123B — Foundations of Business",
+      "SRES 101 / ECON 102 / ECON 104 — Economic Thought",
+      "ACCT 205 — Financial Accounting",
+      "FIN 226 — Financial Management (prereq: ACCT 205)",
+      "MGT 301 — Business Ethics",
+      "MKT 345 or BUS 604 — Marketing Management",
       "MATH 110 or placement exempt",
-      "BUS 399A or MKT 399 (Sales) \u2014 Career Discernment III",
-      "BUS 499A or MKT 499 (Sales) \u2014 Career Discernment IV",
-      "MGT 475 \u2014 Business Strategy  \u26a0 MUST take same semester as BUS 498",
-      "BUS 498 \u2014 Comprehensive Assessment (0 credits)  \u26a0 MUST take same semester as MGT 475"
+      "BUS 399A or MKT 399 (Sales) — Career Discernment III",
+      "BUS 499A or MKT 499 (Sales) — Career Discernment IV",
+      "MGT 475 — Business Strategy  ⚠ MUST take same semester as BUS 498",
+      "BUS 498 — Comprehensive Assessment (0 credits)  ⚠ MUST take same semester as MGT 475"
     ],
     "pairs": {
       "pair_a": {
-        "label": "Pair A \u2014 People & Organizations",
+        "label": "Pair A — Management",
         "courses": [
           "MGT 310",
           "MGT 311"
         ]
       },
       "pair_b": {
-        "label": "Pair B \u2014 Operations & Supply Chain",
+        "label": "Pair B — Operations Management",
         "courses": [
           "MGT 332",
           "MGT 312"
         ]
       },
       "pair_c": {
-        "label": "Pair C \u2014 Marketing Foundations",
+        "label": "Pair C — Marketing",
         "courses": [
           "MKT 346",
           "MKT 348"
         ]
       },
       "pair_d": {
-        "label": "Pair D \u2014 Marketing Strategy",
+        "label": "Pair D — Sales",
         "courses": [
           "MKT 349",
           "MKT 435"
         ]
       },
       "pair_e": {
-        "label": "Pair E \u2014 Finance",
+        "label": "Pair E — Finance",
         "courses": [
           "FIN 332",
           "FIN 334"
         ]
       },
       "pair_f": {
-        "label": "Pair F \u2014 Accounting",
+        "label": "Pair F — Accounting",
         "courses": [
           "ACCT 310",
           "ACCT 311"
         ]
       },
       "pair_g": {
-        "label": "Pair G \u2014 Social Enterprise",
+        "label": "Pair G — Economics",
         "courses": [
           "SRES 315",
           "SRES 470"
         ]
       },
       "pair_h": {
-        "label": "Pair H \u2014 Entrepreneurship",
+        "label": "Pair H — Entrepreneurship",
         "courses": [
           "ENT 372",
           "ENT 472"
         ]
       },
       "pair_i": {
-        "label": "Pair I \u2014 HR Management",
+        "label": "Pair I — People and Organizations",
         "courses": [
           "MGT 330",
           "MGT 410"
