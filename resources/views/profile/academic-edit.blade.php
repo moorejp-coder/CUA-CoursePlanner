@@ -116,6 +116,8 @@
         .section-body { padding: 20px; }
         .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
         @media (max-width: 600px) { .field-grid { grid-template-columns: 1fr; } }
+        .pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+        @media (max-width: 540px) { .pair-grid { grid-template-columns: 1fr; } }
 
         /* ── Buttons ── */
         .btn-primary {
@@ -491,16 +493,23 @@
                 <span class="section-title">Business Pair Selection</span>
             </div>
             <div class="section-body">
-                <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Double major students choose one of nine business pairs — two upper-division courses that complement your primary major.</p>
-                <label for="pair_key" class="field-label">Business Pair</label>
-                <select id="pair_key" name="specialization_1" x-model="pairKey" :disabled="degree !== 'double_major'"
-                        class="field-input {{ $errors->has('specialization_1') ? 'error' : '' }}" style="max-width:420px;">
-                    <option value="">— Select your business pair —</option>
+                <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem;">Choose one of the nine focus area pairs below. You must complete both courses in your chosen pair.</p>
+                <div class="pair-grid" :style="degree !== 'double_major' ? 'opacity:.4;pointer-events:none;' : ''">
                     @foreach($doubleMajorPairs as $key => $label)
-                        <option value="{{ $key }}" {{ old('specialization_1', $profile->degree === 'double_major' ? ($profile->specialization_1 ?? '') : '') === $key ? 'selected' : '' }}>{{ $label }}</option>
+                    @php $pairCourses = $requirements['double_major']['pairs'][$key]['courses'] ?? []; @endphp
+                    <label class="radio-card">
+                        <input type="radio" name="specialization_1" value="{{ $key }}"
+                               x-model="pairKey"
+                               :disabled="degree !== 'double_major'"
+                               style="margin-top:2px;flex-shrink:0;accent-color:var(--cua-blue);">
+                        <div>
+                            <div class="radio-card-title">{{ $label }}</div>
+                            <div class="radio-card-sub">{{ implode(' + ', $pairCourses) }}</div>
+                        </div>
+                    </label>
                     @endforeach
-                </select>
-                @error('specialization_1')<p class="field-error">{{ $message }}</p>@enderror
+                </div>
+                @error('specialization_1')<p class="field-error mt-2">{{ $message }}</p>@enderror
             </div>
         </div>
 
