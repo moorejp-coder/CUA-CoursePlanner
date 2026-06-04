@@ -31,14 +31,13 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('form-submissions', function (Request $request) {
             return [
-                Limit::perMinute(10)->by('user:'.($request->user()?->id ?: 'guest')),
-                Limit::perMinute(10)->by('ip:'.$request->ip()),
+                Limit::perMinute(30)->by('user:'.($request->user()?->id ?: 'guest')),
+                Limit::perMinute(30)->by('ip:'.$request->ip()),
             ];
         });
 
-        // 3 account creations per IP per hour
         RateLimiter::for('signup-ip', function (Request $request) {
-            return Limit::perHour(3)->by('signup_ip|'.$request->ip());
+            return Limit::perHour(10)->by('signup_ip|'.$request->ip());
         });
 
         // 10 token submissions per IP per hour — anti-brute-force on reset tokens

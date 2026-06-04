@@ -67,7 +67,7 @@ class LoginRequest extends FormRequest
      */
     private function ensureIpNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->ipKey(), 5)) {
+        if (! RateLimiter::tooManyAttempts($this->ipKey(), 10)) {
             return;
         }
 

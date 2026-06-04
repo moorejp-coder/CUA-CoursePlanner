@@ -280,7 +280,12 @@
     @else
 
     @php
-        $degreeLabel  = $profile->degree === 'bs_accounting' ? 'B.S. Accounting' : 'B.S.B.A.';
+        $degreeLabel = match($profile->degree) {
+            'bs_accounting'  => 'B.S. Accounting',
+            'double_major'   => 'B.A. in Business (Double Major)',
+            'business_minor' => 'Business Minor',
+            default          => 'B.S.B.A.',
+        };
         $catalogLabel = $profile->catalog_year === 'post_2024' ? 'Post-2024 Catalog' : 'Pre-2024 Catalog';
 
         $statusBadge = function(string $status): string {

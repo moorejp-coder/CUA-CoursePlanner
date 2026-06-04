@@ -146,9 +146,15 @@ class AcademicProfileController extends Controller
             'la_math_thinking' => 'Math Thinking',
         ];
 
+        $laFreeText = ['la_phil_elective', 'la_theology_elective'];
+
         foreach ($laSlotMap as $field => $slotName) {
-            $val = strtoupper(trim($request->input($field, '')));
-            if ($val === '' || $val === 'NOT_YET') {
+            $raw = trim($request->input($field, ''));
+            // Free-text inputs need uppercasing; select inputs have hardcoded uppercase
+            // option values except for mixed-case sentinels (math_exempt, HSTR (any))
+            // which must be preserved as-is.
+            $val = in_array($field, $laFreeText) ? strtoupper($raw) : $raw;
+            if ($val === '' || $val === 'not_yet') {
                 StudentCourse::where('user_id', $userId)
                     ->where('requirement_category', 'liberal_arts')
                     ->where('course_name', $slotName)
@@ -878,8 +884,11 @@ class AcademicProfileController extends Controller
         $requirements = json_decode((string) file_get_contents(storage_path('app/requirements.json')), true) ?? [];
         $catalogYear = $profile?->catalog_year ?? 'post_2024';
         $validSpecs = array_keys($requirements[$catalogYear]['specializations'] ?? []);
-        if (! in_array($value, $validSpecs, true)) {
-            abort(422, 'Invalid specialization key for '.$catalogYear.'. Valid: '.implode(', ', $validSpecs));
+        $validPairKeys = array_keys($requirements['double_major']['pairs'] ?? []);
+        $validMinorKeys = array_keys($requirements['business_minors'] ?? []);
+        $allValid = array_merge($validSpecs, $validPairKeys, $validMinorKeys);
+        if (! in_array($value, $allValid, true)) {
+            abort(422, 'Invalid specialization key. Valid: '.implode(', ', $allValid));
         }
     }
 
