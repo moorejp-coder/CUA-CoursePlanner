@@ -195,10 +195,10 @@
             </div>
         </a>
         <div class="flex items-center gap-3">
-            <a href="{{ route('profile.academic') }}" class="text-[13px] px-3 py-1.5 rounded text-white transition-colors"
+            <a href="{{ route('chat') }}" class="text-[13px] px-3 py-1.5 rounded text-white transition-colors"
                onmouseover="this.style.background='rgba(255,255,255,0.1)'"
                onmouseout="this.style.background='transparent'">
-                Academic Profile
+                Back to Chat
             </a>
             <a href="{{ route('chat') }}"
                class="font-oswald font-semibold uppercase tracking-wide text-[12px] text-white px-4 py-1.5 rounded transition-colors"
@@ -544,7 +544,7 @@
                 </svg>
                 Save Changes
             </button>
-            <a href="{{ route('profile.academic') }}" class="btn-secondary">Cancel</a>
+            <a href="{{ route('chat') }}" class="btn-secondary">Cancel</a>
         </div>
 
     </form>
