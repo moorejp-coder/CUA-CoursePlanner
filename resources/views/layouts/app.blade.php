@@ -21,7 +21,7 @@
                 <a href="{{ route('chat') }}"
                    style="color:rgba(255,255,255,0.75); font-size:13px; font-family:'Roboto',sans-serif; text-decoration:none; transition:color 0.15s;"
                    onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.75)'">Chat</a>
-                <a href="{{ route('profile.academic') }}"
+                <a href="{{ route('profile.academic.edit') }}"
                    style="color:rgba(255,255,255,0.75); font-size:13px; font-family:'Roboto',sans-serif; text-decoration:none; transition:color 0.15s;"
                    onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.75)'">Academic Profile</a>
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">

@@ -31,7 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat');
     Route::post('/api/chat', [ChatController::class, 'message'])->middleware('throttle:60,1')->name('chat.message');
     // Academic profile
-    Route::get('/profile/academic', [AcademicProfileController::class, 'show'])->name('profile.academic');
+    Route::get('/profile/academic', [AcademicProfileController::class, 'editAcademic'])->name('profile.academic');
     Route::get('/profile/academic/edit', [AcademicProfileController::class, 'editAcademic'])->name('profile.academic.edit');
     Route::post('/profile/academic/edit', [AcademicProfileController::class, 'updateAcademic'])->name('profile.academic.update')->middleware('throttle:form-submissions');
     Route::post('/profile/academic/courses', [AcademicProfileController::class, 'updateCourses'])->name('profile.academic.courses')->middleware('throttle:form-submissions');
