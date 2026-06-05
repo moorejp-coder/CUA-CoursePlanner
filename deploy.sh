@@ -45,6 +45,10 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   php artisan route:cache
   php artisan view:cache
 
+  echo "--- Removing node_modules and npm cache to free disk space ---"
+  rm -rf node_modules
+  npm cache clean --force 2>/dev/null || true
+
   echo "--- Restoring storage ownership to web server ---"
   sudo chown -R www-data:www-data "$DEPLOY_PATH/storage" 2>/dev/null || true
 
