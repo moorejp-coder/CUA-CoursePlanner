@@ -101,7 +101,7 @@ class ChatController extends Controller
 
         $systemPrompt = Cache::remember('system_prompt', 3600, fn () => file_get_contents(storage_path('app/system_prompt.txt')));
 
-        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences for general questions. For any course or semester recommendation, always provide a complete list totaling 15-17 credits — do not cut the list short for brevity. Never repeat information already shown in the student profile.";
+        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences for general questions. For any course or semester recommendation, always provide a complete list totaling 15-17 credits — do not cut the list short for brevity. Never repeat information already shown in the student profile.\n\nPROFILE DATA RULE: Your context contains STUDENT profile data, COMPLETED courses, IN_PROGRESS courses, and REMAINING requirements for this specific student. You MUST use this data exclusively. Never recommend any course listed in COMPLETED or IN_PROGRESS — those are already taken or in progress. Never guess at requirements — read them from the REMAINING lines. If the student asks what they still need, answer only from the REMAINING context. Never ask the student for information already present in the STUDENT profile line.";
 
         $profileContext = $this->buildProfileContext($cleanMessage);
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
@@ -130,7 +130,7 @@ class ChatController extends Controller
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => config('services.groq.model'),
                     'messages' => $messages,
-                    'max_tokens' => 600,
+                    'max_tokens' => 800,
                     'temperature' => 0.3,
                 ]);
         } catch (\Throwable $e) {
@@ -320,46 +320,48 @@ class ChatController extends Controller
             $lines[] = 'ACCT: '.($acctParts ?: 'Not yet entered');
         }
 
+        $plannerService = new PlannerService;
+
+        // Always include remaining requirements and prerequisite status so the bot
+        // never has to guess what this student still needs.
+        $remainingContext = $plannerService->buildRemainingContext(
+            $profile->degree,
+            $profile->catalog_year,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+            $user->studentCourses,
+        );
+        $lines[] = $remainingContext;
+
+        $prereqSummary = (new PrerequisiteService)->buildContextSummary(
+            $completedCodes,
+            $inProgressCodes,
+            strtolower($profile->projected_standing),
+            (int) $profile->credits_completed,
+            $profile->degree,
+            $profile->specialization_1,
+            $profile->specialization_2,
+            $profile->specialization_3,
+        );
+        if ($prereqSummary) {
+            $lines[] = $prereqSummary;
+        }
+
+        // Elective options and fastest-path analysis only for planning-intent questions
+        // (verbose context; not needed for general advising questions).
         $planningKeywords = [
             'plan', 'schedule', 'semester', 'remaining', 'graduate',
             'prerequisite', 'register', 'take', 'recommend', 'course',
-            'credit', 'finish', 'sequence', 'requirement',
+            'credit', 'finish', 'sequence', 'requirement', 'need',
+            'left', 'options', 'available', 'eligible', 'advise', 'suggest', 'next',
         ];
         $lowerMessage = strtolower($userMessage);
         $isPlanningIntent = count(array_filter($planningKeywords, fn ($kw) => str_contains($lowerMessage, $kw))) > 0;
 
-        $plannerService = new PlannerService;
-
         if ($isPlanningIntent) {
-            // Remaining degree requirements for 4-year plan generation
-            $remainingContext = $plannerService->buildRemainingContext(
-                $profile->degree,
-                $profile->catalog_year,
-                strtolower($profile->projected_standing),
-                (int) $profile->credits_completed,
-                $profile->specialization_1,
-                $profile->specialization_2,
-                $profile->specialization_3,
-                $user->studentCourses,
-            );
-            $lines[] = $remainingContext;
-
-            // Prerequisite conflict detection + next-eligible analysis
-            $prereqSummary = (new PrerequisiteService)->buildContextSummary(
-                $completedCodes,
-                $inProgressCodes,
-                strtolower($profile->projected_standing),
-                (int) $profile->credits_completed,
-                $profile->degree,
-                $profile->specialization_1,
-                $profile->specialization_2,
-                $profile->specialization_3,
-            );
-
-            if ($prereqSummary) {
-                $lines[] = $prereqSummary;
-            }
-
             // Eligible elective suggestions per specialization
             $eligibleElectives = $plannerService->buildEligibleElectives(
                 $profile->catalog_year,
