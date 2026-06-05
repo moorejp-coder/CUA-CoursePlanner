@@ -586,6 +586,8 @@
                             <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
                             <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
                             <span class="typing-dot w-2 h-2 rounded-full" style="background:#c8c2bb;"></span>
+                            <span x-show="loadingMessage" x-text="loadingMessage"
+                                  style="color:#8b7355; font-size:12px; margin-left:4px;"></span>
                         </div>
                     </div>
                 </div>
@@ -677,6 +679,7 @@ function chatApp() {
         }],
         input: '',
         loading: false,
+        loadingMessage: null,
         error: null,
         profileUpdate: null,
         semesterBanner: false,
@@ -826,18 +829,28 @@ function chatApp() {
             if (!text || this.loading) return;
 
             this.error = null;
+            this.loadingMessage = null;
             this.input = '';
 
             const history = this.messages.map(m => ({ role: m.role, content: m.content }));
             this.messages.push({ role: 'user', content: text });
-            if (!this.loading) {
-                this.loading = true;
-                this.scrollToBottom();
-            }
+            this.loading = true;
+            this.scrollToBottom();
+
+            // Show "Still thinking..." after 10 s so the student knows the request is alive.
+            const thinkingTimer = setTimeout(() => {
+                this.loadingMessage = 'Still thinking...';
+            }, 10000);
+
+            // Abort the fetch after 38 s — slightly longer than the server's 20 s Groq
+            // timeout + one retry, so the server always responds before the client gives up.
+            const controller = new AbortController();
+            const abortTimer = setTimeout(() => controller.abort(), 38000);
 
             try {
                 const res = await fetch('/api/chat', {
                     method: 'POST',
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -845,21 +858,29 @@ function chatApp() {
                     body: JSON.stringify({ message: text, history }),
                 });
 
+                clearTimeout(abortTimer);
                 const data = await res.json();
 
                 if (!res.ok) {
                     this.error = data.error ?? 'Something went wrong. Please try again.';
                 } else {
-                    const { text, update } = this.extractProfileUpdate(data.message);
-                    this.messages.push({ role: 'assistant', content: text });
+                    const { text: msgText, update } = this.extractProfileUpdate(data.message);
+                    this.messages.push({ role: 'assistant', content: msgText });
                     if (update) {
                         this.profileUpdate = update;
                     }
                 }
-            } catch {
-                this.error = 'Could not reach the server. Check your connection and try again.';
+            } catch (e) {
+                clearTimeout(abortTimer);
+                if (e.name === 'AbortError') {
+                    this.error = 'The AI took too long to respond. Please try again in a moment.';
+                } else {
+                    this.error = 'Connection lost. Check your internet connection and try again.';
+                }
             } finally {
+                clearTimeout(thinkingTimer);
                 this.loading = false;
+                this.loadingMessage = null;
                 this.$nextTick(() => this.scrollToBottom());
             }
         },

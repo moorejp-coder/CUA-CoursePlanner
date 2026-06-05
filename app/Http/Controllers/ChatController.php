@@ -115,16 +115,20 @@ class ChatController extends Controller
 
         $messages[] = ['role' => 'user', 'content' => $cleanMessage];
 
+        // Track connection-error retries separately so we only retry once for
+        // transient failures (keeps worst-case server time under the client's 38 s abort).
+        $connAttempts = 0;
+
         try {
             $response = Http::withToken(config('services.groq.key'))
-                ->timeout(30)
-                ->retry(3, 2000, function ($exception, $response) {
-                    // Retry transient connection failures immediately
+                ->timeout(20)
+                ->retry(3, 1500, function ($exception, $response) use (&$connAttempts) {
+                    // Retry a transient connection failure exactly once.
                     if ($exception instanceof ConnectionException) {
-                        return true;
+                        return ++$connAttempts <= 1;
                     }
 
-                    // Retry Groq 429 rate-limit responses after the sleep delay
+                    // Retry Groq 429 rate-limit responses (up to 3 total attempts).
                     return $response && $response->status() === 429;
                 }, throw: false)
                 ->post('https://api.groq.com/openai/v1/chat/completions', [
