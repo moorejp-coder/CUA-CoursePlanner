@@ -101,7 +101,7 @@ class ChatController extends Controller
 
         $systemPrompt = Cache::remember('system_prompt', 3600, fn () => file_get_contents(storage_path('app/system_prompt.txt')));
 
-        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences or a short list unless the student asks for a full plan. Never repeat information already shown in the student profile.";
+        $formattingRule = "\n\nFORMATTING RULE: Never use markdown bold formatting (** **) in your responses. Use plain text, dashes, or numbered lists only. Be concise — 3 to 5 sentences for general questions. For any course or semester recommendation, always provide a complete list totaling 15-17 credits — do not cut the list short for brevity. Never repeat information already shown in the student profile.";
 
         $profileContext = $this->buildProfileContext($cleanMessage);
         $messages = [['role' => 'system', 'content' => $systemPrompt.$formattingRule.$profileContext]];
