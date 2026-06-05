@@ -8,6 +8,7 @@ use App\Services\PrerequisiteService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -17,17 +18,21 @@ use Illuminate\View\View;
 
 class ChatController extends Controller
 {
-    public function index(): View
+    public function index(): View|RedirectResponse
     {
-        $profile = Auth::user()?->studentProfile;
+        $user = Auth::user();
+
+        if (! $user->studentProfile) {
+            return redirect()->route('onboarding');
+        }
+
+        $profile = $user->studentProfile;
 
         $showSemesterBanner = false;
-        if ($profile) {
-            $month = now()->month;
-            if ($month === 9 || $month === 1) {
-                $shownAt = $profile->semester_prompt_shown_at;
-                $showSemesterBanner = ! $shownAt || $shownAt->lt(now()->subMonths(4));
-            }
+        $month = now()->month;
+        if ($month === 9 || $month === 1) {
+            $shownAt = $profile->semester_prompt_shown_at;
+            $showSemesterBanner = ! $shownAt || $shownAt->lt(now()->subMonths(4));
         }
 
         $welcomeMessage = $this->buildWelcomeMessage($profile);
