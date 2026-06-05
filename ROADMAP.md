@@ -174,6 +174,21 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
+## Milestone 8.5 — Bug Fixes, UX Consolidation & Server Hardening ✅ COMPLETE (June 2026)
+**Delivers:** A stable, clean production deployment with no known bugs.
+
+- [x] Fix double_major Back button infinite loop — step6 back now correctly routes to step4 (not step5, which redirects back to step6)
+- [x] Fix `math_exempt` / `HSTR (any)` data corruption — `updateCourses()` was uppercasing all LA field values, destroying dropdown-matched special values on save; free-text fields uppercased, select fields preserved as-is
+- [x] Fix bot unable to update specialization for double_major / business_minor students — `validateSpecialization()` now accepts pair keys and minor keys in addition to standard BSBA spec keys
+- [x] Fix academic profile page showing "B.S.B.A." for all non-accounting degrees — now uses `match()` to correctly label double_major and business_minor students
+- [x] Revert all rate limits from elevated testing values to correct production values (chat: 60/min, form-submissions: 30/min, login: 10 attempts IP-keyed)
+- [x] Consolidate academic profile — removed view-only `/profile/academic` page; edit page is now the single source of truth; bot rebuilds context from DB on every message so updates are reflected immediately
+- [x] Fix stale Back/Cancel links in academic edit page — now route to `/chat` instead of looping back to the same page
+- [x] Server disk cleanup — cleared 1.4 GB (npm cache, node_modules, journald, hello-contest directory); deploy script now auto-purges node_modules and npm cache after every build
+- [x] Full error audit — PHP syntax check across all files, dead reference scan across all routes/views/controllers; zero issues found
+
+---
+
 ## Milestone 9 — Demo & Submission
 **Delivers:** A polished, winning contest submission.
 - Scripted demo against 20 real student scenarios

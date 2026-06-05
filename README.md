@@ -36,8 +36,7 @@ No scheduling. No waiting 48 hours for a reply. The bot reads the student's save
 ### Student Academic Profile System
 
 - **6-Step Onboarding Wizard** — supports all four degree paths: BSBA (full 6 steps), BS Accounting (dedicated accounting step instead of specializations), BA in Business Double Major (8-course reduced core + pair picker for 9 pairs A–I), and Business Minor (minor picker for all 12 business minors with required, double-count, and elective group tracking)
-- **Academic Profile Page** — `/profile/academic` shows every required LA slot (15) and core slot including "not yet" rows, per-specialization blocks with elective lists, completion summary cards with progress bars, and transfer credit records
-- **Slot-Based Course Edit Page** — `/profile/academic/edit` courses section mirrors the onboarding wizard: requirement-slot cards for Liberal Arts (15 slots, 5 subject groups), Business Core (9 numbered sections, catalog-year-conditional fields, Sales-variant options), Specialization (per-spec blocks with required and elective rows), and Other Courses (transfer/misc with delete toggles). Form pre-populates from saved DB records and saves back via `updateOrCreate`.
+- **Academic Profile Page** — `/profile/academic` is the single place students view and update their academic data: requirement-slot cards for Liberal Arts (15 slots, 5 subject groups), Business Core (9 numbered sections, catalog-year-conditional fields, Sales-variant options), Specialization (per-spec blocks with required and elective rows), and Other Courses (transfer/misc with delete toggles). Form pre-populates from saved DB records and saves back via `updateOrCreate`. Bot context is rebuilt from the database on every message, so changes are reflected immediately in the next chat turn.
 - **Bot-Driven Profile Updates** — bot can suggest marking a course as completed via a `[PROFILE_UPDATE]` tag; student sees a confirmation banner and clicks Accept to save the change
 - **Semester Prompt Banner** — each September and January a gold banner prompts students to report new completions to keep their profile current
 
@@ -178,7 +177,7 @@ The following protections are implemented:
 | HTTPS / HSTS | HSTS enforced in production (`max-age=31536000; includeSubDomains`); session cookies auto-HTTPS |
 | HTTP headers | `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (all unused browser APIs disabled), `Content-Security-Policy` (self-only; no external CDN allowances) |
 | Session cookies | HTTPS-only (`secure: auto`), `HttpOnly`, `SameSite=Strict` |
-| API rate limiting | 20 req/min on `/api/chat`; 5 req/min on login and register (IP + user-ID keyed; brute-force protection) |
+| API rate limiting | 60 req/min on `/api/chat`; 10 attempts on login (IP + account keyed; account lock after 10 failures with email unlock link) |
 | Input validation | Messages stripped of HTML tags, max 2,000 chars; API response field allowlists enforced |
 | Passwords | Min 8 chars, mixed case, at least one number; HIBP breach check (k-anonymity) on all set/change flows |
 | Secrets | `GROQ_API_KEY` and `APP_KEY` in `.env` only — never in code, logs, or API responses |
@@ -214,7 +213,7 @@ CUA-CoursePlanner/
 │   └── views/
 │       ├── chat.blade.php               # Main chat UI (Alpine.js, Tailwind)
 │       ├── onboarding/                  # 6 wizard step views (step1–step6 + step_accounting)
-│       └── profile/academic.blade.php   # Read-only academic profile page
+│       └── profile/academic-edit.blade.php  # Academic profile — view and edit in one page
 ├── routes/
 │   └── web.php                          # All application routes
 ├── storage/
