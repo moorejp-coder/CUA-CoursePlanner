@@ -49,8 +49,11 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'email_verified_at' => now(), // Domain validated to @cua.edu — no separate email check needed
         ]);
+
+        // @cua.edu domain already validated above — mark as verified immediately
+        // so users go straight to onboarding without an email verification step.
+        $user->markEmailAsVerified();
 
         event(new Registered($user));
 
