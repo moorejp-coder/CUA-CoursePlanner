@@ -28,6 +28,7 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   composer install --no-dev --optimize-autoloader
 
   echo "--- Installing Node dependencies and building assets ---"
+  rm -rf node_modules
   npm ci
   npm run build
 
