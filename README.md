@@ -85,16 +85,28 @@ The app is deployed on AWS EC2. The custom domain `buschcourseplanner.dev` has b
 ## Screenshots
 
 ### Landing Page
-![Landing page — hero section with CUA branding, cardinal red CTA, and social proof strip](screenshots/landing.png)
+![Landing page — hero section with CUA branding, cardinal red CTA, and feature cards](screenshots/landing.png)
 
-### Onboarding Wizard
-![6-step onboarding wizard — step 3 liberal arts searchable dropdowns](screenshots/onboarding.png)
+### Login
+![Login page — CUA-branded sign-in restricted to @cua.edu addresses](screenshots/login.png)
 
 ### AI Chat Interface
-![Chat interface — personalized welcome message with profile context and Milestone 8 quick-start buttons](screenshots/chat.png)
+![Chat interface — personalized welcome message with profile summary and quick-start sidebar](screenshots/chat.png)
 
-### Academic Profile Page
-![Academic profile page — progress bars, all 15 LA slots, specialization blocks, and transfer credits](screenshots/profile.png)
+### Onboarding — Basic Info
+![Onboarding step 1 — degree program, admit term, graduation target, and catalog year selection](screenshots/onboarding-basic-info.png)
+
+### Onboarding — Liberal Arts
+![Onboarding step 3 — 15 liberal arts requirement slots with searchable dropdowns](screenshots/onboarding-liberal-arts.png)
+
+### Onboarding — Specializations
+![Onboarding step 2 — specialization picker with Alpine.js double-spec warnings and MATH 111 notices](screenshots/onboarding-specializations.png)
+
+### Onboarding — Choosing Specializations
+![Onboarding — selecting specialization courses with required and elective rows per spec](screenshots/onboarding-choosing-specializations.png)
+
+### Onboarding — Business Core
+![Onboarding step 4 — business core requirements with catalog-year-conditional fields](screenshots/onboarding-business-core.png)
 
 ---
 
@@ -230,7 +242,6 @@ CUA-CoursePlanner/
 │       └── ...                          # Auth, onboarding, profile, rate-limiting, GDPR tests
 ├── deploy.sh                            # AWS EC2 deployment script
 ├── ROADMAP.md                           # Milestone plan and open issues
-├── FUTUREUPDATES.md                     # Deferred features and re-enable instructions
 └── .env                                 # Local secrets (gitignored)
 ```
 
