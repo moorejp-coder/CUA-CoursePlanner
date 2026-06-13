@@ -191,13 +191,8 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ## Milestone 9 — Demo & Submission
 **Delivers:** A polished, winning contest submission.
-- Scripted demo against 20 real student scenarios
-- Recorded walkthrough of 5 student personas:
-  1. Incoming freshman exploring degree requirements
-  2. Transfer student checking career discernment exemption
-  3. Junior with double specialization planning senior year
-  4. Senior checking graduation readiness through their profile
-  5. Non-business student exploring a business minor
+- Single hallucination test using the developer's own CUA academic profile (privacy laws prohibit use of any other student's data)
+- One test case, one test data set — grounded entirely in the authenticated user's real degree program, completed courses, specialization, and remaining requirements
 - One-page project summary (problem, solution, AI usage, key learnings)
 - Final README updated with live URL, screenshots, and local setup instructions
 - Demo script with timestamps (30-second hook, 5-minute walkthrough, 30-second close)
@@ -206,18 +201,10 @@ An AI-powered academic advising chatbot for undergraduate students at the Tim & 
 
 ---
 
-## Deferred Features
-See [FUTUREUPDATES.md](FUTUREUPDATES.md) for full details on features taken offline and planned for future work, including:
-- Admin dashboard (student roster, role management, usage statistics)
-- Degree requirements editor with chip/pill tag UI
-- System prompt editor with version history
-
----
-
 ## Success Criteria
 - Bot responds accurately in under 10 seconds
 - Profile system correctly personalizes bot responses for each student
 - Live public URL accessible with working login and onboarding
 - GitHub shows consistent iterative commits across all milestones
-- 5 student persona walkthroughs recorded and ready as backup
+- Hallucination test passes using developer's own academic profile
 - One-page summary written and saved as PDF in repository
