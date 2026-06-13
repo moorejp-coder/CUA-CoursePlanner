@@ -22,7 +22,8 @@ ssh -i "$EC2_KEY_PATH" -o StrictHostKeyChecking=no "$EC2_USER@$EC2_HOST" bash <<
   sudo chown -R "$EC2_USER":"$EC2_USER" "$DEPLOY_PATH/storage" "$DEPLOY_PATH/bootstrap/cache" 2>/dev/null || true
 
   echo "--- Pulling latest code ---"
-  git pull origin main
+  git fetch origin main
+  git reset --hard origin/main
 
   echo "--- Installing PHP dependencies ---"
   composer install --no-dev --optimize-autoloader
