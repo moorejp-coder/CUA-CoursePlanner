@@ -25,7 +25,8 @@ jobs:
             sudo chown -R $USER:$USER storage 2>/dev/null || true
 
             echo "--- Pulling latest code ---"
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
 
             echo "--- Installing PHP dependencies ---"
             composer install --no-dev --optimize-autoloader
